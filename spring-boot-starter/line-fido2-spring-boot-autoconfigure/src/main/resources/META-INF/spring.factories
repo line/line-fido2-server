@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.linecorp.line.auth.fido.fido2.springboot.autoconfigure.config.ChallengeServiceAutoConfiguration, \
+  com.linecorp.line.auth.fido.fido2.springboot.autoconfigure.config.ResponseServiceAutoConfiguration, \
+  com.linecorp.line.auth.fido.fido2.springboot.autoconfigure.config.MdsFetchTaskAutoConfiguration

@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) 2018 LINE Corporation. All rights reserved.
+ * LINE Corporation PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
+
+rootProject.name = 'fido2'
+
+include 'server'
+include 'rpserver'
+include 'common'
+include 'spring-boot-starter:line-fido2-spring-boot-autoconfigure'
+include 'spring-boot-starter:line-fido2-spring-boot-starter'
+include 'spring-boot-starter:line-fido2-spring-boot-demo'
+

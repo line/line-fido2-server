@@ -1,0 +1,20 @@
+spring:
+  profiles:
+    active: local
+  resources:
+    chain:
+      cache: false
+fido2:
+  rp:
+    id: localhost
+    origin: localhost
+    port: 8080
+
+conformance:
+  url: http://localhost:8080
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.hibernate: DEBUG
+    com.linecorp.line: DEBUG
+

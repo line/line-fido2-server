@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: local
+server:
+  port: 8081
+redis:
+  host: localhost
+  port: 6379
+  password:
+logging:
+  level:
+    com.linecorp.line: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate: DEBUG
+h2:
+  console:
+    enabled: true
+    settings:
+      web-allow-others: true

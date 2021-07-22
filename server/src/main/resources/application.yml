@@ -1,0 +1,46 @@
+spring:
+  profiles:
+    active: local
+  config:
+    use-legacy-processing: true
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+server:
+  port: 8081
+fido:
+  protocols:
+    fido2:
+      versions:
+        -
+          major: 1
+          minor: 0
+
+  fido2:
+    session-ttl-millis: 180000
+    accept-unregistered-authenticators: true
+
+logbook:
+  write:
+    level: INFO
+    category: http.wire-log
+  obfuscate:
+    headers:
+      - host
+      - origin
+      - referer
+      - user-agent
+      - accept-encoding
+  exclude:
+    - /health
+mds:
+  enable-mds : false
+  sources:
+    # if you want to use mds service please see below
+    # https://fidoalliance.org/metadata/
+    - name: fido-mds-v2
+      enabled: true
+      endpoint: https://mds2.fidoalliance.org/
+      access-token: xxx
+      root-certificates:
+        - xxx

@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) 2018 LINE Corporation. All rights reserved.
+ * LINE Corporation PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
+
+plugins {
+    id 'java'
+}
+
+apply plugin: 'maven'
+group 'com.linecorp.line.auth.fido.fido2'
+version '1.1.1-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compile('com.fasterxml.jackson.core:jackson-databind:2.9.6')
+    compile('com.fasterxml.jackson.core:jackson-core:2.9.6')
+    compile('com.fasterxml.jackson.core:jackson-annotations:2.9.6')
+    compileOnly 'org.projectlombok:lombok:1.18.18'
+    annotationProcessor 'org.projectlombok:lombok:1.18.18'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
