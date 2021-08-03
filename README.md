@@ -3,32 +3,32 @@
 
 ## Overview
 
-FIDO (Fast IDentity Online) is open standard for online authentication. It is designed for solving the password problems which is stems from a lot of security problems as we are suffering today.
+FIDO (Fast IDentity Online) is an open standard for online authentication. It is designed to solve the password problems stemming from a lot of security problems as we are suffering today.
 
-Rather than relying on symmetric credentials (like password or pin, typically which is knowledge based factor), FIDO is based on public key cryptography algorithm which is based on asymmetric credentials.
+Rather than relying on symmetric credentials (like passwords or PINs, typically which is a knowledge-based factor), FIDO is based on a public-key cryptography algorithm that is based on asymmetric credentials.
 
-Simply, the device generates the key pair and stores the private key within the secure area and send corresponding public key (as the name implies it is okay to be public) to the server.
+Simply, the device generates the key pair and stores the private key within the secure area, and sends the corresponding public key (as the name implies it is okay to be public) to the server.
 
-Then, if the authentication is needed, the server sends challenges to the device and the device generates the digital signature with the private key and send it to the server.
+Then, if the authentication is needed, the server sends challenges to the device and the device generates the digital signature with the private key and sends it to the server.
 
 Finally, the server can validate the signature with the registered public key.
 
 ### What is FIDO2
 FIDO2 is an improved standard for use on the web and other platforms as well as mobile. Various web browsers and OS platforms currently support the FIDO2 standard API.
 
-Basically, FIDO2 has following operations - Registration, Authentication.
+Basically, FIDO2 has the following operations - Registration, Authentication.
 
 #### Registration
-- User is prompted to choose an available FIDO authenticator that matches the online service’s acceptance policy.
-- User unlocks the FIDO authenticator using a fingerprint reader, a button on a second–factor device, securely–entered PIN or other method.
-- User’s device creates a new public/private key pair unique for the local device, online service and user’s account.
-- Public key is sent to the online service and associated with the user’s account. The private key and any information about the local authentication method (such as biometric measurements or templates) never leave the local device.
+- The user is prompted to choose an available FIDO authenticator that matches the online service’s acceptance policy.
+- User unlocks the FIDO authenticator using a fingerprint reader, a button on a second–factor device, securely–entered PIN, or other methods.
+- The user’s device creates a new public/private key pair unique for the local device, online service, and user’s account.
+- The public key is sent to the online service and associated with the user’s account. The private key and any information about the local authentication method (such as biometric measurements or templates) never leave the local device.
 
 #### Authentication
-- Online service challenges the user to login with a previously registered device that matches the service’s acceptance policy.
+- Online service challenges the user to log in with a previously registered device that matches the service’s acceptance policy.
 - User unlocks the FIDO authenticator using the same method as at Registration time.
-- Device uses the user’s account identifier provided by the service to select the correct key and sign the service’s challenge.
-- Client device sends the signed challenge back to the service, which verifies it with the stored public key and logs in the user.
+- The device uses the user’s account identifier provided by the service to select the correct key and sign the service’s challenge.
+- The client device sends the signed challenge back to the service, which verifies it with the stored public key and lets the user log in.
 
       
 ## Screenshots
@@ -45,10 +45,10 @@ Basically, FIDO2 has following operations - Registration, Authentication.
 <img src="images/chrome_android_fingerprint_auth.GIF" height="500" align="center" alt="registration_flow"/>
 
 ## Modules
-- common: fido2 related common models
-- rp-server: simple rp server implementation
-- server: fido2 server
-- spring-boot-stater: Fido2 server wrapped in a spring boot starter
+- server: FIDO2 server
+- common: FIDO2 related common models
+- rp-server: a simple RP server implementation
+- spring-boot-stater: FIDO2 server wrapped in a spring boot starter
 
 ## Features
 - Supported browsers (Supported authenticators and interfaces may be different depending on the current browsers implementations)
@@ -83,7 +83,7 @@ Basically, FIDO2 has following operations - Registration, Authentication.
    - Packed (FIDO2)
    - Tpm (Windows10 devices)
    - Android key attestation
-   - Android safetynet (Any Android devices running 7+)
+   - Android SafetyNet (Any Android devices running 7+)
    - FIDO U2F (Legacy U2F authenticators)
    - Apple Anonymous
    - None
@@ -94,19 +94,19 @@ Basically, FIDO2 has following operations - Registration, Authentication.
    - credProtect
 
 ## How to play with
-You need to run FIDO2 server and RP Server first.
+You need to run the FIDO2 server and RP Server first.
 
-If you want to integrate your own RP Server, please implement APIs by referring the sample codes. Regarding client sides, you may implement the web app for communicating with RP server.
+If you want to integrate your own RP Server, please implement APIs by referring to the sample codes. Regarding client sides, you may implement the web app for communicating with the RP server.
 
 ## Local DB
-FIDO2 Server running on local environments uses h2 as an embedded DB. For other environments such as stg, beta or real, this need to be replaced with commercial standalone DB.
+FIDO2 Server running on local environments uses h2 as an embedded DB. This needs to be replaced with commercial standalone DB for other environments such as staging, beta or real.
 
-In case of local environment, you can use h2 console. Add following path /h2-console to the fido server url to access h2 web console.
+In the case of the local environment, you can use the h2 console. Add the following path /h2-console to the fido server URL to access the h2 web console.
 
 e.g., http://localhost:8081/h2-console
 
 ## Spring Boot Starter
-We also provide our server in the form of spring boot starter.
+We also provide our server in the form of a spring boot starter.
 
 Check out the spring-boot-starter directory.
 
@@ -136,7 +136,7 @@ jar {
 ```
 
 ## Lombok
-This project utilizes Lombok to reduce implementing getter/setter/constructors. You need lombok plugin to build with IntelliJ and Eclipse.
-See following web pages to get information.
+This project utilizes Lombok to reduce implementing getter/setter/constructors. You need the Lombok plugin to build with IntelliJ and Eclipse.
+See the following web pages to get information.
 
 https://projectlombok.org/
