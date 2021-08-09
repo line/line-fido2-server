@@ -28,7 +28,6 @@ jar {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation('org.springframework.boot:spring-boot-starter-web')
-//    implementation('com.linecorp.line.auth.fido.fido2:line-fido2-spring-boot-starter:0.1.1-SNAPSHOT')
     implementation project(':spring-boot-starter:line-fido2-spring-boot-starter')
 
     compileOnly 'org.projectlombok:lombok:1.18.18'

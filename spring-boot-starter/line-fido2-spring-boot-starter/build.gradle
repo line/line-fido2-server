@@ -23,8 +23,6 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
-
-//	api ('com.linecorp.line.auth.fido.fido2:line-fido2-spring-boot-autoconfigure:0.1.1-SNAPSHOT')
 	api project(':spring-boot-starter:line-fido2-spring-boot-autoconfigure')
 
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
@@ -55,10 +53,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.18'
 	annotationProcessor 'org.projectlombok:lombok:1.18.18'
 
-	implementation('com.linecorp.line.auth.fido.fido2:common:1.1.0-SNAPSHOT')
-
 	implementation ('org.springframework.boot:spring-boot-starter-jdbc')
-
 	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
 
 }
