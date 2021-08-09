@@ -20,8 +20,6 @@ repositories {
 }
 
 dependencies {
-//	api('com.linecorp.line.auth.fido.fido2:common:1.1.1-SNAPSHOT')
-//	api('com.linecorp.line.auth.fido.fido2:server:0.1.1-SNAPSHOT')
 	api project(':common')
 	api project(':server')
 
