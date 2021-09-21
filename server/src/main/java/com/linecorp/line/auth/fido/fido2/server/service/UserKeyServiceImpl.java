@@ -177,6 +177,8 @@ public class UserKeyServiceImpl implements UserKeyService {
         try {
             if (algorithm.isRSAAlgorithm()) {
                 keyFactory = KeyFactory.getInstance("RSA");
+            } else if (algorithm.isEdDSAAlgorithm()) {
+                keyFactory = KeyFactory.getInstance("EdDSA");
             } else {
                 keyFactory = KeyFactory.getInstance("ECDSA");
             }
