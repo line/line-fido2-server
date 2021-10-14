@@ -33,10 +33,10 @@ Basically, FIDO2 has the following operations - Registration, Authentication.
       
 ## Screenshots
 ### Chrome on Mac with TouchId
-<img src="images/chrome_mac_touchid.gif" height="500" align="center" alt="registration_flow"/>
+<img src="images/chrome_mac_touchid.gif" width="600" align="center" alt="registration_flow"/>
 
 ### Chrome on Mac with Secret Key (2FA)
-<img src="images/chrome_mac_secretkey.gif" height="500" align="center" alt="registration_flow"/>
+<img src="images/chrome_mac_secretkey.gif" width="600" align="center" alt="registration_flow"/>
 
 ### Chrome on Android with Fingerprint (Reg)
 <img src="images/chrome_android_fingerprint_reg.GIF" height="500" align="center" alt="registration_flow"/>
@@ -45,34 +45,12 @@ Basically, FIDO2 has the following operations - Registration, Authentication.
 <img src="images/chrome_android_fingerprint_auth.GIF" height="500" align="center" alt="registration_flow"/>
 
 ## Modules
-- server: FIDO2 server
+- server: A FIDO2 server implementation conforming to the FIDO2 standard
 - common: FIDO2 related common models
-- rp-server: a simple RP server implementation
-- spring-boot-stater: FIDO2 server wrapped in a spring boot starter
+- rp-server: A sample application with a FIDO2 RP implementation
+- spring-boot-stater: A spring-boot-starter version of the LINE FIDO2 server application that can be easily integrated into a Spring Boot environment
 
 ## Features
-- Supported browsers (Supported authenticators and interfaces may be different depending on the current browsers implementations)
-   - Chrome
-   - Opera (inherited from Chrome)
-   - Firefox
-   - MS Edge (Windows 10 /w 2018 October Update)
-   - MS Edge on Chromium
-   - Safari
-- Supported authenticators (Platforms and externals)
-   - Any FIDO2 authenticators and U2F authenticators with None attestation
-- Signature algorithms
-   - RS1 (RSASSA-PKCS1-v1_5 w/ SHA-1)
-   - RS256 (RSASSA-PKCS1-v1_5 w/ SHA-256)
-   - RS384 (RSASSA-PKCS1-v1_5 w/ SHA-384)
-   - RS512 (RSASSA-PKCS1-v1_5 w/ SHA-512)
-   - PS256 (RSASSA-PSS w/ SHA-256)
-   - PS384 (RSASSA-PSS w/ SHA-384)
-   - PS512 (RSASSA-PSS w/ SHA-512)
-   - EDDSA (EdDSA)
-   - ES256 (ECDSA w/ SHA-256)
-   - ES384 (ECDSA w/ SHA-384)
-   - ES512 (ECDSA w/ SHA-512)
-   - ES256K (ECDSA using P-256K and SHA-256)
 - Supported attestation types
    - Basic
    - Self
@@ -89,28 +67,15 @@ Basically, FIDO2 has the following operations - Registration, Authentication.
    - None
 - Metadata service integration
    - FIDO MDSv2
-- Supported extensions
-   - credProps
-   - credProtect
-
+   
 ## How to play with
 You need to run the FIDO2 server and RP Server first.
 
 If you want to integrate your own RP Server, please implement APIs by referring to the sample codes. Regarding client sides, you may implement the web app for communicating with the RP server.
 
-## Local DB
-FIDO2 Server running on local environments uses h2 as an embedded DB. This needs to be replaced with commercial standalone DB for other environments such as staging, beta or real.
-
-In the case of the local environment, you can use the h2 console. Add the following path /h2-console to the fido server URL to access the h2 web console.
-
-e.g., http://localhost:8081/h2-console
-
-## Spring Boot Starter
 We also provide our server in the form of a spring boot starter.
-
 Check out the spring-boot-starter directory.
 
-## How to run
 ```bash
 # Start RP Server
 cd rpserver
@@ -123,8 +88,20 @@ cd server
 cd spring-boot-starter/line-fido2-spring-boot-demo
 ./gradlew bootRun
 ```
+### Local DB
+FIDO2 Server running on local environments uses h2 as an embedded DB. This needs to be replaced with commercial standalone DB for other environments such as staging, beta or real.
 
-## Issues
+In the case of the local environment, you can use the h2 console. Add the following path /h2-console to the fido server URL to access the h2 web console.
+
+e.g., http://localhost:8081/h2-console
+
+### Lombok
+This project utilizes Lombok to reduce implementing getter/setter/constructors. You need the Lombok plugin to build with IntelliJ and Eclipse.
+See the following web pages to get information.
+
+https://projectlombok.org/
+
+### Issues
 - If data.sql doesn't work well in an IntelliJ environment,
   try commenting on this part in build.gradle.
 ```groovy
@@ -135,8 +112,20 @@ jar {
 }
 ```
 
-## Lombok
-This project utilizes Lombok to reduce implementing getter/setter/constructors. You need the Lombok plugin to build with IntelliJ and Eclipse.
-See the following web pages to get information.
+## References
+`LINE Engineering Blogs`
+- [FIDO at LINE: A First Step to a World Without Passwords](https://engineering.linecorp.com/en/blog/fido-at-line/)
+- [FIDO at LINE: FIDO2 server as an open-source project](https://engineering.linecorp.com/en/blog/fido-at-line-fido2-server-opensource/)
 
-https://projectlombok.org/
+`LINE DevDay Videos`
+- [Strong customer authentication & biometrics using FIDO](https://youtu.be/S1y9wFh7_dc)
+- [Cross Platform Mobile Security At LINE](https://youtu.be/4288h-EamTU)
+- [Secure LINE login with biometric key replacing password](https://youtu.be/vCAu-y-iwyw)
+
+`Internal`
+- [Sequence Diagram](https://github.com/line/line-fido2-server/wiki/Sequence-diagrams)
+
+`External`
+- [FIDO2: WebAuthn & CTAP](https://fidoalliance.org/fido2/)
+- [WebAuthn Level 2](https://www.w3.org/TR/2021/REC-webauthn-2-20210408/)
+- [CTAP v2.1](https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html)
