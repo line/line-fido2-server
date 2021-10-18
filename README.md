@@ -14,6 +14,8 @@
 
 ## Overview
 
+
+
 FIDO (Fast IDentity Online) is an open standard for online authentication. It is designed to solve the password problems stemming from a lot of security problems as we are suffering today.
 
 Rather than relying on symmetric credentials (like passwords or PINs, typically which is a knowledge-based factor), FIDO is based on a public-key cryptography algorithm that is based on asymmetric credentials.
