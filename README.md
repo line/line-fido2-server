@@ -1,4 +1,4 @@
-#LINE FIDO2 SERVER
+# LINE FIDO2 SERVER
 
 ![Stars](https://img.shields.io/github/stars/line/line-fido2-server.svg?style=social)
 ![Repo Size](https://img.shields.io/github/repo-size/line/line-fido2-server)
