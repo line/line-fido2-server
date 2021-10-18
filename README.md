@@ -45,10 +45,10 @@ Basically, FIDO2 has the following operations - Registration, Authentication.
 <img src="images/chrome_android_fingerprint_auth.GIF" height="500" align="center" alt="registration_flow"/>
 
 ## Modules
-- server: A FIDO2 server implementation conforming to the FIDO2 standard
+- server: The FIDO2 server implementation conforming to the FIDO2 standard
 - common: FIDO2 related common models
-- rp-server: A sample application with a FIDO2 RP implementation
-- spring-boot-stater: A spring-boot-starter version of the LINE FIDO2 server application that can be easily integrated into a Spring Boot environment
+- rp-server: The sample application with a FIDO2 RP implementation
+- spring-boot-stater: The spring-boot-starter version of the LINE FIDO2 server application that can be easily integrated into a Spring Boot environment
 
 ## Features
 - Supported attestation types
@@ -111,6 +111,14 @@ jar {
   }
 }
 ```
+
+## API
+
+### Swagger UI
+After running the application, you can view the Swagger UI here.
+- rpserver: http://localhost:8080/swagger-ui.html
+- server: http://localhost:8081/swagger-ui.html
+
 
 ## References
 `LINE Engineering Blogs`
