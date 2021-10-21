@@ -7,12 +7,12 @@ import com.linecorp.line.auth.fido.fido2.server.restdocs.TestSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Rollback
@@ -32,39 +32,57 @@ class CredentialControllerTest extends TestSupport {
 
     @Test
     void getCredentialWithCredentialIdAndRpId() throws Exception {
-        mockMvc.perform(get("/fido2/credentials/{id}",userKeyEntity.getCredentialId())
-                        .param("rpId",userKeyEntity.getRpEntity().getId())
+        mockMvc.perform(get("/fido2/credentials/{id}", userKeyEntity.getCredentialId())
+                        .param("rpId", userKeyEntity.getRpEntity().getId())
                 )
                 .andExpect(status().isOk())
-                .andDo(restDocs.document());
+                .andDo(restDocs.document(
+                        requestParameters(
+                                parameterWithName("rpId").description("RP Id")
+                        ),
+                        pathParameters(
+                                parameterWithName("id").description("credential Id")
+                        )
+                ));
     }
 
     @Test
     void getCredentialsWithUserIdAndRpId() throws Exception {
         mockMvc.perform(get("/fido2/credentials")
-                        .param("rpId",userKeyEntity.getRpEntity().getId())
-                        .param("userId",userKeyEntity.getUserId())
+                        .param("rpId", userKeyEntity.getRpEntity().getId())
+                        .param("userId", userKeyEntity.getUserId())
                 )
                 .andExpect(status().isOk())
-                .andDo(restDocs.document());
+                .andDo(restDocs.document(requestParameters(
+                        parameterWithName("rpId").description("RP Id"),
+                        parameterWithName("userId").description("User Id")
+                )));
     }
 
     @Test
     void deleteCredentialWithCredentialIdAndRpId() throws Exception {
-        mockMvc.perform(delete("/fido2/credentials/{id}",userKeyEntity.getCredentialId())
-                        .param("rpId",userKeyEntity.getRpEntity().getId())
+        mockMvc.perform(delete("/fido2/credentials/{id}", userKeyEntity.getCredentialId())
+                        .param("rpId", userKeyEntity.getRpEntity().getId())
                 )
                 .andExpect(status().isOk())
-                .andDo(restDocs.document());
+                .andDo(restDocs.document(requestParameters(
+                                parameterWithName("rpId").description("RP Id")
+                        ),
+                        pathParameters(
+                                parameterWithName("id").description("credential Id")
+                        )));
     }
 
     @Test
     void deleteCredentialWithUserIdIdAndRpId() throws Exception {
         mockMvc.perform(delete("/fido2/credentials")
-                        .param("rpId",userKeyEntity.getRpEntity().getId())
-                        .param("userId",userKeyEntity.getUserId())
+                        .param("rpId", userKeyEntity.getRpEntity().getId())
+                        .param("userId", userKeyEntity.getUserId())
                 )
                 .andExpect(status().isOk())
-                .andDo(restDocs.document());
+                .andDo(restDocs.document(requestParameters(
+                        parameterWithName("rpId").description("RP Id"),
+                        parameterWithName("userId").description("User Id")
+                )));
     }
 }

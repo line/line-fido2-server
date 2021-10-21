@@ -1,4 +1,4 @@
-= FIDO2 Getting Started Guide
+= LINE FIDO2 SERVER API Guide
 LINE Corp;
 :doctype: book
 :icons: font
@@ -10,52 +10,71 @@ LINE Corp;
 [[introduction]]
 = Introduction
 
-RESTful Notes is a RESTful web service for creating and storing notes.
-It uses hypermedia to describe the relationships between resources and to allow navigation between them.
+This document is about the APIs of the LINE FIDO2 Server application that has been released as open-source.
 
-[[getting_started_running_the_service]]
-== Running the service
+These define the messages exchanged between the RP server and LINE FIDO2 server.
 
-RESTful Notes is written using https://projects.spring.io/spring-boot[Spring Boot] which makes it easy to get it up and running so that you can start exploring the REST API.
+For more information, please see README.md at the link below.
 
-The first step is to clone the Git repository:
+https://github.com/line/line-fido2-server
 
-[source,bash]
-----
-$ git clone https://github.com/spring-projects/spring-restdocs
-----
+Basically, FIDO2 has the following operations - Registration, Authentication.
+
+Example APIs worked like this:
+
+- Work with server-side credentials.
+(https://www.w3.org/TR/webauthn/#server-side-credential)
+
+- Use the platform authenticator in the Chrome browser on Mac OS.
+
+- Attestation Type is "NONE".
+
+
 
 === Registration
 
-==== Request
+Registration consists of two APIs: an API for requesting a challenge, and an API for delivering the results of the client's registration.
+
+==== Get Reg Challenge
 
 operation::challenge-controller-test/get-reg-challenge[snippets='http-request,http-response']
 
-==== Response
+==== Send Reg Response
 
 operation::response-controller-test/send-reg-response[snippets='http-request,http-response']
 
 === Authentication
 
-==== Request
+Authentication consists of two APIs: an API for requesting a challenge and an API for delivering the client's authentication result.
+
+==== Get Auth Challenge
 
 operation::challenge-controller-test/get-auth-challenge[snippets='http-request,http-response']
 
-==== Response
+==== Send Auth Response
 
 operation::response-controller-test/send-auth-response[snippets='http-request,http-response']
 
 === Credential API
 
-operation::credential-controller-test/get-credential-with-credential-id-and-rp-id[snippets='http-request,http-response']
+IMPORTANT: These are not within the scope of the WebAuthn specification but its own APIs.
 
-operation::credential-controller-test/get-credentials-with-user-id-and-rp-id[snippets='http-request,http-response']
+==== Get Credential by CredentialId
+operation::credential-controller-test/get-credential-with-credential-id-and-rp-id[snippets='http-request,path-parameters,request-parameters,http-response']
 
-operation::credential-controller-test/delete-credential-with-credential-id-and-rp-id[snippets='http-request,http-response']
+==== Get Credential by UserId
+operation::credential-controller-test/get-credentials-with-user-id-and-rp-id[snippets='http-request,request-parameters,http-response']
 
-operation::credential-controller-test/delete-credential-with-user-id-id-and-rp-id[snippets='http-request,http-response']
+==== Delete Credential by CredentialId
+operation::credential-controller-test/delete-credential-with-credential-id-and-rp-id[snippets='http-request,path-parameters,request-parameters,http-response']
+
+==== Delete Credential by UserId
+operation::credential-controller-test/delete-credential-with-user-id-id-and-rp-id[snippets='http-request,request-parameters,http-response']
 
 
 === Health Check
 
+IMPORTANT: This is not within the scope of the WebAuthn specification but its own API.
+
+=== Get Health Check Status
 operation::health-check-controller-test/health-check[snippets='http-request,http-response']
