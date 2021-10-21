@@ -1,0 +1,82 @@
+{
+  "serverResponse": {
+    "description": null,
+    "internalError": "SUCCESS",
+    "internalErrorCode": 0,
+    "internalErrorCodeDescription": null
+  },
+  "rp": {
+    "name": "example1",
+    "icon": null,
+    "id": "localhost"
+  },
+  "user": {
+    "name": "TestUser",
+    "icon": null,
+    "id": "65fUCTlqPlOSk22tkrkJ2m8I2MEhpF4fCI_pdosMAzk",
+    "displayName": "Test Display Name"
+  },
+  "challenge": "Hl9yN1FHtOMYv2j8MOTCPrhQDTRHd6ceBzqm2Hk0ljN_mGn2iDzG3yPlh4L-U7sY9csaOgViZbHgJ9ENqD4N0Q",
+  "pubKeyCredParams": [
+    {
+      "type": "public-key",
+      "alg": -65535
+    },
+    {
+      "type": "public-key",
+      "alg": -257
+    },
+    {
+      "type": "public-key",
+      "alg": -258
+    },
+    {
+      "type": "public-key",
+      "alg": -259
+    },
+    {
+      "type": "public-key",
+      "alg": -37
+    },
+    {
+      "type": "public-key",
+      "alg": -38
+    },
+    {
+      "type": "public-key",
+      "alg": -39
+    },
+    {
+      "type": "public-key",
+      "alg": -7
+    },
+    {
+      "type": "public-key",
+      "alg": -35
+    },
+    {
+      "type": "public-key",
+      "alg": -36
+    },
+    {
+      "type": "public-key",
+      "alg": -8
+    },
+    {
+      "type": "public-key",
+      "alg": -43
+    }
+  ],
+  "timeout": 180000,
+  "excludeCredentials": [],
+  "authenticatorSelection": {
+    "authenticatorAttachment": "platform",
+    "requireResidentKey": true,
+    "userVerification": "preferred"
+  },
+  "attestation": "none",
+  "sessionId": "fde89293-9dd4-4244-b7db-1df1086c7bc9",
+  "extensions": {
+    "credProps": true
+  }
+}

@@ -1,0 +1,61 @@
+= FIDO2 Getting Started Guide
+LINE Corp;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[[introduction]]
+= Introduction
+
+RESTful Notes is a RESTful web service for creating and storing notes.
+It uses hypermedia to describe the relationships between resources and to allow navigation between them.
+
+[[getting_started_running_the_service]]
+== Running the service
+
+RESTful Notes is written using https://projects.spring.io/spring-boot[Spring Boot] which makes it easy to get it up and running so that you can start exploring the REST API.
+
+The first step is to clone the Git repository:
+
+[source,bash]
+----
+$ git clone https://github.com/spring-projects/spring-restdocs
+----
+
+=== Registration
+
+==== Request
+
+operation::challenge-controller-test/get-reg-challenge[snippets='http-request,http-response']
+
+==== Response
+
+operation::response-controller-test/send-reg-response[snippets='http-request,http-response']
+
+=== Authentication
+
+==== Request
+
+operation::challenge-controller-test/get-auth-challenge[snippets='http-request,http-response']
+
+==== Response
+
+operation::response-controller-test/send-auth-response[snippets='http-request,http-response']
+
+=== Credential API
+
+operation::credential-controller-test/get-credential-with-credential-id-and-rp-id[snippets='http-request,http-response']
+
+operation::credential-controller-test/get-credentials-with-user-id-and-rp-id[snippets='http-request,http-response']
+
+operation::credential-controller-test/delete-credential-with-credential-id-and-rp-id[snippets='http-request,http-response']
+
+operation::credential-controller-test/delete-credential-with-user-id-id-and-rp-id[snippets='http-request,http-response']
+
+
+=== Health Check
+
+operation::health-check-controller-test/health-check[snippets='http-request,http-response']

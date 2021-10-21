@@ -1,0 +1,27 @@
+{
+  "serverPublicKeyCredential": {
+    "id": "AUTjvBgL29DEg4aoRVchh4KSi9cLUmNuL4JqH4H8RTvKaBVDu88CnXGHDTkpIag5ODydvM-UP5FgqzDzzM3A_tzLSeoWc7hnkQK3g0N0jifjatDHgXX6YmMVAJc",
+    "type": "public-key",
+    "response": {
+      "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoid19aOGctaklHdW5GYkM4S1g5THU0MThVUHV5RmNxQTlnM2ZqajVQRC1OdFYyWXA3R3dxeHdYdXJFNnRSZkp5V29rS21wV2R5c1VSS3lXRDRYNjJFb0EiLCJvcmlnaW4iOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJjcm9zc09yaWdpbiI6ZmFsc2UsIm90aGVyX2tleXNfY2FuX2JlX2FkZGVkX2hlcmUiOiJkbyBub3QgY29tcGFyZSBjbGllbnREYXRhSlNPTiBhZ2FpbnN0IGEgdGVtcGxhdGUuIFNlZSBodHRwczovL2dvby5nbC95YWJQZXgifQ",
+      "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFYW-4ew",
+      "signature": "MEYCIQC74yVXB6oz66Y1hfahBYnHvrhl42p8l2PWpGIPv2EgEgIhAM8ooggslk3efQhiulISGw489JMPQqTWjj0kRXvgc61G",
+      "userHandle": "65fUCTlqPlOSk22tkrkJ2m8I2MEhpF4fCI_pdosMAzk"
+    },
+    "extensions": {
+      "appid": null,
+      "txAuthSimple": null,
+      "txAuthGeneric": null,
+      "authnSel": null,
+      "exts": null,
+      "uvi": null,
+      "loc": null,
+      "biometricPerfBounds": null,
+      "credProps": null
+    }
+  },
+  "sessionId": "c05c782a-77ca-4721-b523-19389bfcf3d7",
+  "origin": "http://localhost:8080",
+  "rpId": "localhost",
+  "tokenBinding": null
+}

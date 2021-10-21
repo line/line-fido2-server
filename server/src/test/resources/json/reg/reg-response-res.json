@@ -1,0 +1,16 @@
+{
+  "serverResponse": {
+    "description": null,
+    "internalError": "SUCCESS",
+    "internalErrorCode": 0,
+    "internalErrorCodeDescription": null
+  },
+  "aaguid": "adce0002-35bc-c60a-648b-0b25f1f05503",
+  "credentialId": "AYF-hoBThKTDPlpZs5i-xXCmPppyXuqEf8g0PpBclsJaSqnxOkC3qa3QVAdLeyBav-1cqnRhhB34YPsjQuN2DlH0AlGDNisTU6mi3TQRnOUSqodRkZKAPKnwx6s",
+  "attestationType": "NONE",
+  "authenticatorTransports": [
+    "internal"
+  ],
+  "userVerified": true,
+  "rk": true
+}

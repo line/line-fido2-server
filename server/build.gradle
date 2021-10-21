@@ -9,9 +9,13 @@ buildscript {
     }
     repositories {
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "org.asciidoctor:asciidoctor-gradle-jvm:3.3.2"
     }
 }
 
@@ -21,6 +25,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'maven'
+apply plugin: 'org.asciidoctor.jvm.convert'
 
 group = 'com.linecorp.line.auth.fido.fido2'
 version = '0.1.1-SNAPSHOT'
@@ -32,8 +37,30 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
 test {
     useJUnitPlatform()
+    outputs.dir snippetsDir
+}
+configurations {
+    asciidoctorExtensions
+}
+
+asciidoctor {
+    configurations "asciidoctorExtensions"
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
+
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
 }
 
 dependencies {
@@ -98,4 +125,9 @@ dependencies {
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.1.0'
+
+    //Spring Rest Doc
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 }
