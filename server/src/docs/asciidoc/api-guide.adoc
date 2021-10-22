@@ -57,7 +57,7 @@ operation::response-controller-test/send-auth-response[snippets='http-request,ht
 
 === Credential API
 
-IMPORTANT: These are not within the scope of the WebAuthn specification but its own APIs.
+NOTE: These are not within the scope of the WebAuthn specification but its own APIs.
 
 ==== Get Credential by CredentialId
 operation::credential-controller-test/get-credential-with-credential-id-and-rp-id[snippets='http-request,path-parameters,request-parameters,http-response']
@@ -74,7 +74,7 @@ operation::credential-controller-test/delete-credential-with-user-id-id-and-rp-i
 
 === Health Check
 
-IMPORTANT: This is not within the scope of the WebAuthn specification but its own API.
+NOTE: This is not within the scope of the WebAuthn specification but its own API.
 
 === Get Health Check Status
 operation::health-check-controller-test/health-check[snippets='http-request,http-response']
