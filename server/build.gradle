@@ -32,6 +32,7 @@ version = '0.1.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 jar.enabled = true
+bootJar.enabled = true
 
 repositories {
     mavenCentral()
@@ -49,18 +50,21 @@ configurations {
     asciidoctorExtensions
 }
 
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
 asciidoctor {
     configurations "asciidoctorExtensions"
     inputs.dir snippetsDir
     dependsOn test
 }
 
-
-bootJar {
+task makeRestDocs(type: Copy) {
     dependsOn asciidoctor
-    from ("${asciidoctor.outputDir}/html5") {
-        into 'static/docs'
-    }
+
+    from file("${asciidoctor.outputDir}")
+    into file('src/main/resources/static/docs')
 }
 
 dependencies {

@@ -101,6 +101,10 @@ cd server
 cd spring-boot-starter/line-fido2-spring-boot-demo
 ./gradlew bootRun
 ```
+After running the applications, you can open the test page at the link below.
+
+ **http://localhost:8080/**
+
 ### Local DB
 FIDO2 Server running on local environments uses h2 as an embedded DB. This needs to be replaced with commercial standalone DB for other environments such as staging, beta or real.
 
@@ -125,13 +129,15 @@ jar {
 }
 ```
 
-## API
+## API Guides
+After running the applications, you can view API guide documents at the link below.
+
+### Spring REST Docs
+- server: http://localhost:8081/docs/api-guide.html
 
 ### Swagger UI
-After running the application, you can view the Swagger UI here.
 - rpserver: http://localhost:8080/swagger-ui.html
 - server: http://localhost:8081/swagger-ui.html
-
 
 ## References
 `LINE Engineering Blogs`
