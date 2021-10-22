@@ -3,7 +3,7 @@ package com.linecorp.line.auth.fido.fido2.server.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linecorp.line.auth.fido.fido2.server.entity.UserKeyEntity;
 import com.linecorp.line.auth.fido.fido2.server.repository.UserKeyRepository;
-import com.linecorp.line.auth.fido.fido2.server.restdocs.TestSupport;
+import com.linecorp.line.auth.fido.fido2.server.support.restdocs.TestSupportForSpringRestDocs;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Rollback
 @Transactional
-class CredentialControllerTest extends TestSupport {
+class CredentialControllerTest extends TestSupportForSpringRestDocs {
 
     @Autowired
     private UserKeyRepository userKeyRepository;
@@ -37,7 +37,7 @@ class CredentialControllerTest extends TestSupport {
     }
 
     @Test
-    void getCredentialWithCredentialIdAndRpId() throws Exception {
+    void getCredentialWithCredentialIdAndRpId_success() throws Exception {
         mockMvc.perform(get("/fido2/credentials/{id}", userKeyEntity.getCredentialId())
                         .param("rpId", userKeyEntity.getRpEntity().getId())
                 )
@@ -57,7 +57,7 @@ class CredentialControllerTest extends TestSupport {
     }
 
     @Test
-    void getCredentialsWithUserIdAndRpId() throws Exception {
+    void getCredentialsWithUserIdAndRpId_success() throws Exception {
         mockMvc.perform(get("/fido2/credentials")
                         .param("rpId", userKeyEntity.getRpEntity().getId())
                         .param("userId", userKeyEntity.getUserId())
@@ -75,7 +75,7 @@ class CredentialControllerTest extends TestSupport {
     }
 
     @Test
-    void deleteCredentialWithCredentialIdAndRpId() throws Exception {
+    void deleteCredentialWithCredentialIdAndRpId_success() throws Exception {
 
         final UserKeyEntity userKeyEntityBefore = userKeyRepository.findByRpEntityIdAndCredentialId(userKeyEntity.getRpEntity().getId(), userKeyEntity.getCredentialId());
         assertThat(userKeyEntityBefore).isNotNull();
@@ -96,7 +96,7 @@ class CredentialControllerTest extends TestSupport {
     }
 
     @Test
-    void deleteCredentialWithUserIdIdAndRpId() throws Exception {
+    void deleteCredentialWithUserIdIdAndRpId_success() throws Exception {
 
         final List<UserKeyEntity> userListBefore = userKeyRepository.findAllByRpEntityIdAndUserId(userKeyEntity.getRpEntity().getId(), userKeyEntity.getUserId());
         assertThat(userListBefore).hasSize(1);

@@ -37,11 +37,11 @@ Registration consists of two APIs: an API for requesting a challenge, and an API
 
 ==== Get Reg Challenge
 
-operation::challenge-controller-test/get-reg-challenge[snippets='http-request,http-response']
+operation::challenge-controller-test/get-reg-challenge_success[snippets='http-request,http-response']
 
 ==== Send Reg Response
 
-operation::response-controller-test/send-reg-response[snippets='http-request,http-response']
+operation::response-controller-test/send-reg-response_success[snippets='http-request,http-response']
 
 === Authentication
 
@@ -49,27 +49,27 @@ Authentication consists of two APIs: an API for requesting a challenge and an AP
 
 ==== Get Auth Challenge
 
-operation::challenge-controller-test/get-auth-challenge[snippets='http-request,http-response']
+operation::challenge-controller-test/get-auth-challenge_success[snippets='http-request,http-response']
 
 ==== Send Auth Response
 
-operation::response-controller-test/send-auth-response[snippets='http-request,http-response']
+operation::response-controller-test/send-auth-response_success[snippets='http-request,http-response']
 
 === Credential API
 
 NOTE: These are not within the scope of the WebAuthn specification but its own APIs.
 
 ==== Get Credential by CredentialId
-operation::credential-controller-test/get-credential-with-credential-id-and-rp-id[snippets='http-request,path-parameters,request-parameters,http-response']
+operation::credential-controller-test/get-credential-with-credential-id-and-rp-id_success[snippets='http-request,path-parameters,request-parameters,http-response']
 
 ==== Get Credential by UserId
-operation::credential-controller-test/get-credentials-with-user-id-and-rp-id[snippets='http-request,request-parameters,http-response']
+operation::credential-controller-test/get-credentials-with-user-id-and-rp-id_success[snippets='http-request,request-parameters,http-response']
 
 ==== Delete Credential by CredentialId
-operation::credential-controller-test/delete-credential-with-credential-id-and-rp-id[snippets='http-request,path-parameters,request-parameters,http-response']
+operation::credential-controller-test/delete-credential-with-credential-id-and-rp-id_success[snippets='http-request,path-parameters,request-parameters,http-response']
 
 ==== Delete Credential by UserId
-operation::credential-controller-test/delete-credential-with-user-id-id-and-rp-id[snippets='http-request,request-parameters,http-response']
+operation::credential-controller-test/delete-credential-with-user-id-id-and-rp-id_success[snippets='http-request,request-parameters,http-response']
 
 
 === Health Check
@@ -77,4 +77,4 @@ operation::credential-controller-test/delete-credential-with-user-id-id-and-rp-i
 NOTE: This is not within the scope of the WebAuthn specification but its own API.
 
 === Get Health Check Status
-operation::health-check-controller-test/health-check[snippets='http-request,http-response']
+operation::health-check-controller-test/health-check_success[snippets='http-request,http-response']

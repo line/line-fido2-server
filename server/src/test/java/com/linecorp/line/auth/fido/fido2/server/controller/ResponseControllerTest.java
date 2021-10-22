@@ -6,7 +6,7 @@ import com.linecorp.line.auth.fido.fido2.common.server.RegOptionResponse;
 import com.linecorp.line.auth.fido.fido2.server.entity.UserKeyEntity;
 import com.linecorp.line.auth.fido.fido2.server.model.Session;
 import com.linecorp.line.auth.fido.fido2.server.repository.UserKeyRepository;
-import com.linecorp.line.auth.fido.fido2.server.restdocs.TestSupport;
+import com.linecorp.line.auth.fido.fido2.server.support.restdocs.TestSupportForSpringRestDocs;
 import com.linecorp.line.auth.fido.fido2.server.service.SessionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Rollback
 @Transactional
-class ResponseControllerTest extends TestSupport {
+class ResponseControllerTest extends TestSupportForSpringRestDocs {
 
     @Autowired
     private UserKeyRepository userKeyRepository;
@@ -31,7 +31,7 @@ class ResponseControllerTest extends TestSupport {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void sendRegResponse() throws Exception {
+    void sendRegResponse_success() throws Exception {
 
         final Session session = sessionService.createSessionData();
         final RegOptionResponse regOptionResponse = objectMapper.readValue(readJson("/json/reg/reg-challenge-res.json"), RegOptionResponse.class);
@@ -51,7 +51,7 @@ class ResponseControllerTest extends TestSupport {
     }
 
     @Test
-    void sendAuthResponse() throws Exception {
+    void sendAuthResponse_success() throws Exception {
 
         final Session session = sessionService.createSessionData();
         final AuthOptionResponse authOptionResponse = objectMapper.readValue(readJson("/json/auth/auth-challenge-res.json"), AuthOptionResponse.class);

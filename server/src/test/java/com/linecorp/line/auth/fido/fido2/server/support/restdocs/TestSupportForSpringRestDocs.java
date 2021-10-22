@@ -1,4 +1,4 @@
-package com.linecorp.line.auth.fido.fido2.server.restdocs;
+package com.linecorp.line.auth.fido.fido2.server.support.restdocs;
 
 import io.micrometer.core.instrument.util.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +24,8 @@ import java.nio.charset.StandardCharsets;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(RestDocumentationExtension.class)
-@Import(RestDocsConfiguration.class)
-public class TestSupport {
+@Import(SpringRestDocsConfiguration.class)
+public class TestSupportForSpringRestDocs {
 
     protected MockMvc mockMvc;
 
