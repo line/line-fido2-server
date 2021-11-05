@@ -1,0 +1,23 @@
+{
+  "id": 1,
+  "rpEntity": {
+    "id": "localhost",
+    "name": "example1",
+    "icon": null,
+    "description": "example1"
+  },
+  "userId": "65fUCTlqPlOSk22tkrkJ2m8I2MEhpF4fCI_pdosMAzk",
+  "username": "TestUser",
+  "userDisplayName": "Test Display Name",
+  "userIcon": null,
+  "aaguid": "adce0002-35bc-c60a-648b-0b25f1f05503",
+  "credentialId": "AUTjvBgL29DEg4aoRVchh4KSi9cLUmNuL4JqH4H8RTvKaBVDu88CnXGHDTkpIag5ODydvM-UP5FgqzDzzM3A_tzLSeoWc7hnkQK3g0N0jifjatDHgXX6YmMVAJc",
+  "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6A7PJ7L7xHAP3wrd1i6Th9ep8KmOi8slCeT2SjREtuFDJfoF1L42dzgww2adGGq7cjYspbjl9YvJA-sr9R2sOg",
+  "signatureAlgorithm": -7,
+  "signCounter": 1634711283,
+  "attestationType": "NONE",
+  "rk": true,
+  "credProtect": 1,
+  "registeredTimestamp": 1634711237595,
+  "authenticatedTimestamp": 1634711288530
+}
