@@ -81,13 +81,15 @@ Basically, FIDO2 has the following operations - Registration, Authentication.
 - Metadata service integration
    - FIDO MDSv2
    
-## How to play with
+## How to run for testing
 You need to run the FIDO2 server and RP Server first.
 
 If you want to integrate your own RP Server, please implement APIs by referring to the sample codes. Regarding client sides, you may implement the web app for communicating with the RP server.
 
 We also provide our server in the form of a spring boot starter.
 Check out the spring-boot-starter directory.
+
+### Manual
 
 ```bash
 # Start RP Server
@@ -101,6 +103,19 @@ cd server
 cd spring-boot-starter/line-fido2-spring-boot-demo
 ./gradlew bootRun
 ```
+### Docker 
+If the [Docker environment is configured](https://docs.docker.com/get-started/), You can also run applications with docker images using docker-compose.
+
+These Docker images should run in your local machine.
+
+- [rpserver](https://hub.docker.com/r/kj84park/rp-server)
+- [server](https://hub.docker.com/r/kj84park/fido2-server)
+
+```bash
+# Start both RP Server and FIDO2 Server
+docker-compose up
+```
+
 After running the applications, you can open the test page at the link below.
 
  **http://localhost:8080/**
