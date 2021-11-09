@@ -300,7 +300,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         byte[] signatureBytes = Base64.getUrlDecoder().decode(serverPublicKeyCredential.getResponse().getSignature());
         boolean result = SignatureHelper.verifySignature(userKey.getPublicKey(), toBeSignedMessage, signatureBytes, userKey.getAlgorithm());
         if (!result) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.ASSERTION_SIGNATURE_VERIFICATION_FAIL);
+            throw FIDO2ServerRuntimeException.makeSignatureVerificationError(userKey.getAaguid());
         }
     }
 

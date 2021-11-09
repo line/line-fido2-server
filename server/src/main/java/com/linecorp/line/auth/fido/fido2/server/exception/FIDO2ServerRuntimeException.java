@@ -62,4 +62,8 @@ public class FIDO2ServerRuntimeException extends RuntimeException {
                 "RpId: " + rpId + "; UserId: " + userId);
     }
 
+    public static FIDO2ServerRuntimeException makeSignatureVerificationError(String aaguid) {
+        throw new FIDO2ServerRuntimeException(InternalErrorCode.ASSERTION_SIGNATURE_VERIFICATION_FAIL,
+                "AAGUId: " + aaguid);
+    }
 }
