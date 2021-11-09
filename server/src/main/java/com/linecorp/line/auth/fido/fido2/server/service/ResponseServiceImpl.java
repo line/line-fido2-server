@@ -206,7 +206,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         checkSignCounter(authData, userKey);
         // return authentication processing result
         log.info("[Finish handling assertion]");
-        return createVerifyCredentialResult(authData, userKey);
+        return createVerifyCredentialResult(authData, userKey, userKey.getAaguid());
     }
 
     protected void checkCredentialId(ServerAuthPublicKeyCredential serverPublicKeyCredential, Session session) {
@@ -304,9 +304,10 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         }
     }
 
-    protected VerifyCredentialResult createVerifyCredentialResult(AuthenticatorData authData, UserKey userKey) {
+    protected VerifyCredentialResult createVerifyCredentialResult(AuthenticatorData authData, UserKey userKey, String aaguid) {
         return VerifyCredentialResult
                 .builder()
+                .aaguid(aaguid)
                 .userId(userKey.getId())
                 .userVerified(authData.isUserVerified())
                 .userPresent(authData.isUserPresent())

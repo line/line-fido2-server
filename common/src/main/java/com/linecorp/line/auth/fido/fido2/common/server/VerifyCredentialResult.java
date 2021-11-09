@@ -31,6 +31,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @JsonInclude(NON_NULL)
 public class VerifyCredentialResult implements ServerAPIResult {
     private ServerResponse serverResponse;
+    private String aaguid;
     private String userId;
     private boolean userVerified;
     private boolean userPresent;
