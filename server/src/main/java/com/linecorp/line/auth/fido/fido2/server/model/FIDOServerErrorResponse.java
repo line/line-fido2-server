@@ -23,4 +23,5 @@ import lombok.Data;
 @Data
 public class FIDOServerErrorResponse {
     private ServerResponse serverResponse;
+    private String aaguid;
 }
