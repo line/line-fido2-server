@@ -243,7 +243,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         if (!StringUtils.isEmpty(serverPublicKeyCredential.getResponse().getUserHandle())) {
             if (!userKey.getId().equals(serverPublicKeyCredential.getResponse().getUserHandle())) {
                 // MUST identical to uerHandle
-                throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_HANDLE_NOT_MATCHED,"User handle is not matched",userKey.getAaguid());
+                throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_HANDLE_NOT_MATCHED, "User handle is not matched", userKey.getAaguid());
             }
         }
     }
