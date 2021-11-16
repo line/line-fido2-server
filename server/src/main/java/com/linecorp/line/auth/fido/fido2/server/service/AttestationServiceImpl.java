@@ -46,7 +46,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
@@ -118,7 +117,7 @@ public class AttestationServiceImpl implements AttestationService {
         log.info("Verify hash of RP ID with rpIdHash in authData");
         byte[] rpIdHash = Digests.sha256(rpId.getBytes(StandardCharsets.UTF_8));
         if (!Arrays.equals(attestationObject.getAuthData().getRpIdHash(), rpIdHash)) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.RPID_HASH_NOT_MATCHED);
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.RPID_HASH_NOT_MATCHED, "RP ID hash is not matched", AaguidUtil.convert(attestationObject.getAuthData().getAttestedCredentialData().getAaguid()));
         }
 
         // verify user present flag
@@ -134,7 +133,7 @@ public class AttestationServiceImpl implements AttestationService {
                 authenticatorSelection.getUserVerification() != null &&
                 authenticatorSelection.getUserVerification() == UserVerificationRequirement.REQUIRED &&
                 !attestationObject.getAuthData().isUserVerified()) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_VERIFICATION_FLAG_NOT_SET);
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_VERIFICATION_FLAG_NOT_SET, "User verification flag not set", AaguidUtil.convert(attestationObject.getAuthData().getAttestedCredentialData().getAaguid()));
         }
     }
 

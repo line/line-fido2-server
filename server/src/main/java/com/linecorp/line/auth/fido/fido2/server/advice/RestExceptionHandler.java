@@ -52,6 +52,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         fidoServerErrorResponse.setServerResponse(serverResponse);
+        fidoServerErrorResponse.setAaguid(ex.getAaguid());
         return new ResponseEntity<>(fidoServerErrorResponse, HttpStatus.BAD_REQUEST);
     }
 

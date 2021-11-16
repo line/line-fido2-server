@@ -200,7 +200,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
 
         UserKey userKey = getUserKey(serverPublicKeyCredential, rpId);
         verifyUserHandle(serverPublicKeyCredential, userKey);
-        verifyAuthDataValues(rpId, session, authData);
+        verifyAuthDataValues(rpId, session, authData,userKey.getAaguid());
         verifySignature(serverPublicKeyCredential, authDataBytes, userKey);
 
         checkSignCounter(authData, userKey);
@@ -243,7 +243,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         if (!StringUtils.isEmpty(serverPublicKeyCredential.getResponse().getUserHandle())) {
             if (!userKey.getId().equals(serverPublicKeyCredential.getResponse().getUserHandle())) {
                 // MUST identical to uerHandle
-                throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_HANDLE_NOT_MATCHED);
+                throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_HANDLE_NOT_MATCHED, "User handle is not matched", userKey.getAaguid());
             }
         }
     }
@@ -258,19 +258,19 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         return authData;
     }
 
-    protected void verifyAuthDataValues(String rpId, Session session, AuthenticatorData authData) {
+    protected void verifyAuthDataValues(String rpId, Session session, AuthenticatorData authData, String aaguid) {
         // verify RP ID (compare with SHA256 hash or RP ID)
         log.info("Verify hash of RP ID with rpIdHash in authData");
 
         byte[] rpIdHash = Digests.sha256(rpId.getBytes(StandardCharsets.UTF_8));
         if (!Arrays.equals(authData.getRpIdHash(), rpIdHash)) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.RPID_HASH_NOT_MATCHED);
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.RPID_HASH_NOT_MATCHED, "RP ID hash is not matched", aaguid);
         }
 
         // verify user present flag
         log.info("Verify user present flag. Should be set");
         if (!authData.isUserPresent()) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_PRESENCE_FLAG_NOT_SET);
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_PRESENCE_FLAG_NOT_SET, "User presence flag not set.", aaguid);
         }
 
         // verify user verification
@@ -278,7 +278,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         if (session.getAuthOptionResponse().getUserVerification() != null &&
                 session.getAuthOptionResponse().getUserVerification() == UserVerificationRequirement.REQUIRED &&
                 !authData.isUserVerified()) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_VERIFICATION_FLAG_NOT_SET);
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_VERIFICATION_FLAG_NOT_SET, "User verification flag not set", aaguid);
         }
     }
 
@@ -300,13 +300,14 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         byte[] signatureBytes = Base64.getUrlDecoder().decode(serverPublicKeyCredential.getResponse().getSignature());
         boolean result = SignatureHelper.verifySignature(userKey.getPublicKey(), toBeSignedMessage, signatureBytes, userKey.getAlgorithm());
         if (!result) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.ASSERTION_SIGNATURE_VERIFICATION_FAIL);
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.ASSERTION_SIGNATURE_VERIFICATION_FAIL, "Signature verification failed", userKey.getAaguid());
         }
     }
 
     protected VerifyCredentialResult createVerifyCredentialResult(AuthenticatorData authData, UserKey userKey) {
         return VerifyCredentialResult
                 .builder()
+                .aaguid(userKey.getAaguid())
                 .userId(userKey.getId())
                 .userVerified(authData.isUserVerified())
                 .userPresent(authData.isUserPresent())

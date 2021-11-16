@@ -24,6 +24,7 @@ import lombok.Getter;
 public class FIDO2ServerRuntimeException extends RuntimeException {
     private static final long serialVersionUID = -2575717184560818381L;
     private final InternalErrorCode errorCode;
+    private String aaguid;
 
     public FIDO2ServerRuntimeException(InternalErrorCode errorCode) {
         this.errorCode = errorCode;
@@ -34,6 +35,12 @@ public class FIDO2ServerRuntimeException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
+    public FIDO2ServerRuntimeException(InternalErrorCode errorCode, String message, String aaguid) {
+        super(message);
+        this.errorCode = errorCode;
+        this.aaguid = aaguid;
+    }
+
     public FIDO2ServerRuntimeException(InternalErrorCode errorCode, String message, Throwable cause) {
         super(message, cause);
         this.errorCode = errorCode;
@@ -42,10 +49,6 @@ public class FIDO2ServerRuntimeException extends RuntimeException {
     public FIDO2ServerRuntimeException(InternalErrorCode errorCode, Throwable cause) {
         super(cause);
         this.errorCode = errorCode;
-    }
-
-    public static FIDO2ServerRuntimeException makeInternalServerError(Throwable cause) {
-        return new FIDO2ServerRuntimeException(InternalErrorCode.INTERNAL_SERVER_ERROR, cause);
     }
 
     public static FIDO2ServerRuntimeException makeCryptoError(Throwable cause) {
@@ -61,5 +64,4 @@ public class FIDO2ServerRuntimeException extends RuntimeException {
         throw new FIDO2ServerRuntimeException(InternalErrorCode.CREDENTIAL_NOT_FOUND,
                 "RpId: " + rpId + "; UserId: " + userId);
     }
-
 }
