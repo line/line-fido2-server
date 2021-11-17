@@ -160,6 +160,7 @@ After running the applications, you can view API guide documents at the link bel
 - [FIDO at LINE: FIDO2 server as an open-source project](https://engineering.linecorp.com/en/blog/fido-at-line-fido2-server-opensource/)
 
 `LINE DevDay Videos`
+- [Open source contribution Starting with LINE FIDO2 Server](https://youtu.be/xKzXi5ic4Do)
 - [Strong customer authentication & biometrics using FIDO](https://youtu.be/S1y9wFh7_dc)
 - [Cross Platform Mobile Security At LINE](https://youtu.be/4288h-EamTU)
 - [Secure LINE login with biometric key replacing password](https://youtu.be/vCAu-y-iwyw)
