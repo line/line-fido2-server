@@ -2,13 +2,19 @@ version : "3.8"
 services:
     rp:
       container_name: rp-server
-      image: kj84park/rp-server:0.0.1
+      image: rp:latest
+      build:
+        context: .
+        dockerfile: ./rpserver/Dockerfile
       ports:
         - "8080:8080"
       restart: always
     fido2:
       container_name: fido2-server
-      image: kj84park/fido2-server:0.0.1
+      image: fido2:latest
+      build:
+        context: .
+        dockerfile: ./server/Dockerfile
       ports:
         - "8081:8081"
       restart: always
