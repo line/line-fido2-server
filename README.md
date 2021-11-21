@@ -104,12 +104,7 @@ cd spring-boot-starter/line-fido2-spring-boot-demo
 ./gradlew bootRun
 ```
 ### Docker for demo
-If the [Docker environment is configured](https://docs.docker.com/get-started/), You can also run applications with docker images using docker-compose.
-
-These Docker images must run in your local environment and also open a test page in a local web browser.
-
-- [rpserver](https://hub.docker.com/r/kj84park/rp-server)
-- [server](https://hub.docker.com/r/kj84park/fido2-server)
+If the [Docker environment is configured](https://docs.docker.com/get-started/), You can easily run applications with docker-compose.
 
 ```bash
 # Start both RP Server and FIDO2 Server
