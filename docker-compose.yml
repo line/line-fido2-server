@@ -1,5 +1,11 @@
 version : "3.8"
 services:
+    build:
+      container_name: build-image
+      image: build-image:latest
+      build:
+        context: .
+        dockerfile: ./Dockerfile
     rp:
       container_name: rp-server
       image: rp:latest
