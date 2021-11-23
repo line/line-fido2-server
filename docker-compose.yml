@@ -1,0 +1,26 @@
+version : "3.8"
+services:
+    build:
+      container_name: build-image
+      image: build-image:latest
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+    rp:
+      container_name: rp-server
+      image: rp:latest
+      build:
+        context: .
+        dockerfile: ./rpserver/Dockerfile
+      ports:
+        - "8080:8080"
+      restart: always
+    fido2:
+      container_name: fido2-server
+      image: fido2:latest
+      build:
+        context: .
+        dockerfile: ./server/Dockerfile
+      ports:
+        - "8081:8081"
+      restart: always

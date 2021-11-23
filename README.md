@@ -81,13 +81,15 @@ Basically, FIDO2 has the following operations - Registration, Authentication.
 - Metadata service integration
    - FIDO MDSv2
    
-## How to play with
+## How to run 
 You need to run the FIDO2 server and RP Server first.
 
 If you want to integrate your own RP Server, please implement APIs by referring to the sample codes. Regarding client sides, you may implement the web app for communicating with the RP server.
 
 We also provide our server in the form of a spring boot starter.
 Check out the spring-boot-starter directory.
+
+### Manual
 
 ```bash
 # Start RP Server
@@ -101,6 +103,14 @@ cd server
 cd spring-boot-starter/line-fido2-spring-boot-demo
 ./gradlew bootRun
 ```
+### Docker for demo
+If the [Docker environment is configured](https://docs.docker.com/get-started/), You can easily run applications with docker-compose.
+
+```bash
+# Start both RP Server and FIDO2 Server
+docker-compose up
+```
+
 After running the applications, you can open the test page at the link below.
 
  **http://localhost:8080/**
@@ -145,6 +155,7 @@ After running the applications, you can view API guide documents at the link bel
 - [FIDO at LINE: FIDO2 server as an open-source project](https://engineering.linecorp.com/en/blog/fido-at-line-fido2-server-opensource/)
 
 `LINE DevDay Videos`
+- [Open source contribution Starting with LINE FIDO2 Server](https://youtu.be/xKzXi5ic4Do)
 - [Strong customer authentication & biometrics using FIDO](https://youtu.be/S1y9wFh7_dc)
 - [Cross Platform Mobile Security At LINE](https://youtu.be/4288h-EamTU)
 - [Secure LINE login with biometric key replacing password](https://youtu.be/vCAu-y-iwyw)
