@@ -16,7 +16,11 @@
 
 package com.linecorp.line.auth.fido.fido2.common.server;
 
+
+import javax.validation.constraints.NotBlank;
+
 import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +31,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthOptionRequest {
+    @NotBlank
     private String rpId;
     private String userId;
     private UserVerificationRequirement userVerification;

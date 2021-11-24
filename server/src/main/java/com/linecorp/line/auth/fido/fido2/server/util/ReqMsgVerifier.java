@@ -157,25 +157,4 @@ public class ReqMsgVerifier {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_REQUEST_BODY, "serverPublicKeyCredential.response.clientDataJSON should be base64 url encoded");
         }
     }
-
-    public static void validateRegOptionRequest(RegOptionRequest regOptionRequest) {
-        // validation
-        if (regOptionRequest.getRp() == null ||
-                regOptionRequest.getUser() == null) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_REQUEST_BODY);
-        }
-
-        if (regOptionRequest.getUser().getId() == null) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_REQUEST_BODY, "userId should not be null");
-        }
-        if (!(regOptionRequest.getUser().getId().length() > 0 && regOptionRequest.getUser().getId().length() < 64)) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_REQUEST_BODY, "userId length must be between 1 and 64 bytes");
-        }
-    }
-
-    public static void validateAuthOptionRequest(AuthOptionRequest authOptionRequest) {
-        if (!StringUtils.hasText(authOptionRequest.getRpId())) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_REQUEST_BODY);
-        }
-    }
 }
