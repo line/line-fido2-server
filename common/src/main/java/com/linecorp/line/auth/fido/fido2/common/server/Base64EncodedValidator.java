@@ -16,18 +16,23 @@
 
 package com.linecorp.line.auth.fido.fido2.common.server;
 
-import java.util.List;
+import java.util.Base64;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
-import com.linecorp.line.auth.fido.fido2.common.AuthenticatorTransport;
+public class Base64EncodedValidator implements ConstraintValidator<Base64Encoded, String> {
+    @Override
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null) {
+            return true;
+        }
 
-import lombok.Data;
-
-@Data
-public class ServerAuthenticatorAttestationResponse extends ServerAuthenticatorResponse {
-    @NotBlank
-    @Base64Encoded
-    private String attestationObject;
-    private List<AuthenticatorTransport> transports;    // WebAuthn Level2
+        try {
+            Base64.getUrlDecoder().decode(value);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+        return true;
+    }
 }

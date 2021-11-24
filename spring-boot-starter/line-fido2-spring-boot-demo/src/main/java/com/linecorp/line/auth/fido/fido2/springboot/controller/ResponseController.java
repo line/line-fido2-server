@@ -16,12 +16,13 @@
 
 package com.linecorp.line.auth.fido.fido2.springboot.controller;
 
+import javax.validation.Valid;
+
 import com.linecorp.line.auth.fido.fido2.common.server.RegisterCredential;
 import com.linecorp.line.auth.fido.fido2.common.server.RegisterCredentialResult;
 import com.linecorp.line.auth.fido.fido2.common.server.VerifyCredential;
 import com.linecorp.line.auth.fido.fido2.common.server.VerifyCredentialResult;
 import com.linecorp.line.auth.fido.fido2.server.service.ResponseService;
-import com.linecorp.line.auth.fido.fido2.server.util.ReqMsgVerifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,15 +40,13 @@ public class ResponseController {
     }
 
     @PostMapping(path = "fido2/reg/response")
-    public RegisterCredentialResult sendRegResponse(@RequestBody RegisterCredential registerCredential) {
-        ReqMsgVerifier.validateRegisterCredential(registerCredential);
+    public RegisterCredentialResult sendRegResponse(@Valid @RequestBody RegisterCredential registerCredential) {
         return responseService.handleAttestation(registerCredential.getServerPublicKeyCredential(), registerCredential.getSessionId(),
                 registerCredential.getOrigin(), registerCredential.getRpId(), registerCredential.getTokenBinding());
     }
 
     @PostMapping(path = "fido2/auth/response")
-    public VerifyCredentialResult sendAuthResponse(@RequestBody VerifyCredential verifyCredential) {
-        ReqMsgVerifier.validateVerifyCredential(verifyCredential);
+    public VerifyCredentialResult sendAuthResponse(@Valid @RequestBody VerifyCredential verifyCredential) {
         return responseService.handleAssertion(verifyCredential.getServerPublicKeyCredential(), verifyCredential.getSessionId(),
                 verifyCredential.getOrigin(), verifyCredential.getRpId(), verifyCredential.getTokenBinding());
     }

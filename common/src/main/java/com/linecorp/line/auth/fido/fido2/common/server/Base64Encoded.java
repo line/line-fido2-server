@@ -16,18 +16,21 @@
 
 package com.linecorp.line.auth.fido.fido2.common.server;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
-import com.linecorp.line.auth.fido.fido2.common.AuthenticatorTransport;
+@Constraint(validatedBy = Base64EncodedValidator.class)
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Base64Encoded {
+    String message() default "must be a well-formed base64";
 
-import lombok.Data;
+    Class<?>[] groups() default { };
 
-@Data
-public class ServerAuthenticatorAttestationResponse extends ServerAuthenticatorResponse {
-    @NotBlank
-    @Base64Encoded
-    private String attestationObject;
-    private List<AuthenticatorTransport> transports;    // WebAuthn Level2
+    Class<? extends Payload>[] payload() default { };
 }

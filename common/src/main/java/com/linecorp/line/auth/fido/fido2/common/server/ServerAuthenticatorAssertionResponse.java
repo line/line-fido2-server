@@ -16,11 +16,17 @@
 
 package com.linecorp.line.auth.fido.fido2.common.server;
 
+import javax.validation.constraints.NotBlank;
+
 import lombok.Data;
 
 @Data
 public class ServerAuthenticatorAssertionResponse extends ServerAuthenticatorResponse {
-    private String authenticatorData;   // base64url encoded
-    private String signature;   // base64url encoded
+    @NotBlank
+    @Base64Encoded
+    private String authenticatorData;
+    @NotBlank
+    @Base64Encoded
+    private String signature;
     private String userHandle;  // base64url encoded
 }

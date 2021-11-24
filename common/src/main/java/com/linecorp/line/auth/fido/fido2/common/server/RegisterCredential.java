@@ -16,15 +16,24 @@
 
 package com.linecorp.line.auth.fido.fido2.common.server;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.linecorp.line.auth.fido.fido2.common.TokenBinding;
 
 import lombok.Data;
 
 @Data
 public class RegisterCredential {
+    @NotNull
+    @Valid
     private ServerRegPublicKeyCredential serverPublicKeyCredential;
+    @NotBlank
     private String sessionId;
+    @NotBlank
     private String origin;
+    @NotBlank
     private String rpId;
     private TokenBinding tokenBinding;
 }
