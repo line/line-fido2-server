@@ -21,8 +21,11 @@ import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.model.FIDOServerErrorResponse;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -31,6 +34,34 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers, HttpStatus status,
+                                                                  WebRequest request) {
+        InternalErrorCode errorCode = InternalErrorCode.INVALID_REQUEST_BODY;
+
+        log.error("MethodArgumentNotValidException {}({})", errorCode, errorCode.getCode());
+        log.error(ex.getLocalizedMessage());
+
+        log.error("MethodArgumentNotValidException::stack trace:", ex);
+        Throwable cause = ex.getCause();
+        log.error("MethodArgumentNotValidException::cause: " + (cause == null ? "<none>" : cause.getMessage()));
+        if (cause != null) {
+            log.error("cause::stack trace: ", cause);
+        }
+
+        FIDOServerErrorResponse fidoServerErrorResponse = new FIDOServerErrorResponse();
+        ServerResponse serverResponse = ServerResponse
+                .builder()
+                .description(ex.getMessage())
+                .internalError(errorCode.name())
+                .internalErrorCode(errorCode.getCode())
+                .build();
+
+        fidoServerErrorResponse.setServerResponse(serverResponse);
+        return new ResponseEntity<>(fidoServerErrorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(FIDO2ServerRuntimeException.class)
     protected ResponseEntity<FIDOServerErrorResponse> handleServerRuntimeException(FIDO2ServerRuntimeException ex, WebRequest request) {
         log.error("FIDO2ServerRuntimeException {}({})", ex.getErrorCode(), ex.getErrorCode().getCode());
