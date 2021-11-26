@@ -27,7 +27,7 @@ import lombok.Data;
 @Data
 public class ServerPublicKeyCredentialUserEntity extends PublicKeyCredentialEntity {
     @NotNull
-    @Length(min = 1, max = 63)
+    @Length(min = 1, max = 64)
     private String id;  //base64url encoded
     private String displayName;
 }
