@@ -16,10 +16,18 @@
 
 package com.linecorp.line.auth.fido.fido2.common;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import com.linecorp.line.auth.fido.fido2.common.server.Base64Encoded;
+
 import lombok.Data;
 
 @Data
 public class Credential {
+    @NotBlank
+    @Base64Encoded
     private String id;
+    @NotNull
     private PublicKeyCredentialType type;
 }

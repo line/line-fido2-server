@@ -16,12 +16,13 @@
 
 package com.linecorp.line.auth.fido.fido2.springboot.controller;
 
+import javax.validation.Valid;
+
 import com.linecorp.line.auth.fido.fido2.common.server.AuthOptionRequest;
 import com.linecorp.line.auth.fido.fido2.common.server.AuthOptionResponse;
 import com.linecorp.line.auth.fido.fido2.common.server.RegOptionRequest;
 import com.linecorp.line.auth.fido.fido2.common.server.RegOptionResponse;
 import com.linecorp.line.auth.fido.fido2.server.service.ChallengeService;
-import com.linecorp.line.auth.fido.fido2.server.util.ReqMsgVerifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,14 +40,12 @@ public class ChallengeController {
     }
 
     @PostMapping(path = "fido2/reg/challenge")
-    public RegOptionResponse getRegChallenge(@RequestBody RegOptionRequest regOptionRequest) {
-        ReqMsgVerifier.validateRegOptionRequest(regOptionRequest);
+    public RegOptionResponse getRegChallenge(@Valid @RequestBody RegOptionRequest regOptionRequest) {
         return challengeService.getRegChallenge(regOptionRequest);
     }
 
     @PostMapping(path = "fido2/auth/challenge")
-    public AuthOptionResponse getAuthChallenge(@RequestBody AuthOptionRequest authOptionRequest) {
-        ReqMsgVerifier.validateAuthOptionRequest(authOptionRequest);
+    public AuthOptionResponse getAuthChallenge(@Valid @RequestBody AuthOptionRequest authOptionRequest) {
         return challengeService.getAuthChallenge(authOptionRequest);
     }
 }

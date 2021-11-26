@@ -16,6 +16,9 @@
 
 package com.linecorp.line.auth.fido.fido2.common.server;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.linecorp.line.auth.fido.fido2.common.Credential;
 import com.linecorp.line.auth.fido.fido2.common.extension.AuthenticationExtensionsClientOutputs;
 
@@ -23,6 +26,8 @@ import lombok.Data;
 
 @Data
 public class ServerAuthPublicKeyCredential extends Credential {
+    @NotNull
+    @Valid
     private ServerAuthenticatorAssertionResponse response;
     // extension
     private AuthenticationExtensionsClientOutputs extensions;

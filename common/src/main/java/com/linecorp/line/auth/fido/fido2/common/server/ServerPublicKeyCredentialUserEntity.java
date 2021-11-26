@@ -16,12 +16,18 @@
 
 package com.linecorp.line.auth.fido.fido2.common.server;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
+
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialEntity;
 
 import lombok.Data;
 
 @Data
 public class ServerPublicKeyCredentialUserEntity extends PublicKeyCredentialEntity {
+    @NotNull
+    @Length(min = 1, max = 64)
     private String id;  //base64url encoded
     private String displayName;
 }

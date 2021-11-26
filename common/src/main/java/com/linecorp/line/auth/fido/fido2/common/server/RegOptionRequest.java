@@ -16,6 +16,9 @@
 
 package com.linecorp.line.auth.fido.fido2.common.server;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.linecorp.line.auth.fido.fido2.common.AttestationConveyancePreference;
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRpEntity;
@@ -31,7 +34,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegOptionRequest {
+    @NotNull
     private PublicKeyCredentialRpEntity rp;
+    @NotNull
+    @Valid
     private ServerPublicKeyCredentialUserEntity user;
     private AuthenticatorSelectionCriteria authenticatorSelection;
     private AttestationConveyancePreference attestation;
