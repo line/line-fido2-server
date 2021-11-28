@@ -1,0 +1,20 @@
+{
+  "rp": {
+    "name": "Test RP",
+    "icon": null,
+    "id": "localhost"
+  },
+  "user": {
+    "name": "TestUser",
+    "icon": null,
+    "id": "65fUCTlqPlOSk22tkrkJ2m8I2MEhpF4fCI_pdosMAzk",
+    "displayName": "Test Display Name"
+  },
+  "authenticatorSelection": {
+    "authenticatorAttachment": "platform",
+    "requireResidentKey": true,
+    "userVerification": "preferred"
+  },
+  "attestation": "none",
+  "credProtect": null
+}
