@@ -32,7 +32,7 @@ class CredentialControllerTest extends TestSupportForSpringRestDocs {
 
     @BeforeEach
     void init() throws Exception {
-        userKeyEntity = new ObjectMapper().readValue(readJson("/json/database/user-key-entity.json"), UserKeyEntity.class);
+        userKeyEntity = new ObjectMapper().readValue(readJson(DATABASE_USER_KEY_ENTITY_JSON_PATH), UserKeyEntity.class);
         userKeyRepository.save(userKeyEntity);
     }
 
