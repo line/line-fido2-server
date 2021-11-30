@@ -43,11 +43,8 @@ class ServerAuthPublicKeyCredentialBeanValidationTest extends BeanValidationTest
         final Set<ConstraintViolation<ServerAuthPublicKeyCredential>> constraintViolations = validator.validate(serverAuthPublicKeyCredential);
 
         assertThat(constraintViolations).hasSize(2);
-
-        constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
-                        .containsOnly(MUST_NOT_BE_NULL)
-        );
+        assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                .containsOnly(MUST_NOT_BE_NULL);
     }
 
     @Test
@@ -58,11 +55,8 @@ class ServerAuthPublicKeyCredentialBeanValidationTest extends BeanValidationTest
         final Set<ConstraintViolation<ServerAuthPublicKeyCredential>> constraintViolations = validator.validate(serverAuthPublicKeyCredential);
 
         assertThat(constraintViolations).hasSize(1);
-
-        constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
-                        .containsOnly(MUST_NOT_BE_BLANK)
-        );
+        assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                .containsOnly(MUST_NOT_BE_BLANK);
     }
 
     @Test
@@ -74,9 +68,7 @@ class ServerAuthPublicKeyCredentialBeanValidationTest extends BeanValidationTest
         final Set<ConstraintViolation<ServerAuthPublicKeyCredential>> constraintViolations = validator.validate(serverAuthPublicKeyCredential);
 
         assertThat(constraintViolations).hasSize(1);
-        constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
-                        .containsOnly(MUST_BE_A_WELL_FORMED_BASE_64)
-        );
+        assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                .containsOnly(MUST_BE_A_WELL_FORMED_BASE_64);
     }
 }

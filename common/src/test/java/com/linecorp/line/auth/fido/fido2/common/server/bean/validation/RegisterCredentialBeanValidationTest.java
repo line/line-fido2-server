@@ -41,11 +41,8 @@ class RegisterCredentialBeanValidationTest extends BeanValidationTestSupport {
         final Set<ConstraintViolation<RegisterCredential>> constraintViolations = validator.validate(registerCredential);
 
         assertThat(constraintViolations).hasSize(1);
-
-        constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
-                        .containsOnly(MUST_NOT_BE_NULL)
-        );
+        assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                .containsOnly(MUST_NOT_BE_NULL);
     }
 
     @Test
@@ -58,9 +55,7 @@ class RegisterCredentialBeanValidationTest extends BeanValidationTestSupport {
         final Set<ConstraintViolation<RegisterCredential>> constraintViolations = validator.validate(registerCredential);
 
         assertThat(constraintViolations).hasSize(3);
-        constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
-                        .containsOnly(MUST_NOT_BE_BLANK)
-        );
+        assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                .containsOnly(MUST_NOT_BE_BLANK);
     }
 }

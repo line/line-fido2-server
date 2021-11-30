@@ -42,9 +42,7 @@ class RegOptionRequestBeanValidationTest extends BeanValidationTestSupport {
         final Set<ConstraintViolation<RegOptionRequest>> constraintViolations = validator.validate(regOptionRequest);
 
         assertThat(constraintViolations).hasSize(2);
-        constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
-                        .containsOnly(MUST_NOT_BE_NULL)
-        );
+        assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                .containsOnly(MUST_NOT_BE_NULL);
     }
 }
