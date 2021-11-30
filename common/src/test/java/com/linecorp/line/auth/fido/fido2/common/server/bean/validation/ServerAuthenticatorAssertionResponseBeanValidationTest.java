@@ -42,9 +42,10 @@ class ServerAuthenticatorAssertionResponseBeanValidationTest extends BeanValidat
 
         final Set<ConstraintViolation<ServerAuthenticatorAssertionResponse>> constraintViolations = validator.validate(serverAuthenticatorAssertionResponse);
 
-        assertThat(constraintViolations.size()).isEqualTo(3);
+        assertThat(constraintViolations).hasSize(3);
         constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolation.getMessage()).isEqualTo(MUST_NOT_BE_BLANK)
+                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                        .containsOnly(MUST_NOT_BE_BLANK)
         );
     }
 
@@ -62,9 +63,10 @@ class ServerAuthenticatorAssertionResponseBeanValidationTest extends BeanValidat
 
         final Set<ConstraintViolation<ServerAuthenticatorAssertionResponse>> constraintViolations = validator.validate(serverAuthenticatorAssertionResponse);
 
-        assertThat(constraintViolations.size()).isEqualTo(3);
+        assertThat(constraintViolations).hasSize(3);
         constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolation.getMessage()).isEqualTo(MUST_BE_A_WELL_FORMED_BASE_64)
+                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                        .containsOnly(MUST_BE_A_WELL_FORMED_BASE_64)
         );
     }
 }

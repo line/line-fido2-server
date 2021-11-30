@@ -42,9 +42,10 @@ class VerifyCredentialBeanValidationTest extends BeanValidationTestSupport {
 
         final Set<ConstraintViolation<VerifyCredential>> constraintViolations = validator.validate(verifyCredential);
 
-        assertThat(constraintViolations.size()).isEqualTo(3);
+        assertThat(constraintViolations).hasSize(3);
         constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolation.getMessage()).isEqualTo(MUST_NOT_BE_BLANK)
+                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                        .containsOnly(MUST_NOT_BE_BLANK)
         );
     }
 }

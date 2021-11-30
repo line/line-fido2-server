@@ -42,9 +42,10 @@ class ServerRegPublicKeyCredentialBeanValidationTest extends BeanValidationTestS
 
         final Set<ConstraintViolation<ServerRegPublicKeyCredential>> constraintViolations = validator.validate(serverRegPublicKeyCredential);
 
-        assertThat(constraintViolations.size()).isEqualTo(1);
+        assertThat(constraintViolations).hasSize(1);
         constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolation.getMessage()).isEqualTo(MUST_NOT_BE_NULL)
+                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                        .containsOnly(MUST_NOT_BE_NULL)
         );
     }
 }

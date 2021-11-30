@@ -41,9 +41,10 @@ class ServerPublicKeyCredentialUserEntityBeanValidationTest extends BeanValidati
         serverPublicKeyCredentialUserEntity.setId(RandomString.make(65));
         final Set<ConstraintViolation<ServerPublicKeyCredentialUserEntity>> constraintViolations = validator.validate(serverPublicKeyCredentialUserEntity);
 
-        assertThat(constraintViolations.size()).isEqualTo(1);
+        assertThat(constraintViolations).hasSize(1);
         constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolation.getMessage()).isEqualTo(LENGTH_MUST_BE_BETWEEN_1_AND_64)
+                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                        .containsOnly(LENGTH_MUST_BE_BETWEEN_1_AND_64)
         );
     }
 
@@ -53,9 +54,10 @@ class ServerPublicKeyCredentialUserEntityBeanValidationTest extends BeanValidati
         serverPublicKeyCredentialUserEntity.setId("");
         final Set<ConstraintViolation<ServerPublicKeyCredentialUserEntity>> constraintViolations = validator.validate(serverPublicKeyCredentialUserEntity);
 
-        assertThat(constraintViolations.size()).isEqualTo(1);
+        assertThat(constraintViolations).hasSize(1);
         constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolation.getMessage()).isEqualTo(LENGTH_MUST_BE_BETWEEN_1_AND_64)
+                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                        .containsOnly(LENGTH_MUST_BE_BETWEEN_1_AND_64)
         );
     }
 }

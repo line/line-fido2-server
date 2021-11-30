@@ -40,9 +40,10 @@ class AuthOptionRequestBeanValidationTest extends BeanValidationTestSupport {
 
         final Set<ConstraintViolation<AuthOptionRequest>> constraintViolations = validator.validate(authOptionRequest);
 
-        assertThat(constraintViolations.size()).isEqualTo(1);
+        assertThat(constraintViolations).hasSize(1);
         constraintViolations.forEach(
-                constraintViolation -> assertThat(constraintViolation.getMessage()).isEqualTo(MUST_NOT_BE_BLANK)
+                constraintViolation -> assertThat(constraintViolations).extracting(ConstraintViolation::getMessage)
+                        .containsOnly(MUST_NOT_BE_BLANK)
         );
     }
 }
