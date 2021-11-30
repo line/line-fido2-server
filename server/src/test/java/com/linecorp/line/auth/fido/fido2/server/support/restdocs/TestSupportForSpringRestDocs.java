@@ -1,5 +1,6 @@
 package com.linecorp.line.auth.fido.fido2.server.support.restdocs;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.util.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +28,25 @@ import java.nio.charset.StandardCharsets;
 @Import(SpringRestDocsConfiguration.class)
 public class TestSupportForSpringRestDocs {
 
+    protected static final String DATABASE_USER_KEY_ENTITY_JSON_PATH = "/json/database/user-key-entity.json";
+    protected static final String REG_CHALLENGE_RES_JSON_PATH = "/json/reg/reg-challenge-res.json";
+    protected static final String REG_CHALLENGE_REQ_JSON_PATH = "/json/reg/reg-challenge-req.json";
+    protected static final String AUTH_CHALLENGE_RES_JSON_PATH = "/json/auth/auth-challenge-res.json";
+    protected static final String AUTH_CHALLENGE_REQ_JSON_PATH = "/json/auth/auth-challenge-req.json";
+
+    protected static final String AUTH_RESPONSE_RES_JSON_PATH = "/json/auth/auth-response-res.json";
+    protected static final String AUTH_RESPONSE_REQ_JSON_PATH = "/json/auth/auth-response-req.json";
+    protected static final String REG_RESPONSE_RES_JSON_PATH = "/json/reg/reg-response-res.json";
+    protected static final String REG_RESPONSE_REQ_JSON_PATH = "/json/reg/reg-response-req.json";
+
+    protected static final String REG_CHALLENGE_URL_PATH = "/fido2/reg/challenge";
+    protected static final String REG_RESPONSE_URL_PATH = "/fido2/reg/response";
+    protected static final String AUTH_CHALLENGE_URL_PATH = "/fido2/auth/challenge";
+    protected static final String AUTH_RESPONSE_URL_PATH = "/fido2/auth/response";
+
     protected MockMvc mockMvc;
+
+    protected final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     protected RestDocumentationResultHandler restDocs;
