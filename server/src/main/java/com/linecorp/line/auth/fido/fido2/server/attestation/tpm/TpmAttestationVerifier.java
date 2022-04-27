@@ -235,8 +235,7 @@ public class TpmAttestationVerifier implements AttestationVerifier {
         final String OID_TCG_AT_TPM_MODEL = "2.23.133.2.2";
         final String OID_TCG_AT_TPM_VERSION = "2.23.133.2.3";
 
-        log.info("AIK Cert Information");
-        log.info(aikCert.toString());
+        log.debug("AIK Cert Information: {}", aikCert);
 
         try {
             // check version (MUST be set to 3)
@@ -291,7 +290,7 @@ public class TpmAttestationVerifier implements AttestationVerifier {
             }
 
             TpmSubjectAlternativeName alternativeName = builder.build();
-            log.info("TPM Subject Alternative name: {}", alternativeName);
+            log.debug("TPM Subject Alternative name: {}", alternativeName);
 
             // check extended key usage extension (MUST contain tcg-kp-AIKCertificate oid)
             List<String> extendedKeyUsage = aikCert.getExtendedKeyUsage();
@@ -308,17 +307,17 @@ public class TpmAttestationVerifier implements AttestationVerifier {
             byte[] authInfoAccessExtensionValue = aikCert.getExtensionValue(
                     Extension.authorityInfoAccess.getId());
 
-            log.info("AIA extension info (Optional)");
+            log.debug("AIA extension info (Optional)");
             AccessDescription[] accessDescriptions = getAccessDescriptions(authInfoAccessExtensionValue);
             if (accessDescriptions != null) {
                 for (AccessDescription accessDescription : accessDescriptions) {
 
                     if (accessDescription.getAccessMethod().equals(OCSP_ACCESS_METHOD)) {
-                        log.info("AIA: OCSP enabled");
+                        log.debug("AIA: OCSP enabled");
                     }
 
                     if (accessDescription.getAccessMethod().equals(CRL_ACCESS_METHOD)) {
-                        log.info("AIA: CRL enabled");
+                        log.debug("AIA: CRL enabled");
                     }
 
                     GeneralName gn = accessDescription.getAccessLocation();
@@ -327,7 +326,7 @@ public class TpmAttestationVerifier implements AttestationVerifier {
                     }
 
                     DERIA5String str = (DERIA5String) ((DERTaggedObject) gn.toASN1Primitive()).getObject();
-                    log.info("Access Location: {}", str.getString());
+                    log.debug("Access Location: {}", str);
                 }
             }
 

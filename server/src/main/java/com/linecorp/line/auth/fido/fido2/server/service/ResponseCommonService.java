@@ -52,7 +52,7 @@ abstract public class ResponseCommonService {
      */
     public byte[] handleCommon(String type, String challengeSent, String base64UrlEncodedClientDataJSON, String origin, TokenBinding tokenBinding) {
         String clientDataJSON = new String(Base64.getUrlDecoder().decode(base64UrlEncodedClientDataJSON));
-        log.info("clientDataJSON: {}", clientDataJSON);
+        log.debug("clientDataJSON: {}", clientDataJSON);
         CollectedClientData collectedClientData;
         try {
             collectedClientData = getCollectedClientData(clientDataJSON);
@@ -61,7 +61,7 @@ abstract public class ResponseCommonService {
         }
         byte[] clientDataJSONBytes = clientDataJSON.getBytes();
 
-        log.info("collectedClientData: {}", collectedClientData);
+        log.debug("collectedClientData: {}", collectedClientData);
         // verify collected client data
         if (StringUtils.isEmpty(collectedClientData.getType()) ||
                 StringUtils.isEmpty(collectedClientData.getChallenge()) ||
@@ -70,19 +70,19 @@ abstract public class ResponseCommonService {
         }
 
         // verify challenge (should be matched to challenge sent in create call)
-        log.info("Verify challenge matched to challenge sent");
+        log.debug("Verify challenge matched to challenge sent");
         if (!collectedClientData.getChallenge().equals(challengeSent)) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.CHALLENGE_NOT_MATCHED);
         }
 
         // verify type
-        log.info("Check operation type in collectedClientData");
+        log.debug("Check operation type in collectedClientData");
         if (!type.equals(collectedClientData.getType())) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_OPERATION_TYPE);
         }
 
         // verify origin
-        log.info("Verify origin matched to origin in collectedClientData");
+        log.debug("Verify origin matched to origin in collectedClientData");
         URI originFromClientData;
         URI originFromRp;
         try {
@@ -95,7 +95,7 @@ abstract public class ResponseCommonService {
         checkOrigin(originFromClientData, originFromRp);
 
         // verify token binding
-        log.info("Verify token binding if supported");
+        log.debug("Verify token binding if supported");
         if (collectedClientData.getTokenBinding() != null) {
             if (collectedClientData.getTokenBinding().getStatus() == null) {
                 throw new FIDO2ServerRuntimeException(InternalErrorCode.TOKEN_BINDING_STATUS_MISSING);
@@ -117,7 +117,7 @@ abstract public class ResponseCommonService {
         }
 
         // compute hash of clientDataJSON
-        log.info("Compute hash of clientDataJSON");
+        log.debug("Compute hash of clientDataJSON");
 
         return Digests.sha256(clientDataJSONBytes);
     }

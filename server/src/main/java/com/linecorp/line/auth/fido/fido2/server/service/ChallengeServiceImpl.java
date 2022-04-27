@@ -142,8 +142,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         // write session
         sessionService.createSession(session);
 
-        log.debug("regOptionResponse: ");
-        log.debug(regOptionResponse.toString());
+        log.debug("regOptionResponse: {}", regOptionResponse);
 
         return regOptionResponse;
     }
@@ -214,8 +213,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         // write session
         sessionService.createSession(session);
 
-        log.debug("authOptionResponse:");
-        log.debug(authOptionResponse.toString());
+        log.debug("authOptionResponse: {}", authOptionResponse);
 
         return authOptionResponse;
     }

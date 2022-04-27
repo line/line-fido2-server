@@ -84,7 +84,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         ServerAuthenticatorAttestationResponse attestationResponse = serverPublicKeyCredential.getResponse();
 
         // handle common part
-        log.info("Handle common part of response");
+        log.debug("Handle common part of response");
         byte[] clientDataHsh = handleCommon("webauthn.create", session.getRegOptionResponse().getChallenge(),
                 attestationResponse.getClientDataJSON(), origin, tokenBinding);
 
@@ -106,17 +106,17 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
 
     protected RegisterCredentialResult getRegisterCredentialResult(RegOptionResponse regOptionResponse, List<AuthenticatorTransport> transports, AuthenticatorData authData, AttestationVerificationResult attestationVerificationResult, AuthenticationExtensionsClientOutputs clientExtensions, String rpId) {
         // get credential info
-        log.info("Get public key credential info");
+        log.debug("Get public key credential info");
         AttestedCredentialData attestedCredentialData = authData.getAttestedCredentialData();
         String credentialId = Base64
                 .getUrlEncoder()
                 .withoutPadding()
                 .encodeToString(attestedCredentialData.getCredentialId());
-        log.info("Convert COSE public key to java public key instance");
+        log.debug("Convert COSE public key to java public key instance");
 
         // check credential id is duplicated by users
         // if the duplications are exist, we may reject or deleting old registration and registering new one
-        log.info("Check duplication of credential id in permanent storage");
+        log.debug("Check duplication of credential id in permanent storage");
         if (userKeyService.containsCredential(rpId, credentialId)) {
             // just reject
             throw new FIDO2ServerRuntimeException(InternalErrorCode.DUPLICATED_CREDENTIAL_ID,
@@ -124,7 +124,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         }
 
         // store registration for latter authentication
-        log.info("Store public key credential info in permanent storage");
+        log.debug("Store public key credential info in permanent storage");
 
         UserKey userKey = ExtensionHelper.createUserKeyWithExtensions(UserKey
                 .builder()
@@ -143,7 +143,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         userKeyService.createUser(userKey);
 
         // return registration processing result
-        log.info("[Finish handling attestation]");
+        log.debug("[Finish handling attestation]");
         return createRegisterCredentialResult(authData, attestedCredentialData, credentialId, userKey);
     }
 
@@ -205,14 +205,14 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
 
         checkSignCounter(authData, userKey);
         // return authentication processing result
-        log.info("[Finish handling assertion]");
+        log.debug("[Finish handling assertion]");
         return createVerifyCredentialResult(authData, userKey);
     }
 
     protected void checkCredentialId(ServerAuthPublicKeyCredential serverPublicKeyCredential, Session session) {
         // check credential.id is in the allow credential list (if we set the allow credential list)
         log.debug("credential ID: {}", serverPublicKeyCredential.getId());
-        log.info("Check credential id in response is in the allow credential list");
+        log.debug("Check credential id in response is in the allow credential list");
         boolean credentialIdFound = false;
         if (!session.getAuthOptionResponse().getAllowCredentials().isEmpty()) {
             for (ServerPublicKeyCredentialDescriptor publicKeyCredentialDescriptor : session.getAuthOptionResponse().getAllowCredentials()) {
@@ -229,7 +229,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
 
     protected UserKey getUserKey(ServerAuthPublicKeyCredential serverPublicKeyCredential, String rpId) {
         // get user key
-        log.info("Get user key with rpId and credential id");
+        log.debug("Get user key with rpId and credential id");
         UserKey userKey = userKeyService.getWithCredentialId(rpId, serverPublicKeyCredential.getId());
         if (userKey == null) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.CREDENTIAL_COUNT_INVALID);
@@ -239,7 +239,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
 
     protected void verifyUserHandle(ServerAuthPublicKeyCredential serverPublicKeyCredential, UserKey userKey) {
         // check userHandle if it present
-        log.info("Check userHandle if it is present, user handle MUST be identical to user id of a founded credential");
+        log.debug("Check userHandle if it is present, user handle MUST be identical to user id of a founded credential");
         if (!StringUtils.isEmpty(serverPublicKeyCredential.getResponse().getUserHandle())) {
             if (!userKey.getId().equals(serverPublicKeyCredential.getResponse().getUserHandle())) {
                 // MUST identical to uerHandle
@@ -260,7 +260,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
 
     protected void verifyAuthDataValues(String rpId, Session session, AuthenticatorData authData, String aaguid) {
         // verify RP ID (compare with SHA256 hash or RP ID)
-        log.info("Verify hash of RP ID with rpIdHash in authData");
+        log.debug("Verify hash of RP ID with rpIdHash in authData");
 
         byte[] rpIdHash = Digests.sha256(rpId.getBytes(StandardCharsets.UTF_8));
         if (!Arrays.equals(authData.getRpIdHash(), rpIdHash)) {
@@ -268,13 +268,13 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         }
 
         // verify user present flag
-        log.info("Verify user present flag. Should be set");
+        log.debug("Verify user present flag. Should be set");
         if (!authData.isUserPresent()) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_PRESENCE_FLAG_NOT_SET, "User presence flag not set.", aaguid);
         }
 
         // verify user verification
-        log.info("Verify user verification flag if user verification required");
+        log.debug("Verify user verification flag if user verification required");
         if (session.getAuthOptionResponse().getUserVerification() != null &&
                 session.getAuthOptionResponse().getUserVerification() == UserVerificationRequirement.REQUIRED &&
                 !authData.isUserVerified()) {
@@ -284,7 +284,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
 
     protected void verifySignature(ServerAuthPublicKeyCredential serverPublicKeyCredential, byte[] authDataBytes, UserKey userKey) {
         // prepare toBeSignedMessage
-        log.info("Prepare toBeSignedMessage (authData + hash(cData))");
+        log.debug("Prepare toBeSignedMessage (authData + hash(cData))");
         byte[] cData = Base64.getUrlDecoder().decode(serverPublicKeyCredential.getResponse().getClientDataJSON());
         byte[] hash = Digests.sha256(cData);
         // binary concat of authData and hash
@@ -296,7 +296,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
                 .array();
 
         // verify signature
-        log.info("Verify signature");
+        log.debug("Verify signature");
         byte[] signatureBytes = Base64.getUrlDecoder().decode(serverPublicKeyCredential.getResponse().getSignature());
         boolean result = SignatureHelper.verifySignature(userKey.getPublicKey(), toBeSignedMessage, signatureBytes, userKey.getAlgorithm());
         if (!result) {
@@ -321,7 +321,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
 
     protected void checkSignCounter(AuthenticatorData authData, UserKey userKey) {
         // check signature counter
-        log.info("Check signature counter");
+        log.debug("Check signature counter");
         if (authData.getSignCount() != 0 || userKey.getSignCounter() != 0) {
             if (authData.getSignCount() > userKey.getSignCounter()) {
                 // update
@@ -335,13 +335,13 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
     }
 
     protected Session checkSession(String sessionId) {
-        log.info("Get session info, {}", sessionId);
+        log.debug("Get session info for session id {}", sessionId);
         Session session = sessionService.getSession(sessionId);
         if (session == null) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.SESSION_NOT_FOUND,
                     "No such session for session id: (" + sessionId + "), Session may be expired already");
         }
-        log.info("Check revoke state of session");
+        log.debug("Check revoke state of session");
         if (session.isServed()) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.SESSION_ALREADY_REVOKED,
                     "Session is revoked for session id: (" + sessionId + "), Response for the session is handled already");

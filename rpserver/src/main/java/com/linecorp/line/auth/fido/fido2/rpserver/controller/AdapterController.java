@@ -78,8 +78,8 @@ public class AdapterController {
 
         fidoServerHost = fidoServerConfig.getHost();
         scheme = fidoServerConfig.getScheme();
-        log.info("fidoServerHost: " + fidoServerHost);
-        log.info("scheme: " + scheme);
+        log.debug("fidoServerHost: {}", fidoServerHost);
+        log.debug("scheme: {}", scheme);
 
         regChallengeUri = uriComponentsBuilder
                 .scheme(scheme)

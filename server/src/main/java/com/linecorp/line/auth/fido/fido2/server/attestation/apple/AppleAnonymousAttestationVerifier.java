@@ -58,7 +58,7 @@ public class AppleAnonymousAttestationVerifier implements AttestationVerifier {
     public AttestationVerificationResult verify(AttestationStatement attestationStatement, AuthenticatorData authenticatorData, byte[] clientDataHash) {
         AppleAnonymousAttestationStatement appleAnonymous = (AppleAnonymousAttestationStatement) attestationStatement;
 
-        log.info("Prepare nonceToHash");
+        log.debug("Prepare nonceToHash");
         byte[] expectedNonceToHash = ByteBuffer
                 .allocate(authenticatorData.getBytes().length + clientDataHash.length)
                 .put(authenticatorData.getBytes())
