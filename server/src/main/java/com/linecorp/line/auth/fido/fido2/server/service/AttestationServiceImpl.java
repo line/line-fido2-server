@@ -77,12 +77,12 @@ public class AttestationServiceImpl implements AttestationService {
     @Override
     public AttestationVerificationResult verifyAttestation(byte[] clientDataHsh, AttestationObject attestationObject) {
         // verify attStmt
-        log.info("Verify attStmt with format {}", attestationObject.getFmt());
+        log.debug("Verify attStmt with format {}", attestationObject.getFmt());
         AttestationVerificationResult attestationVerificationResult =
                 attestationVerifierFactory
                         .getVerifier(attestationObject.getFmt())
                         .verify(attestationObject.getAttStmt(), attestationObject.getAuthData(), clientDataHsh);
-        log.info("Attestation verification result {}", attestationVerificationResult);
+        log.debug("Attestation verification result {}", attestationVerificationResult);
         return attestationVerificationResult;
     }
 
@@ -93,7 +93,7 @@ public class AttestationServiceImpl implements AttestationService {
                 .decode(attestationResponse.getAttestationObject());
 
         // perform CBOR decoding
-        log.info("Perform CBOR decoding of attestationObject");
+        log.debug("Perform CBOR decoding of attestationObject");
         CBORFactory cborFactory = new CBORFactory();
         ObjectMapper objectMapper = new ObjectMapper(cborFactory);
         AttestationObject attestationObject;
@@ -114,21 +114,21 @@ public class AttestationServiceImpl implements AttestationService {
         }
 
         // verify RP ID (compare with SHA256 hash or RP ID)
-        log.info("Verify hash of RP ID with rpIdHash in authData");
+        log.debug("Verify hash of RP ID with rpIdHash in authData");
         byte[] rpIdHash = Digests.sha256(rpId.getBytes(StandardCharsets.UTF_8));
         if (!Arrays.equals(attestationObject.getAuthData().getRpIdHash(), rpIdHash)) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.RPID_HASH_NOT_MATCHED, "RP ID hash is not matched", AaguidUtil.convert(attestationObject.getAuthData().getAttestedCredentialData().getAaguid()));
         }
 
         // verify user present flag
-        log.info("Verify user present flag. Should be set");
+        log.debug("Verify user present flag. Should be set");
         if (!attestationObject.getAuthData().isUserPresent()) {
             // Temporary comment out for Android chrome testings
 //            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_PRESENCE_FLAG_NOT_SET);
         }
 
         // verify user verification
-        log.info("Verify user verification flag if user verification required");
+        log.debug("Verify user verification flag if user verification required");
         if (authenticatorSelection != null &&
                 authenticatorSelection.getUserVerification() != null &&
                 authenticatorSelection.getUserVerification() == UserVerificationRequirement.REQUIRED &&
@@ -142,7 +142,7 @@ public class AttestationServiceImpl implements AttestationService {
         // verify trustworthiness
         // check the attestation certificate chained up to root certificates
         // if fails, SHOULD reject the registration
-        log.info("Verify trustworthiness of chain");
+        log.debug("Verify trustworthiness of chain");
 
         byte[] aaguid = attestationObject.getAuthData().getAttestedCredentialData().getAaguid();
         MetadataStatement metadataStatement = null;
@@ -202,9 +202,9 @@ public class AttestationServiceImpl implements AttestationService {
 
             boolean result = CertPathUtil.validate(attestationVerificationResult.getTrustPath(),
                     trustAnchors, enableRevocation);
-            log.debug("trust path: " + attestationVerificationResult.getTrustPath());
-            log.debug("trust anchors: " + trustAnchors);
-            log.debug("validation result: " + result);
+            log.debug("trust path: {}", attestationVerificationResult.getTrustPath());
+            log.debug("trust anchors: {}", trustAnchors);
+            log.debug("validation result: {}", result);
 
             if (!result) {
                 throw new FIDO2ServerRuntimeException(InternalErrorCode.CERTIFICATE_PATH_VALIDATION_FAIL);
@@ -217,20 +217,19 @@ public class AttestationServiceImpl implements AttestationService {
     }
 
     private boolean hasCRLDistPointForRevokeCheck(AttestationVerificationResult attestationVerificationResult) throws IOException {
-        log.debug("num certs in chain:" + attestationVerificationResult.getTrustPath().size());
+        log.debug("num certs in chain: {}", attestationVerificationResult.getTrustPath().size());
         X509Certificate leafCert = (X509Certificate) attestationVerificationResult.getTrustPath().get(0);
-        log.debug("**** leaf cert subject: " + leafCert.getSubjectDN());
-        log.debug("**** leaf cert issuer: " + leafCert.getIssuerDN());
+        log.debug("**** leaf cert subject: {}", leafCert.getSubjectDN());
+        log.debug("**** leaf cert issuer: {}", leafCert.getIssuerDN());
 
         byte[] cdpExt = leafCert.getExtensionValue(Extension.cRLDistributionPoints.getId());
         CRLDistPoint cdp = null;
         if (cdpExt != null) {
             cdp = CRLDistPoint.getInstance(X509ExtensionUtil.fromExtensionValue(cdpExt));
         }
-        log.debug(String.format("***** SubjectDN: [%s], CDP: [%s]", leafCert.getSubjectDN(),
-                cdp == null ? "<null>" : cdp));
+        log.debug("***** SubjectDN: [{}], CDP: [{}]", leafCert.getSubjectDN(), cdp);
         boolean enableRevocation = cdpExt != null;
-        log.debug("enable revocation: " + enableRevocation);
+        log.debug("enable revocation: {}", enableRevocation);
         return enableRevocation;
     }
 

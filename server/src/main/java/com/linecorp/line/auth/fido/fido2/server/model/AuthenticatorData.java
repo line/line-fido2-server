@@ -122,7 +122,7 @@ public class AuthenticatorData {
     }
 
     protected static AuthenticatorExtension decodeAuthenticatorDataExtension(ByteArrayInputStream inputStream) throws IOException {
-        log.info("Extension is included");
+        log.debug("Extension is included");
         int extensionDataLength = inputStream.available();
         if (extensionDataLength > 0) {
             byte[] extensionsBytes = new byte[extensionDataLength];

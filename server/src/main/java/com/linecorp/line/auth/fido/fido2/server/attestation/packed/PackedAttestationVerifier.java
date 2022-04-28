@@ -82,20 +82,22 @@ public class PackedAttestationVerifier implements AttestationVerifier {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_COSE_ALGORITHM, "Alg " + packed.getAlg());
         }
 
-        log.info("Prepare toBeSignedMessage");
+        log.debug("Prepare toBeSignedMessage");
         byte[] toBeSignedMessage = ByteBuffer
                 .allocate(authenticatorData.getBytes().length + clientDataHash.length)
                 .put(authenticatorData.getBytes())
                 .put(clientDataHash)
                 .array();
-        log.debug("toBeSignedMessage (b64url enc): {}", Base64.getUrlEncoder().withoutPadding().encodeToString(toBeSignedMessage));
+        String base64UrlEncodedMessageBytes = Base64.getUrlEncoder().withoutPadding().encodeToString(toBeSignedMessage);
+        log.debug("toBeSignedMessage (b64url enc): {}", base64UrlEncodedMessageBytes);
 
         // attestation type
         // basic
+        String base64UrlEncodedSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(packed.getSig());
         if (packed.getX5c() != null &&
             !packed.getX5c().isEmpty()) {
-            log.info("Basic Attestation Type");
-            log.info("Generate certificate list with x5c");
+            log.debug("Basic Attestation Type");
+            log.debug("Generate certificate list with x5c");
             List<Certificate> certificateList;
             try {
                 certificateList = CertificateUtil.getCertificates(packed.getX5c());
@@ -106,10 +108,11 @@ public class PackedAttestationVerifier implements AttestationVerifier {
             PublicKey publicKey = certificateList.get(0).getPublicKey();
 
             // verify signature /w public key, toBeSignedMessage, signature, algorithm
-            log.info("Verify signature /w public key in leaf cert {}, toBeSignedMessage {}, signature {}, algorithm {}",
+            log.debug("Verify signature /w public key in leaf cert {}, toBeSignedMessage {}, signature {}, algorithm {}",
                     Base64.getUrlEncoder().withoutPadding().encodeToString(publicKey.getEncoded()),
-                    Base64.getUrlEncoder().withoutPadding().encodeToString(toBeSignedMessage),
-                    Base64.getUrlEncoder().withoutPadding().encodeToString(packed.getSig()), algorithm);
+                    base64UrlEncodedMessageBytes,
+                    base64UrlEncodedSignature,
+                    algorithm);
             boolean result = SignatureHelper.verifySignature(publicKey, toBeSignedMessage, packed.getSig(), algorithm);
 
             X509Certificate certificate = (X509Certificate) certificateList.get(0);
@@ -129,10 +132,10 @@ public class PackedAttestationVerifier implements AttestationVerifier {
                     .format(AttestationStatementFormatIdentifier.PACKED)
                     .build();
         } else {    // self
-            log.info("Self Attestation Type");
+            log.debug("Self Attestation Type");
             CredentialPublicKey credentialPublicKey = authenticatorData.getAttestedCredentialData().getCredentialPublicKey();
 
-            log.info("Get credential public key for verifying signature");
+            log.debug("Get credential public key for verifying signature");
             PublicKey publicKey;
             if (algorithm.isRSAAlgorithm()) {
                 if (credentialPublicKey instanceof RSAKey) {
@@ -200,10 +203,11 @@ public class PackedAttestationVerifier implements AttestationVerifier {
             }
 
             // verify signature /w public key, toBeSignedMessage, signature, algorithm
-            log.info("Verify signature /w credential public key {}, toBeSignedMessage {}, signature {}, algorithm {}",
+            log.debug("Verify signature /w credential public key {}, toBeSignedMessage {}, signature {}, algorithm {}",
                     Base64.getUrlEncoder().withoutPadding().encodeToString(publicKey.getEncoded()),
-                    Base64.getUrlEncoder().withoutPadding().encodeToString(toBeSignedMessage),
-                    Base64.getUrlEncoder().withoutPadding().encodeToString(packed.getSig()), algorithm);
+                    base64UrlEncodedMessageBytes,
+                    base64UrlEncodedSignature,
+                    algorithm);
             boolean result = SignatureHelper.verifySignature(publicKey, toBeSignedMessage, packed.getSig(), algorithm);
 
             return AttestationVerificationResult
