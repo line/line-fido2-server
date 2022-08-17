@@ -43,7 +43,7 @@ Basically, FIDO2 has the following operations - Registration, Authentication.
 - The device uses the user’s account identifier provided by the service to select the correct key and sign the service’s challenge.
 - The client device sends the signed challenge back to the service, which verifies it with the stored public key and lets the user log in.
 
-      
+
 ## Screenshots
 ### Chrome on Mac with TouchId
 <img src="images/chrome_mac_touchid.gif" width="600" align="center" alt="registration_flow"/>
@@ -65,23 +65,23 @@ Basically, FIDO2 has the following operations - Registration, Authentication.
 
 ## Features
 - Supported attestation types
-   - Basic
-   - Self
-   - Attestation CA (a.k.a Privacy CA)
-   - None
-   - Anonymization CA
+  - Basic
+  - Self
+  - Attestation CA (a.k.a Privacy CA)
+  - None
+  - Anonymization CA
 - Supported attestation formats
-   - Packed (FIDO2)
-   - Tpm (Windows10 devices)
-   - Android key attestation
-   - Android SafetyNet (Any Android devices running 7+)
-   - FIDO U2F (Legacy U2F authenticators)
-   - Apple Anonymous
-   - None
+  - Packed (FIDO2)
+  - Tpm (Windows10 devices)
+  - Android key attestation
+  - Android SafetyNet (Any Android devices running 7+)
+  - FIDO U2F (Legacy U2F authenticators)
+  - Apple Anonymous
+  - None
 - Metadata service integration
-   - FIDO MDSv2
-   
-## How to run 
+  - FIDO MDSv2
+
+## How to run
 You need to run the FIDO2 server and RP Server first.
 
 If you want to integrate your own RP Server, please implement APIs by referring to the sample codes. Regarding client sides, you may implement the web app for communicating with the RP server.
@@ -113,7 +113,7 @@ docker-compose up
 
 After running the applications, you can open the test page at the link below.
 
- **http://localhost:8080/**
+**http://localhost:8080/**
 
 ### Local DB
 FIDO2 Server running on local environments uses h2 as an embedded DB. This needs to be replaced with commercial standalone DB for other environments such as staging, beta or real.
@@ -121,6 +121,17 @@ FIDO2 Server running on local environments uses h2 as an embedded DB. This needs
 In the case of the local environment, you can use the h2 console. Add the following path /h2-console to the fido server URL to access the h2 web console.
 
 e.g., http://localhost:8081/h2-console
+
+
+If the below error occurs while logging in to h2-console,
+```
+No suitable driver found for 08001/0
+```
+try to remove or comment out *logbook-spring-boot-starter* from build.gradle.
+
+```
+implementation('org.zalando:logbook-spring-boot-starter:1.8.1')
+```
 
 ### Lombok
 This project utilizes Lombok to reduce implementing getter/setter/constructors. You need the Lombok plugin to build with IntelliJ and Eclipse.
