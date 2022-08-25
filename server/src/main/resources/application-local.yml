@@ -1,6 +1,16 @@
 spring:
   profiles:
     active: local
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:userdb;
+    username: sa
+    password:
 server:
   port: 8081
 redis:
@@ -12,8 +22,4 @@ logging:
     com.linecorp.line: DEBUG
     org.springframework.web: DEBUG
     org.hibernate: DEBUG
-h2:
-  console:
-    enabled: true
-    settings:
-      web-allow-others: true
+
