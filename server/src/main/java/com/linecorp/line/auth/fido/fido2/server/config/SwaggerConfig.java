@@ -48,9 +48,9 @@ public class SwaggerConfig {
     private ApiInfo metaData() {
         return new ApiInfoBuilder()
                 .title("FIDO2 SERVER REST API")
-                .description("FIDO2 (WebAuthN) SEVER REST API")
+                .description("If you want to know the details of the WebAuthn standard, you can also refer to the official documentation. \n\n https://www.w3.org/TR/webauthn-2/" )
                 .version("1.0.0")
-                .contact(new Contact("Kyung-Joon Park", null, "kyungjoon.park@linecorp.copm"))
+                .contact(new Contact("Kyung-Joon Park", null, "kyungjoon.park@linecorp.com"))
                 .build();
     }
 }

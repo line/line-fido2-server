@@ -18,6 +18,14 @@ For more information, please see README.md at the link below.
 
 https://github.com/line/line-fido2-server
 
+
+
+If you want to know the details of the WebAuthn standard, you can also refer to the official documentation.
+
+https://www.w3.org/TR/webauthn-2/
+
+
+
 Basically, FIDO2 has the following operations - Registration, Authentication.
 
 Example APIs worked like this:
