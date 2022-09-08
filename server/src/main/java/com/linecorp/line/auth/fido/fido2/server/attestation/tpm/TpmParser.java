@@ -18,6 +18,7 @@ package com.linecorp.line.auth.fido.fido2.server.attestation.tpm;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import com.linecorp.line.auth.fido.fido2.server.util.UnsignedUtil;
 
@@ -95,21 +96,16 @@ public class TpmParser {
         byte[] authPolicyLengthBytes = new byte[2];
         byte[] symmetricBytes = new byte[2];
         byte[] schemeBytes = new byte[2];
-        byte[] keyBitsBytes;    // rsa key
-        byte[] exponentBytes;   // rsa key
-        byte[] curveIdBytes;    // ecc key
-        byte[] kdfBytes;    //ecc key
-        byte[] uniqueLengthBytes = new byte[2];
-        byte[] uniqueBytes;
+        byte[] uniqueBytes = null;
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(pubArea);
 
-        inputStream.read(typeBytes);    // type
+        inputStream.read(typeBytes);
         int type = UnsignedUtil.readUINT16BE(typeBytes);
-        inputStream.read(nameAlgBytes); // name alg
+        inputStream.read(nameAlgBytes);
         TpmHashAlgorithm nameAlg =
                 TpmHashAlgorithm.fromValue(UnsignedUtil.readUINT16BE(nameAlgBytes));
-        inputStream.read(objectAttributesBytes);    // object attributes
+        inputStream.read(objectAttributesBytes);
         int objectAttributesFlags = (int) UnsignedUtil.readUINT32BE(objectAttributesBytes);
         ObjectAttributes objectAttributes = parseObjectAttributes(objectAttributesFlags);
         // skip auth policy
@@ -122,8 +118,8 @@ public class TpmParser {
         // read parameters depending on the key type
         Parameters parameters = null;
         if (type == TpmKeyAlgorithm.RSA.getValue()) {
-            keyBitsBytes = new byte[2];
-            exponentBytes = new byte[4];
+            byte[] keyBitsBytes = new byte[2];
+            byte[] exponentBytes = new byte[4];
             inputStream.read(symmetricBytes);
             inputStream.read(schemeBytes);
             inputStream.read(keyBitsBytes);
@@ -133,9 +129,15 @@ public class TpmParser {
             parameters.setScheme(TpmSignatureAlgorithm.fromValue(UnsignedUtil.readUINT16BE(schemeBytes)));
             ((RsaParameters) parameters).setKeyBits(keyBitsBytes);
             ((RsaParameters) parameters).setExponent(exponentBytes);
+
+            byte[] uniqueLengthBytes = new byte[2];
+            inputStream.read(uniqueLengthBytes);
+            int uniqueLength = UnsignedUtil.readUINT16BE(uniqueLengthBytes);
+            uniqueBytes = new byte[uniqueLength];
+            inputStream.read(uniqueBytes);
         } else if (type == TpmKeyAlgorithm.ECC.getValue()) {
-            curveIdBytes = new byte[2];
-            kdfBytes = new byte[2];
+            byte[] curveIdBytes = new byte[2];
+            byte[] kdfBytes = new byte[2];
             inputStream.read(symmetricBytes);
             inputStream.read(schemeBytes);
             inputStream.read(curveIdBytes);
@@ -145,16 +147,28 @@ public class TpmParser {
             parameters.setScheme(TpmSignatureAlgorithm.fromValue(UnsignedUtil.readUINT16BE(schemeBytes)));
             ((EccParameters) parameters).setCurveId(TpmEccCurve.fromValue(UnsignedUtil.readUINT16BE(curveIdBytes)));
             ((EccParameters) parameters).setKdf(kdfBytes);
+
+            byte[] xLengthBytes = new byte[2];
+            inputStream.read(xLengthBytes);
+            int xLength = UnsignedUtil.readUINT16BE(xLengthBytes);
+            byte[] xBytes = new byte[xLength];
+            inputStream.read(xBytes);
+
+            byte[] yLengthBytes = new byte[2];
+            inputStream.read(yLengthBytes);
+            int yLength = UnsignedUtil.readUINT16BE(yLengthBytes);
+            byte[] yBytes = new byte[yLength];
+            inputStream.read(yBytes);
+
+            uniqueBytes = ByteBuffer.allocate(xLength + yLength)
+                    .put(xBytes)
+                    .put(yBytes)
+                    .array();
         } else {
             // invalid
         }
 
         // read unique (key value)
-        inputStream.read(uniqueLengthBytes);
-        int uniqueLength = UnsignedUtil.readUINT16BE(uniqueLengthBytes);
-        uniqueBytes = new byte[uniqueLength];
-        inputStream.read(uniqueBytes);
-
         return PubArea
                 .builder()
                 .type(TpmKeyAlgorithm.fromValue(type))
