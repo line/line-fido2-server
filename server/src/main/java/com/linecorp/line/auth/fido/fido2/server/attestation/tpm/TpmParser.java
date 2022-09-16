@@ -16,10 +16,13 @@
 
 package com.linecorp.line.auth.fido.fido2.server.attestation.tpm;
 
+import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
+import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
+import com.linecorp.line.auth.fido.fido2.server.util.UnsignedUtil;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
-import com.linecorp.line.auth.fido.fido2.server.util.UnsignedUtil;
+import java.nio.ByteBuffer;
 
 public class TpmParser {
     public static CertInfo parseCertInfo(byte[] certInfo) throws IOException {
@@ -89,27 +92,48 @@ public class TpmParser {
     }
 
     public static PubArea parsePubArea(byte[] pubArea) throws IOException {
+        ByteArrayInputStream pubAreaInputStream = new ByteArrayInputStream(pubArea);
+        switch (TpmKeyAlgorithm.fromValue(extractTpmKeyAlgType(pubAreaInputStream))) {
+            case RSA: {
+                return createPubAreaForRSA(pubAreaInputStream);
+            }
+            case ECC: {
+                return createPubAreaForECC(pubAreaInputStream);
+            }
+        }
+        throw new FIDO2ServerRuntimeException(InternalErrorCode.TPM_ATTESTATION_DATA_INVALID);
+    }
+
+    private static int extractTpmKeyAlgType(ByteArrayInputStream inputStream) throws IOException {
         byte[] typeBytes = new byte[2];
+        inputStream.read(typeBytes);
+        return UnsignedUtil.readUINT16BE(typeBytes);
+    }
+
+    private static PubArea createPubAreaForRSA(ByteArrayInputStream inputStream) throws IOException {
+        return createPubAreaBuilder(TpmKeyAlgorithm.RSA, inputStream)
+                .parameters(extractParametersForRSA(inputStream))
+                .unique(extractUniqueBytesForRSA(inputStream))
+                .build();
+    }
+
+    private static PubArea createPubAreaForECC(ByteArrayInputStream inputStream) throws IOException {
+        return createPubAreaBuilder(TpmKeyAlgorithm.ECC, inputStream)
+                .parameters(extractParametersForECC(inputStream))
+                .unique(extractUniqueBytesForECC(inputStream))
+                .build();
+    }
+
+    private static PubArea.PubAreaBuilder createPubAreaBuilder(TpmKeyAlgorithm tpmKeyAlgType, ByteArrayInputStream inputStream) throws IOException {
         byte[] nameAlgBytes = new byte[2];
         byte[] objectAttributesBytes = new byte[4];
         byte[] authPolicyLengthBytes = new byte[2];
-        byte[] symmetricBytes = new byte[2];
-        byte[] schemeBytes = new byte[2];
-        byte[] keyBitsBytes;    // rsa key
-        byte[] exponentBytes;   // rsa key
-        byte[] curveIdBytes;    // ecc key
-        byte[] kdfBytes;    //ecc key
-        byte[] uniqueLengthBytes = new byte[2];
-        byte[] uniqueBytes;
 
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(pubArea);
-
-        inputStream.read(typeBytes);    // type
-        int type = UnsignedUtil.readUINT16BE(typeBytes);
-        inputStream.read(nameAlgBytes); // name alg
+        inputStream.read(nameAlgBytes);
         TpmHashAlgorithm nameAlg =
                 TpmHashAlgorithm.fromValue(UnsignedUtil.readUINT16BE(nameAlgBytes));
-        inputStream.read(objectAttributesBytes);    // object attributes
+
+        inputStream.read(objectAttributesBytes);
         int objectAttributesFlags = (int) UnsignedUtil.readUINT32BE(objectAttributesBytes);
         ObjectAttributes objectAttributes = parseObjectAttributes(objectAttributesFlags);
         // skip auth policy
@@ -119,50 +143,77 @@ public class TpmParser {
             inputStream.skip(authPolicyLength);
         }
 
-        // read parameters depending on the key type
-        Parameters parameters = null;
-        if (type == TpmKeyAlgorithm.RSA.getValue()) {
-            keyBitsBytes = new byte[2];
-            exponentBytes = new byte[4];
-            inputStream.read(symmetricBytes);
-            inputStream.read(schemeBytes);
-            inputStream.read(keyBitsBytes);
-            inputStream.read(exponentBytes);
-            parameters = new RsaParameters();
-            parameters.setSymmetric(symmetricBytes);
-            parameters.setScheme(TpmSignatureAlgorithm.fromValue(UnsignedUtil.readUINT16BE(schemeBytes)));
-            ((RsaParameters) parameters).setKeyBits(keyBitsBytes);
-            ((RsaParameters) parameters).setExponent(exponentBytes);
-        } else if (type == TpmKeyAlgorithm.ECC.getValue()) {
-            curveIdBytes = new byte[2];
-            kdfBytes = new byte[2];
-            inputStream.read(symmetricBytes);
-            inputStream.read(schemeBytes);
-            inputStream.read(curveIdBytes);
-            inputStream.read(kdfBytes);
-            parameters = new EccParameters();
-            parameters.setSymmetric(symmetricBytes);
-            parameters.setScheme(TpmSignatureAlgorithm.fromValue(UnsignedUtil.readUINT16BE(schemeBytes)));
-            ((EccParameters) parameters).setCurveId(TpmEccCurve.fromValue(UnsignedUtil.readUINT16BE(curveIdBytes)));
-            ((EccParameters) parameters).setKdf(kdfBytes);
-        } else {
-            // invalid
-        }
-
-        // read unique (key value)
-        inputStream.read(uniqueLengthBytes);
-        int uniqueLength = UnsignedUtil.readUINT16BE(uniqueLengthBytes);
-        uniqueBytes = new byte[uniqueLength];
-        inputStream.read(uniqueBytes);
-
         return PubArea
                 .builder()
-                .type(TpmKeyAlgorithm.fromValue(type))
+                .type(tpmKeyAlgType)
                 .nameAlg(nameAlg)
-                .objectAttributes(objectAttributes)
-                .parameters(parameters)
-                .unique(uniqueBytes)
-                .build();
+                .objectAttributes(objectAttributes);
+    }
+
+    private static Parameters extractParametersForRSA(ByteArrayInputStream inputStream) throws IOException {
+        byte[] symmetricBytes = new byte[2];
+        byte[] schemeBytes = new byte[2];
+        byte[] keyBitsBytes = new byte[2];
+        byte[] exponentBytes = new byte[4];
+
+        inputStream.read(symmetricBytes);
+        inputStream.read(schemeBytes);
+        inputStream.read(keyBitsBytes);
+        inputStream.read(exponentBytes);
+
+        Parameters parameters = new RsaParameters();
+        parameters.setSymmetric(symmetricBytes);
+        parameters.setScheme(TpmSignatureAlgorithm.fromValue(UnsignedUtil.readUINT16BE(schemeBytes)));
+        ((RsaParameters) parameters).setKeyBits(keyBitsBytes);
+        ((RsaParameters) parameters).setExponent(exponentBytes);
+        return parameters;
+    }
+
+    private static byte[] extractUniqueBytesForRSA(ByteArrayInputStream inputStream) throws IOException {
+        byte[] uniqueLengthBytes = new byte[2];
+        inputStream.read(uniqueLengthBytes);
+        int uniqueLength = UnsignedUtil.readUINT16BE(uniqueLengthBytes);
+        byte[] uniqueBytes = new byte[uniqueLength];
+        inputStream.read(uniqueBytes);
+        return uniqueBytes;
+    }
+
+    private static Parameters extractParametersForECC(ByteArrayInputStream inputStream) throws IOException {
+        byte[] symmetricBytes = new byte[2];
+        byte[] schemeBytes = new byte[2];
+        byte[] curveIdBytes = new byte[2];
+        byte[] kdfBytes = new byte[2];
+
+        inputStream.read(symmetricBytes);
+        inputStream.read(schemeBytes);
+        inputStream.read(curveIdBytes);
+        inputStream.read(kdfBytes);
+
+        Parameters parameters = new EccParameters();
+        parameters.setSymmetric(symmetricBytes);
+        parameters.setScheme(TpmSignatureAlgorithm.fromValue(UnsignedUtil.readUINT16BE(schemeBytes)));
+        ((EccParameters) parameters).setCurveId(TpmEccCurve.fromValue(UnsignedUtil.readUINT16BE(curveIdBytes)));
+        ((EccParameters) parameters).setKdf(kdfBytes);
+        return parameters;
+    }
+
+    private static byte[] extractUniqueBytesForECC(ByteArrayInputStream inputStream) throws IOException {
+        byte[] xLengthBytes = new byte[2];
+        inputStream.read(xLengthBytes);
+        int xLength = UnsignedUtil.readUINT16BE(xLengthBytes);
+        byte[] xBytes = new byte[xLength];
+        inputStream.read(xBytes);
+
+        byte[] yLengthBytes = new byte[2];
+        inputStream.read(yLengthBytes);
+        int yLength = UnsignedUtil.readUINT16BE(yLengthBytes);
+        byte[] yBytes = new byte[yLength];
+        inputStream.read(yBytes);
+
+        return ByteBuffer.allocate(xLength + yLength)
+                .put(xBytes)
+                .put(yBytes)
+                .array();
     }
 
     public static ClockInfo parseClockInfo(byte[] clockInfo) throws IOException {

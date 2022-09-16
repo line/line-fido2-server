@@ -18,6 +18,8 @@ package com.linecorp.line.auth.fido.fido2.server.attestation.tpm;
 
 import java.util.Arrays;
 
+import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
+import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -32,6 +34,7 @@ public enum TpmKeyAlgorithm {
         return Arrays.stream(TpmKeyAlgorithm.values())
                 .filter(e -> e.value == value)
                 .findFirst()
-                .get();
+                .orElseThrow(() -> new FIDO2ServerRuntimeException(InternalErrorCode.TPM_ATTESTATION_DATA_INVALID));
+
     }
 }
