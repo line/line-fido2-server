@@ -18,7 +18,7 @@ package com.linecorp.line.auth.fido.fido2.server.service;
 
 import java.util.List;
 
-import com.linecorp.line.auth.fido.uaf.common.metadata.MetadataStatement;
+import com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata.MetadataStatement;
 
 public interface MetadataService {
     MetadataStatement getMetadataStatementWithAaguid(String aaguid);

@@ -25,8 +25,11 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.linecorp.line.auth.fido.fido2.common.crypto.Digests;
+import com.linecorp.line.auth.fido.fido2.common.mdsv3.MetadataBLOBPayload;
+import com.linecorp.line.auth.fido.fido2.common.mdsv3.MetadataBLOBPayloadEntry;
 import com.linecorp.line.auth.fido.fido2.server.config.MdsConfig;
 import com.linecorp.line.auth.fido.fido2.server.config.MdsInfo;
 import com.linecorp.line.auth.fido.fido2.server.entity.MetadataEntity;
@@ -36,9 +39,7 @@ import com.linecorp.line.auth.fido.fido2.server.repository.MetadataRepository;
 import com.linecorp.line.auth.fido.fido2.server.repository.MetadataTocRepository;
 import com.linecorp.line.auth.fido.fido2.server.util.CertPathUtil;
 import com.linecorp.line.auth.fido.fido2.server.util.CertificateUtil;
-import com.linecorp.line.auth.fido.uaf.common.mds.AuthenticatorStatus;
-import com.linecorp.line.auth.fido.uaf.common.mds.MetadataTOCPayload;
-import com.linecorp.line.auth.fido.uaf.common.mds.MetadataTOCPayloadEntry;
+import com.linecorp.line.auth.fido.fido2.common.mdsv3.AuthenticatorStatus;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,11 +100,6 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
         }
         log.info("Handle MDS with following source: {}", mdsInfo);
         String mdsSourceEndpoint = mdsInfo.getEndpoint();
-        if ("fido-mds-v2".equals(mdsInfo.getName()) && mdsInfo.getAccessToken() != null ) {
-            mdsSourceEndpoint += "?token=" + mdsInfo.getAccessToken();
-        } else if (mdsInfo.getName().contains("conformance")) {
-            mdsSourceEndpoint += mdsInfo.getAccessToken();
-        }
         log.info("Start fetching Metadata TOC");
         mdsProtocolClient.fetchAsyncMetadataToc(mdsSourceEndpoint, new Callback<ResponseBody>() {
             @Override
@@ -140,7 +136,7 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
         refreshMetadata();
     }
 
-    private MetadataTOCResult handleMetadataToc(String url, String metadataToc, MdsInfo mdsInfo) throws CertificateException {
+    public MetadataTOCResult handleMetadataToc(String url, String metadataToc, MdsInfo mdsInfo) throws CertificateException {
         log.info("Start handling Metadata TOC");
 
         int updatedCount = 0, totalCount = 0;
@@ -153,9 +149,10 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
 
         // decode payload
         ObjectMapper objectMapper = new ObjectMapper();
-        MetadataTOCPayload metadataTOCPayload;
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        MetadataBLOBPayload metadataBLOBPayload;
         try {
-            metadataTOCPayload = objectMapper.readValue(Base64.getUrlDecoder().decode(encodedMetadataTocPayload), MetadataTOCPayload.class);
+            metadataBLOBPayload = objectMapper.readValue(Base64.getUrlDecoder().decode(encodedMetadataTocPayload), MetadataBLOBPayload.class);
         } catch (IOException e) {
             return MetadataTOCResult
                     .builder()
@@ -166,15 +163,15 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
                     .build();
         }
 
-        log.info("Metadata TOC Payload: {}", metadataTOCPayload);
+        log.info("Metadata TOC Payload: {}", metadataBLOBPayload);
 
-        totalCount = metadataTOCPayload.getEntries().size();
+        totalCount = metadataBLOBPayload.getEntries().size();
 
         // check no and compare with previous
         MetadataTocEntity metadataTocEntity = metadataTocRepository.findFirstByMetadataSourceOrderByNoDesc(mdsInfo.getName());
 
         if (metadataTocEntity != null) {
-            if (metadataTocEntity.getId() >= metadataTOCPayload.getNo()) {
+            if (metadataTocEntity.getId() >= metadataBLOBPayload.getNo()) {
                 // already up to date
                 return MetadataTOCResult
                         .builder()
@@ -282,25 +279,25 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
         // get jwt signature algorithm and hash algorithm
         String algorithm = decodedJWT.getAlgorithm();
         Algorithm signatureAlgorithm;
-        String hashAlgorithm;
+
         if (ALGORITHM_RS256.equals(algorithm)) {
             signatureAlgorithm = Algorithm.RSA256((RSAPublicKey) publicKey, null);
-            hashAlgorithm = "SHA256";
+
         } else if (ALGORITHM_RS384.equals(algorithm)) {
             signatureAlgorithm = Algorithm.RSA384((RSAPublicKey) publicKey, null);
-            hashAlgorithm = "SHA384";
+
         } else if (ALGORITHM_RS512.equals(algorithm)) {
             signatureAlgorithm = Algorithm.RSA512((RSAPublicKey) publicKey, null);
-            hashAlgorithm = "SHA512";
+
         } else if (ALGORITHM_ES256.equals(algorithm)) {
             signatureAlgorithm = Algorithm.ECDSA256((ECPublicKey) publicKey, null);
-            hashAlgorithm = "SHA256";
+
         } else if (ALGORITHM_ES384.equals(algorithm)) {
             signatureAlgorithm = Algorithm.ECDSA384((ECPublicKey) publicKey, null);
-            hashAlgorithm = "SHA384";
+
         } else if (ALGORITHM_ES512.equals(algorithm)) {
             signatureAlgorithm = Algorithm.ECDSA512((ECPublicKey) publicKey, null);
-            hashAlgorithm = "SHA512";
+
         } else {
             return MetadataTOCResult
                     .builder()
@@ -326,13 +323,12 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
         // toc is valid and new version
         // store data
         metadataTocRepository.save(
-                new MetadataTocEntity(null, mdsInfo.getName(), metadataTOCPayload.getNo(), metadataTOCPayload.getLegalHeader(), metadataTOCPayload.getNextUpdate(), encodedMetadataTocPayload));
-
+                new MetadataTocEntity(null, mdsInfo.getName(), metadataBLOBPayload.getNo(), metadataBLOBPayload.getLegalHeader(), metadataBLOBPayload.getNextUpdate(), encodedMetadataTocPayload));
 
         // iterate all payload entry
-        int metadataCount = metadataTOCPayload.getEntries().size();
+        int metadataCount = metadataBLOBPayload.getEntries().size();
         log.info("MDS Registered metadata count: ", metadataCount);
-        for (MetadataTOCPayloadEntry entry : metadataTOCPayload.getEntries()) {
+        for (MetadataBLOBPayloadEntry entry : metadataBLOBPayload.getEntries()) {
             log.info("Metadata TOC Payload Entry: {}", entry);
             // check status report, timeOfLastStatusChange has been changed comparing to local cache
             // find metadata from db and compare it
@@ -364,52 +360,33 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
                         localMetadataEntity.getTimeOfLastStatusChange()))) {
                 // new entry
                 // or download metadata with url and check hash, if valid update it
-                try {
-                    String metadataStatementUrl = entry.getUrl();
-                    if ("fido-mds-v2".equals(mdsInfo.getName()) && mdsInfo.getAccessToken() != null ) {
-                        metadataStatementUrl += "/?token=" + mdsInfo.getAccessToken();
-                    }
-                    Response<ResponseBody> response = mdsProtocolClient.fetchSyncMetadata(metadataStatementUrl);
 
-                    if (response.isSuccessful() && response.body() != null) {
-                        String encodedMetadataStatement = response.body().string();
-
-                        // check hash value with signature algorithm of JWT
-                        byte[] digest = Digests.digest(hashAlgorithm, encodedMetadataStatement.getBytes());
-
-                        if (entry.getHash().equals(
-                                Base64.getUrlEncoder().withoutPadding().encodeToString(digest))) {
-                            // update metadata
-                            updatedCount++;
-                            String metdatadata = new String(Base64.getUrlDecoder().decode(encodedMetadataStatement));
-                            log.info("Metadata: {}", metdatadata);
-                            MetadataEntity.MetadataEntityBuilder builder = MetadataEntity
-                                    .builder()
-                                    .aaguid(entry.getAaguid())
-                                    .content(metdatadata)
-                                    .statusReports(entry.getStatusReports().toString())
-                                    .timeOfLastStatusChange(entry.getTimeOfLastStatusChange());
-
-                            // if it is existing one, just update it
-                            if (localMetadataEntity != null) {
-                                builder.id(localMetadataEntity.getId());
-                            }
-                            MetadataEntity metadataEntity = builder.build();
-                            metadataRepository.save(metadataEntity);
-                        } else {
-                            // ignore it
-                            // not valid entry
-                            log.info("Ignore entry (hash not matched)");
-                            continue;
-                        }
-                    } else {
-                        // http error
+                    String encodedMetadataStatement = null;
+                    try {
+                        encodedMetadataStatement = objectMapper.writeValueAsString(entry.getMetadataStatement());
+                    } catch (JsonProcessingException e) {
                         continue;
                     }
-                } catch (IOException e) {
-                    log.warn("Metadata fectch error: " + e.getMessage(), e);
-                    continue;
-                }
+
+                        // update metadata
+                        updatedCount++;
+                        String metdatadata = encodedMetadataStatement;
+                        log.info("Metadata: {}", metdatadata);
+                        MetadataEntity.MetadataEntityBuilder builder = MetadataEntity
+                                .builder()
+                                .aaguid(entry.getAaguid())
+                                .content(metdatadata)
+                                .statusReports(entry.getStatusReports().toString())
+                                .timeOfLastStatusChange(entry.getTimeOfLastStatusChange());
+
+                        // if it is existing one, just update it
+                        if (localMetadataEntity != null) {
+                            builder.id(localMetadataEntity.getId());
+                        }
+                        MetadataEntity metadataEntity = builder.build();
+                        log.info("##### content : {}", metadataEntity.getContent());
+                        metadataRepository.save(metadataEntity);
+
             } else {
                 // skip it, already latest one
                 log.info("Skip entry, already latest one");

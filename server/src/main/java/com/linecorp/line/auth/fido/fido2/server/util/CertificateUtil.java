@@ -23,7 +23,7 @@ import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeExce
 import com.linecorp.line.auth.fido.fido2.server.model.AttestationStatementFormatIdentifier;
 import com.linecorp.line.auth.fido.fido2.server.model.AuthenticatorVendor;
 import com.linecorp.line.auth.fido.fido2.server.service.VendorSpecificMetadataService;
-import com.linecorp.line.auth.fido.uaf.common.metadata.MetadataStatement;
+import com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata.MetadataStatement;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 
