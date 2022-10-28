@@ -12,9 +12,9 @@ public class AuthenticatorGetInfo {
     private String aaguid;
     private Map options;
     private int maxMsgSize;
+
     private List<Integer> pinUvAuthProtocols;
     private int maxCredentialCountInList;
-
     private int maxCredentialIdLength;
     private List<String> transports;
     private List<Map> algorithms;

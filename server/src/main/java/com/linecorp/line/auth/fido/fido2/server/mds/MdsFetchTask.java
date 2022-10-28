@@ -78,7 +78,7 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
 
     private final Queue<MdsInfo> metadataSourceQueue = new LinkedList<>();
 
-    private boolean enableMds;
+    private final boolean enableMds;
 
     @Autowired
     public MdsFetchTask(MdsConfig mdsConfig, MetadataRepository metadataRepository, MetadataTocRepository metadataTocRepository) {
@@ -384,7 +384,6 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
                             builder.id(localMetadataEntity.getId());
                         }
                         MetadataEntity metadataEntity = builder.build();
-                        log.info("##### content : {}", metadataEntity.getContent());
                         metadataRepository.save(metadataEntity);
 
             } else {

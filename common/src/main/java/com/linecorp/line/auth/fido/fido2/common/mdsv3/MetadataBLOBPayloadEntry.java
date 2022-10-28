@@ -9,7 +9,6 @@ public class MetadataBLOBPayloadEntry {
     private String aaid;
     private String aaguid;
     private List<String> attestationCertificateKeyIdentifiers;
-
     private MetadataStatement metadataStatement;
     private List<String> biometricStatusReports;
 
