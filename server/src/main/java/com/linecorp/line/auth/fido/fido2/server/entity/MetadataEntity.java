@@ -39,6 +39,9 @@ public class MetadataEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Column(columnDefinition = "TEXT")
+    private String biometricStatusReports;
+
     private String timeOfLastStatusChange;
 
     @Column(columnDefinition = "TEXT")

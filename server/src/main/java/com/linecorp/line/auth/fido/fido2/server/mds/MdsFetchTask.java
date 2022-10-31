@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -376,6 +377,7 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
                                 .builder()
                                 .aaguid(entry.getAaguid())
                                 .content(metdatadata)
+                                .biometricStatusReports(ObjectUtils.isEmpty(entry.getBiometricStatusReports()) ? null : entry.getBiometricStatusReports().toString())
                                 .statusReports(entry.getStatusReports().toString())
                                 .timeOfLastStatusChange(entry.getTimeOfLastStatusChange());
 
