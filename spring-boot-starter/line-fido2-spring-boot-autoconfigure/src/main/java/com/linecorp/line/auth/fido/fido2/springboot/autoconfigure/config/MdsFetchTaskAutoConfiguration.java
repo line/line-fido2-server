@@ -17,23 +17,24 @@
 package com.linecorp.line.auth.fido.fido2.springboot.autoconfigure.config;
 
 import com.linecorp.line.auth.fido.fido2.server.config.MdsConfig;
+import com.linecorp.line.auth.fido.fido2.server.helper.MdsV3MetadataHelper;
 import com.linecorp.line.auth.fido.fido2.server.mds.MdsFetchTask;
-import com.linecorp.line.auth.fido.fido2.server.repository.MetadataRepository;
-import com.linecorp.line.auth.fido.fido2.server.repository.MetadataTocRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnClass(MdsFetchTask.class)
 @EntityScan(basePackages = {"com.linecorp.line.auth.fido.fido2.server.entity"})
+@ComponentScan(basePackages = "com.linecorp.line.auth.fido.fido2.server.helper")
 public class MdsFetchTaskAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MdsFetchTask mdsFetchTask(MdsConfig mdsConfig, MetadataRepository metadataRepository, MetadataTocRepository metadataTocRepository) {
-        return new MdsFetchTask(mdsConfig, metadataRepository, metadataTocRepository);
+    public MdsFetchTask mdsFetchTask(MdsConfig mdsConfig, MdsV3MetadataHelper mdsV3MetadataHelper) {
+        return new MdsFetchTask(mdsConfig, mdsV3MetadataHelper);
     }
 }
