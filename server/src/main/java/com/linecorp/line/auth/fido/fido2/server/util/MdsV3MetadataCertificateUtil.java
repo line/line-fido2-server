@@ -35,7 +35,7 @@ public class MdsV3MetadataCertificateUtil {
     private static final String ALGORITHM_ES384 = "ES384";
     private static final String ALGORITHM_ES512 = "ES512";
 
-    public static void verifyCertificate(String url, String metadataToc, MdsInfo mdsInfo, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException {
+    public static void verifyCertificate(String url, String metadataToc, MdsInfo mdsInfo, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException , MdsV3MetadataException{
         List<Certificate> certificateChain = verifyCertificateChain(url, mdsInfo, JWT.decode(metadataToc),metadataBLOBPayload);
         verifySignature(metadataToc, JWT.decode(metadataToc), certificateChain.get(0), metadataBLOBPayload);
     }

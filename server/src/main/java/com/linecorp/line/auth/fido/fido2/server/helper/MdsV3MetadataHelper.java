@@ -103,7 +103,6 @@ public class MdsV3MetadataHelper {
         int fido2EntryCount = 0;
 
         for (MetadataBLOBPayloadEntry entry : metadataBLOBPayload.getEntries()) {
-            log.info("Metadata TOC Payload Entry: {}", entry);
 
             if (!isAcceptableStatus(entry.getStatusReports().get(0).getStatus())) {
                 log.debug("Ignore entry due to status: {}", entry.getStatusReports().get(0).getStatus());

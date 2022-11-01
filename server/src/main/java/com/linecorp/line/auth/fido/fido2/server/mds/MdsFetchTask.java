@@ -60,7 +60,7 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
         }
     }
 
-    public void refreshMetadata() {
+    private void refreshMetadata() {
         MdsInfo mdsInfo = metadataSourceQueue.poll();
         if (mdsInfo == null || !mdsInfo.isEnabled()) {
             return;
@@ -103,7 +103,7 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
         refreshMetadata();
     }
 
-    public MetadataTOCResult handleMetadataToc(String url, String metadataToc, MdsInfo mdsInfo) throws CertificateException, MdsV3MetadataException {
+    private MetadataTOCResult handleMetadataToc(String url, String metadataToc, MdsInfo mdsInfo) throws CertificateException, MdsV3MetadataException {
         log.info("Start handling Metadata TOC");
         return mdsV3MetadataHelper.handle(url, metadataToc, mdsInfo);
     }
