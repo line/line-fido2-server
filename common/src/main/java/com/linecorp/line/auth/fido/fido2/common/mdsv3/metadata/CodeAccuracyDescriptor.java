@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CodeAccuracyDescriptor {
-    private int base;
-    private int minLength;
+    private Integer base;
+    private Integer minLength;
     private Integer maxRetries;
     private Integer blockSlowdown;
 }

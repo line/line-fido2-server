@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Version {
-    private int major;
-    private int minor;
+    private Integer major;
+    private Integer minor;
 }

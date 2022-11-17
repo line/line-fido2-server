@@ -16,9 +16,9 @@ public class MetadataStatement {
     private String description;
 
     private Map<String, String> alternativeDescriptions;
-    private int authenticatorVersion;
+    private Integer authenticatorVersion;
     private String protocolFamily;
-    private int schema;
+    private Integer schema;
     private List<Version> upv;
 
     private List<String> authenticationAlgorithms;
@@ -27,10 +27,10 @@ public class MetadataStatement {
     private List<List<VerificationMethodDescriptor>> userVerificationDetails;
     private List<String> keyProtection;
 
-    private boolean isKeyRestricted;
-    private boolean isFreshUserVerificationRequired;
+    private Boolean isKeyRestricted;
+    private Boolean isFreshUserVerificationRequired;
     private List<String> matcherProtection;
-    private int cryptoStrength;
+    private Integer cryptoStrength;
     private List<String> attachmentHint;
 
     private List<String> tcDisplay;

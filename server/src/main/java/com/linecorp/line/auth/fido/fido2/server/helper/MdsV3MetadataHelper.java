@@ -42,10 +42,14 @@ public class MdsV3MetadataHelper {
 
         checkLatestDataExist(metadataTocRepository.findFirstByMetadataSourceOrderByNoDesc(mdsInfo.getName()), metadataBLOBPayload);
         MdsV3MetadataCertificateUtil.verifyCertificate(url, metadataToc, mdsInfo, metadataBLOBPayload);
-        saveMetaDataToc(metadataToc, mdsInfo, metadataBLOBPayload, metadataTocRepository);
-
-        return createMetadataTocResult(metadataBLOBPayload, metadataRepository);
+        return handleMetadata(metadataToc, mdsInfo, metadataBLOBPayload);
     }
+
+    private MetadataTOCResult handleMetadata(String metadataToc, MdsInfo mdsInfo, MetadataBLOBPayload metadataBLOBPayload) {
+        saveMetaDataToc(metadataToc, mdsInfo, metadataBLOBPayload, metadataTocRepository);
+        return processBlobPayload(metadataBLOBPayload, metadataRepository);
+    }
+
     private static MetadataBLOBPayload createMetadataBLOBPayload(String metadataToc) throws MdsV3MetadataException {
 
         DecodedJWT decodedJWT = JWT.decode(metadataToc);
@@ -89,7 +93,7 @@ public class MdsV3MetadataHelper {
                 new MetadataTocEntity(null, mdsInfo.getName(), metadataBLOBPayload.getNo(), metadataBLOBPayload.getLegalHeader(), metadataBLOBPayload.getNextUpdate(), JWT.decode(metadataToc).getPayload()));
     }
 
-    private static MetadataTOCResult createMetadataTocResult(MetadataBLOBPayload metadataBLOBPayload, MetadataRepository metadataRepository) {
+    private static MetadataTOCResult processBlobPayload(MetadataBLOBPayload metadataBLOBPayload, MetadataRepository metadataRepository) {
 
         // iterate all payload entry
         log.info("MDS Registered metadata count: {}", metadataBLOBPayload.getEntries().size());
@@ -129,7 +133,7 @@ public class MdsV3MetadataHelper {
                 updatedCount++;
 
                 try {
-                    saveMetadata(entry, localMetadataEntity, objectMapper.writeValueAsString(entry.getMetadataStatement()), metadataRepository);
+                    saveMetadata(entry, localMetadataEntity, objectMapper.writeValueAsString(entry.getMetadataStatement()), metadataRepository,objectMapper);
                 } catch (JsonProcessingException e) {
                     log.debug("Json parsing error of Metadata Statement: {}", entry.getMetadataStatement());
                 }
@@ -152,14 +156,14 @@ public class MdsV3MetadataHelper {
                 .build();
     }
 
-    private static void saveMetadata(MetadataBLOBPayloadEntry entry, MetadataEntity localMetadataEntity, String encodedMetadataStatement, MetadataRepository metadataRepository) {
+    private static void saveMetadata(MetadataBLOBPayloadEntry entry, MetadataEntity localMetadataEntity, String encodedMetadataStatement, MetadataRepository metadataRepository, ObjectMapper objectMapper) throws JsonProcessingException {
 
         MetadataEntity.MetadataEntityBuilder builder = MetadataEntity
                 .builder()
                 .aaguid(entry.getAaguid())
                 .content(encodedMetadataStatement)
-                .biometricStatusReports(ObjectUtils.isEmpty(entry.getBiometricStatusReports()) ? null : entry.getBiometricStatusReports().toString())
-                .statusReports(entry.getStatusReports().toString())
+                .biometricStatusReports(ObjectUtils.isEmpty(entry.getBiometricStatusReports()) ? null : objectMapper.writeValueAsString(entry.getBiometricStatusReports()))
+                .statusReports(ObjectUtils.isEmpty(entry.getStatusReports()) ? null : objectMapper.writeValueAsString(entry.getStatusReports()))
                 .timeOfLastStatusChange(entry.getTimeOfLastStatusChange());
 
         // if it is existing one, just update it

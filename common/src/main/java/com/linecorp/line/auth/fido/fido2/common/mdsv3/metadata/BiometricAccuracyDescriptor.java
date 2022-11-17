@@ -13,11 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BiometricAccuracyDescriptor {
-    private Double FAR;
-    private Double FRR;
-    private Double EER;
-    private Double FAAR;
-    private Integer maxReferenceDataSets;
+    private Double selfAttestedFRR;
+    private Double selfAttestedFAR;
+    private Integer maxTemplates;
     private Integer maxRetries;
     private Integer blockSlowdown;
 }

@@ -11,5 +11,6 @@ import lombok.Data;
 public class ExtensionDescriptor {
     private String id;
     private String data;
-    private boolean fail_if_unknown;
+    private Short tag;
+    private Boolean fail_if_unknown;
 }

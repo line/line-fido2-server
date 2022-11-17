@@ -9,11 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigInteger;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PatternAccuracyDescriptor {
-    private long minComplexity; //unsigned long
+    private BigInteger minComplexity; //unsigned long
     private Integer maxRetries;
     private Integer blockSlowdown;
 }

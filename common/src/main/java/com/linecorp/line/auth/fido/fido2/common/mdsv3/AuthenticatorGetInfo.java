@@ -11,15 +11,15 @@ public class AuthenticatorGetInfo {
     private List<String> extensions;
     private String aaguid;
     private Map options;
-    private int maxMsgSize;
+    private Integer maxMsgSize;
 
     private List<Integer> pinUvAuthProtocols;
-    private int maxCredentialCountInList;
-    private int maxCredentialIdLength;
+    private Integer maxCredentialCountInList;
+    private Integer maxCredentialIdLength;
     private List<String> transports;
     private List<Map> algorithms;
 
-    private int maxAuthenticatorConfigLength;
-    private int defaultCredProtect;
-    private int firmwareVersion;
+    private Integer maxAuthenticatorConfigLength;
+    private Integer defaultCredProtect;
+    private Integer firmwareVersion;
 }

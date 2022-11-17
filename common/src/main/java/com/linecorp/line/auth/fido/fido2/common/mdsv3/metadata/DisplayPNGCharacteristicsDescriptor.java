@@ -7,14 +7,16 @@ package com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class DisplayPNGCharacteristicsDescriptor {
-    private long width; //unsigned long
-    private long height;    //unsigned long
-    private int bitDepth;
-    private int colorType;
-    private int compression;
-    private int filter;
-    private int interlace;
+    private BigInteger width; //unsigned long
+    private BigInteger height;    //unsigned long
+    private Integer bitDepth;
+    private Short colorType;
+    private Short compression;
+    private Short filter;
+    private Short interlace;
     private RgbPaletteEntry[] plte;
 }

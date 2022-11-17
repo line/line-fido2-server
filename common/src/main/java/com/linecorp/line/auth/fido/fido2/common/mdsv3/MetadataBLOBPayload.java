@@ -6,7 +6,7 @@ import java.util.List;
 @Data
 public class MetadataBLOBPayload {
     private String legalHeader;
-    private long no;
+    private Long no;
     private String nextUpdate;
     private List<MetadataBLOBPayloadEntry> entries;
 }

@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class StatusReport {
     private AuthenticatorStatus status;
+    private Long authenticatorVersion;
     private String effectiveDate;
     private String certificate;
     private String url;
