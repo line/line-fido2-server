@@ -25,7 +25,7 @@ import java.util.List;
 @SpringBootTest
 class MdsV3MetadataHelperTest {
 
-    public static final int EXPECTED_METADATA_SIZE = 110;
+    public static final int EXPECTED_METADATA_SIZE = 73;
     @Autowired
     private MdsV3MetadataHelper mdsV3MetadataHelper;
 
@@ -58,7 +58,7 @@ class MdsV3MetadataHelperTest {
         Assertions.assertNotNull(mdsEndPointUrl);
 
         //when
-        mdsV3MetadataHelper.handle(mdsEndPointUrl, metadataToc, mdsConfig.getSources().get(0));
+        mdsV3MetadataHelper.handle(metadataToc, mdsConfig.getSources().get(0));
 
         //then
         Iterable<MetadataEntity> metadataEntityIterable = metadataRepository.findAll();
@@ -85,7 +85,7 @@ class MdsV3MetadataHelperTest {
         //then
         Assertions.assertThrows(MdsV3MetadataException.class, () -> {
             //when
-            mdsV3MetadataHelper.handle(mdsEndPointUrl, metadataToc, wrongMdsInfo);
+            mdsV3MetadataHelper.handle(metadataToc, wrongMdsInfo);
         });
     }
 }

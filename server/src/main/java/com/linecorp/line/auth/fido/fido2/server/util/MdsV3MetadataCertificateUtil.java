@@ -14,8 +14,6 @@ import com.linecorp.line.auth.fido.fido2.server.config.MdsInfo;
 import com.linecorp.line.auth.fido.fido2.server.exception.MdsV3MetadataException;
 import com.linecorp.line.auth.fido.fido2.server.mds.MetadataTOCResult;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
@@ -23,7 +21,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.TrustAnchor;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -35,13 +32,13 @@ public class MdsV3MetadataCertificateUtil {
     private static final String ALGORITHM_ES384 = "ES384";
     private static final String ALGORITHM_ES512 = "ES512";
 
-    public static void verifyCertificate(String url, String metadataToc, MdsInfo mdsInfo, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException , MdsV3MetadataException{
-        List<Certificate> certificateChain = verifyCertificateChain(url, mdsInfo, JWT.decode(metadataToc),metadataBLOBPayload);
+    public static void verifyCertificate(String metadataToc, MdsInfo mdsInfo, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException, MdsV3MetadataException {
+        List<Certificate> certificateChain = verifyCertificateChain(mdsInfo, JWT.decode(metadataToc), metadataBLOBPayload);
         verifySignature(metadataToc, JWT.decode(metadataToc), certificateChain.get(0), metadataBLOBPayload);
     }
 
-    private static List<Certificate> verifyCertificateChain(String url, MdsInfo mdsInfo, DecodedJWT decodedJWT, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException, MdsV3MetadataException {
-        List<Certificate> certificateChain = getCertificateChain(url, mdsInfo.getRootCertificates(), decodedJWT, metadataBLOBPayload);
+    private static List<Certificate> verifyCertificateChain(MdsInfo mdsInfo, DecodedJWT decodedJWT, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException, MdsV3MetadataException {
+        List<Certificate> certificateChain = getCertificateChain(mdsInfo.getRootCertificates(), decodedJWT, metadataBLOBPayload);
         Set<TrustAnchor> trustAnchors = CertificateUtil.getTrustAnchors(mdsInfo.getRootCertificates());
 
         try {
@@ -69,52 +66,22 @@ public class MdsV3MetadataCertificateUtil {
         return certificateChain;
     }
 
-    private static List<Certificate> getCertificateChain(String url, List<String> rootCertificates, DecodedJWT decodedJWT, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException, MdsV3MetadataException {
-        if (!decodedJWT.getHeaderClaim("x5u").isNull()) {
-            return getX5UCertificates(url, decodedJWT, metadataBLOBPayload);
+    private static List<Certificate> getCertificateChain(List<String> rootCertificates, DecodedJWT decodedJWT, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException, MdsV3MetadataException {
+        if (isX5u(decodedJWT)) {
+            throw new MdsV3MetadataException(MetadataTOCResult
+                    .builder()
+                    .result(false)
+                    .totalCount(metadataBLOBPayload.getEntries().size())
+                    .updatedCount(0)
+                    .reason("x5u does not support")
+                    .build());
         } else {
             return getX5CCertificates(rootCertificates, decodedJWT, metadataBLOBPayload);
         }
     }
 
-    private static List<Certificate> getX5UCertificates(String url, DecodedJWT decodedJWT, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException, MdsV3MetadataException {
-        // refer x5u
-        List<Certificate> certificateChain = new ArrayList<>();
-        String x509UrlString = decodedJWT.getHeaderClaim("x5u").asString();
-
-        URL x509Url, tocUrl;
-        try {
-            x509Url = new URL(x509UrlString);
-            tocUrl = new URL(url);
-
-        } catch (MalformedURLException e) {
-            throw new MdsV3MetadataException(MetadataTOCResult
-                    .builder()
-                    .result(false)
-                    .totalCount(metadataBLOBPayload.getEntries().size())
-                    .updatedCount(0)
-                    .reason("URL for x5u is not valid")
-                    .build());
-        }
-
-        if (!x509Url.getHost().equals(tocUrl.getHost())) {
-            throw new MdsV3MetadataException(MetadataTOCResult
-                    .builder()
-                    .result(false)
-                    .totalCount(metadataBLOBPayload.getEntries().size())
-                    .updatedCount(0)
-                    .reason("x5u origin differs to Metadata TOC origin")
-                    .build());
-        }
-
-        // retrieve x509 certificate or certificate chain (PEM)
-        String pemEncoded = ""; // need to get from x5u url
-        String[] certificateParts = pemEncoded.split("-----END CERTIFICATE-----");
-        for (String certificate : certificateParts) {
-            certificateChain.add(
-                    CertificateUtil.getCertificate(certificate.replaceAll("\"-----BEGIN CERTIFICATE-----\"", "").replaceAll("\n", "")));
-        }
-        return certificateChain;
+    private static boolean isX5u(DecodedJWT decodedJWT) {
+        return !decodedJWT.getHeaderClaim("x5u").isNull();
     }
 
     private static List<Certificate> getX5CCertificates(List<String> rootCertificates, DecodedJWT decodedJWT, MetadataBLOBPayload metadataBLOBPayload) throws CertificateException, MdsV3MetadataException {

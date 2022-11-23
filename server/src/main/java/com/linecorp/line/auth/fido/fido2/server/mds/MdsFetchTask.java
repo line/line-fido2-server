@@ -72,7 +72,6 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     log.debug("Metadata successfully fetched");
-                    String url = call.request().url().toString();
                     try {
                         if (response.body() == null) {
                             log.error("Metadata TOC fetch failed");
@@ -80,13 +79,13 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
                         }
                         String metadataToc = response.body().string();
                         // handleMetadataToc
-                        MetadataTOCResult result = handleMetadataToc(url, metadataToc, mdsInfo);
-                        log.info("Metadata TOC from MDS ({}) handling result: {}", mdsInfo.getName(), result);
+                        MetadataTOCResult result = handleMetadataToc(metadataToc, mdsInfo);
+                        log.debug("Metadata TOC from MDS ({}) handling result: {}", mdsInfo.getName(), result);
 
                     } catch (IOException | CertificateException e) {
-                        log.warn("Error parsing metadata TOC: " + e.getMessage(), e);
+                        log.error("Error parsing metadata TOC: " + e.getMessage(), e);
                     } catch (MdsV3MetadataException e) {
-                        log.warn("Error handling metadata TOC: " + e.metadataTOCResult);
+                        log.error("Error handling metadata TOC: " + e.metadataTOCResult);
                     }
 
                 } else {
@@ -103,9 +102,9 @@ public class MdsFetchTask implements ApplicationListener<ApplicationReadyEvent> 
         refreshMetadata();
     }
 
-    private MetadataTOCResult handleMetadataToc(String url, String metadataToc, MdsInfo mdsInfo) throws CertificateException, MdsV3MetadataException {
+    private MetadataTOCResult handleMetadataToc(String metadataToc, MdsInfo mdsInfo) throws CertificateException, MdsV3MetadataException {
         log.info("Start handling Metadata TOC");
-        return mdsV3MetadataHelper.handle(url, metadataToc, mdsInfo);
+        return mdsV3MetadataHelper.handle(metadataToc, mdsInfo);
     }
 
     @Override

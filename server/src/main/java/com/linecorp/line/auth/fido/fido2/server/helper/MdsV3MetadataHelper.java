@@ -11,6 +11,8 @@ import com.linecorp.line.auth.fido.fido2.common.mdsv3.MetadataBLOBPayloadEntry;
 import com.linecorp.line.auth.fido.fido2.server.config.MdsInfo;
 import com.linecorp.line.auth.fido.fido2.server.entity.MetadataEntity;
 import com.linecorp.line.auth.fido.fido2.server.entity.MetadataTocEntity;
+import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
+import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.exception.MdsV3MetadataException;
 import com.linecorp.line.auth.fido.fido2.server.mds.MetadataTOCResult;
 import com.linecorp.line.auth.fido.fido2.server.repository.MetadataRepository;
@@ -37,11 +39,11 @@ public class MdsV3MetadataHelper {
         this.metadataTocRepository = metadataTocRepository;
     }
 
-    public MetadataTOCResult handle(String url, String metadataToc, MdsInfo mdsInfo) throws CertificateException, MdsV3MetadataException {
+    public MetadataTOCResult handle(String metadataToc, MdsInfo mdsInfo) throws CertificateException, MdsV3MetadataException {
         MetadataBLOBPayload metadataBLOBPayload = createMetadataBLOBPayload(metadataToc);
 
         checkLatestDataExist(metadataTocRepository.findFirstByMetadataSourceOrderByNoDesc(mdsInfo.getName()), metadataBLOBPayload);
-        MdsV3MetadataCertificateUtil.verifyCertificate(url, metadataToc, mdsInfo, metadataBLOBPayload);
+        MdsV3MetadataCertificateUtil.verifyCertificate(metadataToc, mdsInfo, metadataBLOBPayload);
         return handleMetadata(metadataToc, mdsInfo, metadataBLOBPayload);
     }
 
@@ -70,7 +72,7 @@ public class MdsV3MetadataHelper {
                     .reason("Json parsing error of Metadata TOC Payload")
                     .build());
         }
-        log.info("Metadata TOC Payload: {}", metadataBLOBPayload);
+
         return metadataBLOBPayload;
     }
 
@@ -121,30 +123,33 @@ public class MdsV3MetadataHelper {
 
             if (isU2FEntry(entry)) {
                 u2fEntryCount++;
+                log.debug("Ignore U2F metadata entry");
+                continue;
             }
 
-            MetadataEntity localMetadataEntity = null;
+            MetadataEntity localMetadataEntity;
             if (isFIDO2Entry(entry.getAaguid())) {
                 fido2EntryCount++;
                 localMetadataEntity = metadataRepository.findByAaguid(entry.getAaguid());
-            }
 
-            if (isNewEntry(entry, localMetadataEntity)) {
-                updatedCount++;
+                if (isNewEntry(entry, localMetadataEntity)) {
+                    updatedCount++;
 
-                try {
-                    saveMetadata(entry, localMetadataEntity, objectMapper.writeValueAsString(entry.getMetadataStatement()), metadataRepository,objectMapper);
-                } catch (JsonProcessingException e) {
-                    log.debug("Json parsing error of Metadata Statement: {}", entry.getMetadataStatement());
+                    try {
+                        saveMetadata(entry, localMetadataEntity, objectMapper.writeValueAsString(entry.getMetadataStatement()), metadataRepository, objectMapper);
+                    } catch (JsonProcessingException e) {
+                        log.error("Json parsing error of Metadata Statement: {}", entry.getMetadataStatement());
+                        //Because of the possibility that the metadata format has been changed or broken, it is specifically delivered to the user as an FIDO2ServerRuntimeException.
+                        throw new FIDO2ServerRuntimeException(InternalErrorCode.METADATA_JSON_PARSING_FAIL);
+                    }
+
+                } else {
+                    log.info("Skip entry, already latest one");
                 }
-
-            } else {
-                log.info("Skip entry, already latest one");
             }
         }
 
         log.info("Finish handling Metadata TOC");
-
         return MetadataTOCResult
                 .builder()
                 .result(true)
@@ -204,7 +209,7 @@ public class MdsV3MetadataHelper {
         return authenticatorStatus != AuthenticatorStatus.USER_VERIFICATION_BYPASS &&
                 authenticatorStatus != AuthenticatorStatus.ATTESTATION_KEY_COMPROMISE &&
                 authenticatorStatus != AuthenticatorStatus.USER_KEY_REMOTE_COMPROMISE &&
-                authenticatorStatus != AuthenticatorStatus.USER_KEY_PHYSICAL_COMPROMISE;
+                authenticatorStatus != AuthenticatorStatus.USER_KEY_PHYSICAL_COMPROMISE &&
+                authenticatorStatus != AuthenticatorStatus.REVOKED;
     }
-
 }
