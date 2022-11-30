@@ -29,7 +29,8 @@ public enum AuthenticatorTransport {
     USB("usb"),
     NFC("nfc"),
     BLE("ble"),
-    INTERNAL("internal");
+    INTERNAL("internal"),
+    HYBRID("hybrid");
 
     @JsonValue
     @Getter private final String value;
