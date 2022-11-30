@@ -16,8 +16,10 @@
 
 package com.linecorp.line.auth.fido.fido2.common.mdsv3;
 
+import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialParameters;
 import lombok.Data;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -27,25 +29,25 @@ public class AuthenticatorGetInfo {
     private List<String> extensions;
     private String aaguid;
     private Map options;
-    private Long maxMsgSize;
+    private BigInteger maxMsgSize;
 
     private List<Long> pinUvAuthProtocols;
-    private Long maxCredentialCountInList;
-    private Long maxCredentialIdLength;
+    private BigInteger maxCredentialCountInList;
+    private BigInteger maxCredentialIdLength;
     private List<String> transports;
-    private List<Map> algorithms;
+    private List<PublicKeyCredentialParameters> algorithms;
 
-    private Long maxSerializedLargeBlobArray;
+    private BigInteger maxSerializedLargeBlobArray;
     private Boolean forcePINChange;
-    private Long minPINLength;
-    private Long firmwareVersion;
-    private Long maxCredBlobLength;
+    private BigInteger minPINLength;
+    private BigInteger firmwareVersion;
+    private BigInteger maxCredBlobLength;
 
-    private Long maxRPIDsForSetMinPINLength;
-    private Long preferredPlatformUvAttempts;
-    private Long uvModality;
+    private BigInteger maxRPIDsForSetMinPINLength;
+    private BigInteger preferredPlatformUvAttempts;
+    private BigInteger uvModality;
     private Map certifications;
-    private Long remainingDiscoverableCredentials;
+    private BigInteger remainingDiscoverableCredentials;
 
-    private List<Long> vendorPrototypeConfigCommands;
+    private List<BigInteger> vendorPrototypeConfigCommands;
 }
