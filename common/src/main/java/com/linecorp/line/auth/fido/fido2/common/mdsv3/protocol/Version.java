@@ -14,5 +14,16 @@
  * under the License.
  */
 
-group 'com.linecorp.line.auth.fido.fido2'
-version '1.0-SNAPSHOT'
+package com.linecorp.line.auth.fido.fido2.common.mdsv3.protocol;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Version {
+    private Integer major;
+    private Integer minor;
+}

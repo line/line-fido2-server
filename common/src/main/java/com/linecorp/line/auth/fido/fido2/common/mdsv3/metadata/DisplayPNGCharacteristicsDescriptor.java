@@ -14,5 +14,20 @@
  * under the License.
  */
 
-group 'com.linecorp.line.auth.fido.fido2'
-version '1.0-SNAPSHOT'
+package com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata;
+
+import lombok.Data;
+
+import java.math.BigInteger;
+
+@Data
+public class DisplayPNGCharacteristicsDescriptor {
+    private BigInteger width; //unsigned long
+    private BigInteger height;    //unsigned long
+    private Integer bitDepth;
+    private Short colorType;
+    private Short compression;
+    private Short filter;
+    private Short interlace;
+    private RgbPaletteEntry[] plte;
+}

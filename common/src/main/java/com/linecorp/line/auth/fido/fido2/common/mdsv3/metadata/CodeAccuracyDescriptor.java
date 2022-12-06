@@ -14,5 +14,18 @@
  * under the License.
  */
 
-group 'com.linecorp.line.auth.fido.fido2'
-version '1.0-SNAPSHOT'
+package com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class CodeAccuracyDescriptor {
+    private Integer base;
+    private Integer minLength;
+    private Integer maxRetries;
+    private Integer blockSlowdown;
+}

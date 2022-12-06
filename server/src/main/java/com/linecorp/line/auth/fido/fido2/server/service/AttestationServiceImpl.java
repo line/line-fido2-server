@@ -34,7 +34,7 @@ import com.linecorp.line.auth.fido.fido2.server.model.AttestationStatementFormat
 import com.linecorp.line.auth.fido.fido2.server.util.AaguidUtil;
 import com.linecorp.line.auth.fido.fido2.server.util.CertPathUtil;
 import com.linecorp.line.auth.fido.fido2.server.util.CertificateUtil;
-import com.linecorp.line.auth.fido.uaf.common.metadata.MetadataStatement;
+import com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata.MetadataStatement;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.x509.CRLDistPoint;
 import org.bouncycastle.asn1.x509.Extension;

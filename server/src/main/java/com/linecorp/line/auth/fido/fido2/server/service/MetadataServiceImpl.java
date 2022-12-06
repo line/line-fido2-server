@@ -29,7 +29,7 @@ import com.linecorp.line.auth.fido.fido2.server.entity.MetadataEntity;
 import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.repository.MetadataRepository;
-import com.linecorp.line.auth.fido.uaf.common.metadata.MetadataStatement;
+import com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata.MetadataStatement;
 
 @Service
 public class MetadataServiceImpl implements MetadataService {

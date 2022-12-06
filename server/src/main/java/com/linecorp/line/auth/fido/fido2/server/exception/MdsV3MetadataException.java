@@ -13,6 +13,16 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+package com.linecorp.line.auth.fido.fido2.server.exception;
 
-group 'com.linecorp.line.auth.fido.fido2'
-version '1.0-SNAPSHOT'
+import com.linecorp.line.auth.fido.fido2.server.mds.MetadataTOCResult;
+import lombok.Getter;
+
+@Getter
+public class MdsV3MetadataException extends RuntimeException{
+    public MetadataTOCResult metadataTOCResult;
+
+    public MdsV3MetadataException(MetadataTOCResult metadataTOCResult) {
+        this.metadataTOCResult = metadataTOCResult;
+    }
+}

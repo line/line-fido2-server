@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 LINE Corporation
+ * Copyright 2022 LINE Corporation
  *
  * LINE Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -14,36 +14,24 @@
  * under the License.
  */
 
-package com.linecorp.line.auth.fido.fido2.server.entity;
+package com.linecorp.line.auth.fido.fido2.common.mdsv3;
 
-import javax.persistence.*;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata.BiometricStatusReport;
+import com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata.MetadataStatement;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "METADATA")
-public class MetadataEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;    // internal
-
+public class MetadataBLOBPayloadEntry {
+    private String aaid;
     private String aaguid;
+    private List<String> attestationCertificateKeyIdentifiers;
+    private MetadataStatement metadataStatement;
+    private List<BiometricStatusReport> biometricStatusReports;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String content;
-
-    @Column(columnDefinition = "TEXT")
-    private String biometricStatusReports;
-
+    private List<StatusReport> statusReports;
     private String timeOfLastStatusChange;
-
-    @Column(columnDefinition = "TEXT")
-    private String statusReports;
+    private String rogueListURL;
+    private StringBuilder rogueListHash;
 }

@@ -14,5 +14,16 @@
  * under the License.
  */
 
-group 'com.linecorp.line.auth.fido.fido2'
-version '1.0-SNAPSHOT'
+package com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata;
+
+import lombok.Data;
+
+@Data
+public class EcdaaTrustAnchor {
+    private String X;
+    private String Y;
+    private String c;
+    private String sx;
+    private String sy;
+    private String G1Curve;
+}

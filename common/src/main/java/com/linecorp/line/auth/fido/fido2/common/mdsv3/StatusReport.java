@@ -14,5 +14,19 @@
  * under the License.
  */
 
-group 'com.linecorp.line.auth.fido.fido2'
-version '1.0-SNAPSHOT'
+package com.linecorp.line.auth.fido.fido2.common.mdsv3;
+
+import lombok.Data;
+
+@Data
+public class StatusReport {
+    private AuthenticatorStatus status;
+    private Long authenticatorVersion;
+    private String effectiveDate;
+    private String certificate;
+    private String url;
+    private String certificationDescriptor;
+    private String certificateNumber;
+    private String certificationPolicyVersion;
+    private String certificationRequirementsVersion;
+}

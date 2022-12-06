@@ -24,7 +24,6 @@ import lombok.Data;
 public class MdsInfo {
     private String name;
     private boolean enabled;
-    private String accessToken;
     private String endpoint;
     private List<String> rootCertificates;
 }

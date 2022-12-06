@@ -149,7 +149,13 @@ jar {
   }
 }
 ```
-
+- If Fido2StarterDemoApplication doesn't work well, try commenting on this part in build.gradle.
+```groovy
+task dockerBuild() {
+  jar.enabled = false
+  dependsOn(bootJar)
+}
+```
 ## API Guides
 After running the applications, you can view API guide documents at the link below.
 
