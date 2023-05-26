@@ -30,7 +30,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 public class AuthenticationExtensionsClientInputs {
     private String appid;
     private String txAuthSimple;
-    private TxAuthGenericAlg txAuthGeneric;
+    private TxAuthGenericArg txAuthGeneric;
     private List<String> authnSel;
     private List<String> line_authnSel;
     private Boolean exts;

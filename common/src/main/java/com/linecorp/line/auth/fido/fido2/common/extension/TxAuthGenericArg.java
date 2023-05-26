@@ -19,7 +19,7 @@ package com.linecorp.line.auth.fido.fido2.common.extension;
 import lombok.Data;
 
 @Data
-public class TxAuthGenericAlg {
+public class TxAuthGenericArg {
     private String contentType;
     private String content;
 }
