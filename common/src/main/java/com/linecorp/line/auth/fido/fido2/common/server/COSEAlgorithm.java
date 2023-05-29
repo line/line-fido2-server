@@ -35,7 +35,7 @@ public enum COSEAlgorithm {
     ES256("ES256", -7, "ECDSA w/ SHA-256", true),
     ES384("ES384", -35, "ECDSA w/ SHA-384", true),
     ES512("ES512", -36, "ECDSA w/ SHA-512", true),
-    ES256K("ES256K", -43, "ECDSA using P-256K and SHA-256", false);
+    ES256K("ES256K", -47, "ECDSA using P-256K and SHA-256", false);
 
     private final String name;
     private final int value;
