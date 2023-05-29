@@ -37,7 +37,7 @@ public enum COSEAlgorithmIdentifier {
     ES384(-35),
     ES512(-36),
     EdDSA(-8),
-    ES256K(-43);
+    ES256K(-47);
 
     @JsonValue
     @Getter private final long value;
