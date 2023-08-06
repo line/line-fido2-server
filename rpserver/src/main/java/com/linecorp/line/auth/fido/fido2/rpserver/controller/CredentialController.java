@@ -81,7 +81,7 @@ public class CredentialController {
             @PathVariable("id") String credentialId) {
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(getDeleteCredentialsUri);
-        URI uri = uriComponentsBuilder.path(credentialId)
+        URI uri = uriComponentsBuilder.pathSegment(credentialId)
                                       .queryParam("rpId", rpId)
                                       .build().toUri();
 
@@ -112,7 +112,7 @@ public class CredentialController {
             @PathVariable("id") String credentialId) {
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(getDeleteCredentialsUri);
-        URI uri = uriComponentsBuilder.path(credentialId)
+        URI uri = uriComponentsBuilder.pathSegment(credentialId)
                                       .queryParam("rpId", rpId)
                                       .build().toUri();
 
