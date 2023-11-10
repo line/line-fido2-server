@@ -1,0 +1,9 @@
+FROM gradle:6.8.3-jdk8 AS builder
+
+RUN apt update && apt install -y iproute2
+
+COPY ./ /home/gradle/project
+
+WORKDIR /home/gradle/project
+
+CMD ["gradle", "-Dorg.gradle.daemon=false", "clean", "check"]

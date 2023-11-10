@@ -5,7 +5,7 @@ services:
       image: build-image:latest
       build:
         context: .
-        dockerfile: ./Dockerfile
+        dockerfile: Dockerfile-orig
     rp:
       container_name: rp-server
       image: rp:latest
