@@ -49,6 +49,6 @@ public class MetadataTocEntity {
     @Column(nullable = false)
     private String nextUpdate;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String encodedMetadataTocPayload;
 }

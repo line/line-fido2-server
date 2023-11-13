@@ -36,7 +36,7 @@ public class MetadataEntity {
 
     private String aaguid;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
     @Column(columnDefinition = "TEXT")

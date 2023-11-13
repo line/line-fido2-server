@@ -7,7 +7,7 @@ spring:
     jcache:
       config: classpath:ehcache.xml
 server:
-  port: 8081
+  port: 8080
 fido:
   protocols:
     fido2:
