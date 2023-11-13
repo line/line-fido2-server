@@ -4,7 +4,8 @@ if (env.BRANCH_NAME == "master") {
         serviceNamespace = "openbanking"
         jobName = "line-fido2-server"
         betaFeatures = [
-            obk: true
+            obk: true,
+            syncHMLWithPRD: false
         ]
         cacheVolumes = [
             'Dockerfile-tests': [
