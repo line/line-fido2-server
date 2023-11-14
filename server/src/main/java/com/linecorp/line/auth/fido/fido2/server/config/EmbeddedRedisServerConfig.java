@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 import redis.embedded.RedisServer;
 
 @Component
-@Profile("!prod")
+@Profile("!prod,!hml")
 public class EmbeddedRedisServerConfig {
     @Value("${redis.port}")
     private int redisPort;
