@@ -1,5 +1,5 @@
-// If is a merge to master.
-if (env.BRANCH_NAME == "master") {
+// If is a merge to main.
+if (env.BRANCH_NAME == "main") {
     ciKubernetesDeploy {
         serviceNamespace = "openbanking"
         jobName = "line-fido2-server"
