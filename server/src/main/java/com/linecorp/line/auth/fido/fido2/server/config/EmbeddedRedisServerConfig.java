@@ -27,11 +27,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import org.springframework.util.StringUtils;
 import redis.embedded.RedisServer;
 
 @Component
-@Profile("!prod")
+@Profile("!prod,!hml")
 public class EmbeddedRedisServerConfig {
     @Value("${redis.port}")
     private int redisPort;
@@ -67,7 +66,7 @@ public class EmbeddedRedisServerConfig {
     }
 
     private Process executeGrepProcessCommand(int port) throws IOException {
-        String command = String.format("netstat -nat | grep LISTEN|grep %d", port);
+        String command = String.format("ss -nat | grep LISTEN|grep %d", port);
         String[] shell = {"/bin/sh", "-c", command};
         return Runtime.getRuntime().exec(shell);
     }
@@ -84,6 +83,6 @@ public class EmbeddedRedisServerConfig {
 
         } catch (Exception e) {}
 
-        return !StringUtils.isEmpty(pidInfo.toString());
+        return !pidInfo.toString().isEmpty();
     }
 }
