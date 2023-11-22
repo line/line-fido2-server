@@ -1,6 +1,6 @@
 // If is a merge to main.
 if (env.BRANCH_NAME == "main") {
-    ciKubernetesDeploy {
+    ciKubernetesDeploySkipSonar {
         serviceNamespace = "openbanking"
         jobName = "line-fido2-server"
         betaFeatures = [
@@ -19,7 +19,7 @@ if (env.BRANCH_NAME == "main") {
 }
 
 if (env.BRANCH_NAME == "hml") {
-    ciKubernetesDeploy {
+    ciKubernetesDeploySkipSonar {
         serviceNamespace = "openbanking"
         jobName = "line-fido2-server"
         betaFeatures = [
