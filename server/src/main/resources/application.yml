@@ -6,6 +6,9 @@ spring:
   cache:
     jcache:
       config: classpath:ehcache.xml
+  jpa:
+    hibernate:
+      ddl-auto: update
 server:
   port: 8080
 fido:
