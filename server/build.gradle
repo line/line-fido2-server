@@ -107,7 +107,7 @@ dependencies {
     implementation('com.auth0:java-jwt:3.4.0')
 
     //local redis
-    implementation('com.github.kstyrc:embedded-redis:0.6')
+    implementation('com.github.codemonstur:embedded-redis:1.4.3')
 
     //bouncy castle
     implementation('org.bouncycastle:bcprov-jdk15on:1.60')
