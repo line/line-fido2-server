@@ -107,8 +107,12 @@ cd spring-boot-starter/line-fido2-spring-boot-demo
 If the [Docker environment is configured](https://docs.docker.com/get-started/), You can easily run applications with docker-compose.
 
 ```bash
+# Build docker images
+docker build -t build-image .
+docker compose build
+
 # Start both RP Server and FIDO2 Server
-docker-compose up
+docker compose up
 ```
 
 After running the applications, you can open the test page at the link below.
