@@ -1,0 +1,120 @@
+/*
+ * Copyright 2024 LY Corporation
+ *
+ * LY Corporation licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'application'
+    id 'java-library'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+test {
+    useJUnitPlatform()
+    outputs.dir snippetsDir
+}
+configurations {
+    asciidoctorExtensions
+}
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
+asciidoctor {
+    configurations "asciidoctorExtensions"
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
+task makeRestDocs(type: Copy) {
+    dependsOn asciidoctor
+
+    from file("${asciidoctor.outputDir}")
+    into file('src/main/resources/static/docs')
+}
+
+bootRun {
+    mainClassName = 'com.linecorp.line.auth.fido.fido2.demo.Fido2StarterDemoApplication'
+}
+
+repositories {
+    mavenCentral()
+}
+
+tasks.register('dockerBuild') {
+    doFirst {
+        jar.enabled = System.getenv("OPEN_SOURCE_BUILD") != "true"
+    }
+    dependsOn(bootJar)
+}
+
+
+dependencies {
+    implementation project(':base')
+    implementation project(':common')
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-data-redis')
+    implementation('com.fasterxml.jackson.dataformat:jackson-dataformat-cbor')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+
+    compileOnly 'org.projectlombok:lombok:1.18.18'
+    annotationProcessor 'org.projectlombok:lombok:1.18.18'
+
+    //local redis
+    if (System.getProperty('os.arch').toLowerCase().contains('aarch64')) {
+        // Apple Silicon
+        implementation('com.github.codemonstur:embedded-redis:1.4.3')
+    } else {
+        implementation('com.github.kstyrc:embedded-redis:0.6')
+    }
+
+    //local db
+    runtimeOnly('com.h2database:h2')
+
+    //redis client
+    implementation('redis.clients:jedis')
+
+    //eddsa library
+    implementation('net.i2p.crypto:eddsa:0.3.0')
+
+    // Test
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.8.1')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.8.1')
+    testImplementation("org.mockito:mockito-core")
+
+    //bouncy castle
+    testImplementation('org.bouncycastle:bcprov-jdk15on:1.60')
+
+    //retrofit
+    testImplementation('com.squareup.retrofit2:retrofit:2.4.0')
+    testImplementation('com.squareup.retrofit2:converter-jackson:2.4.0')
+
+    //springdoc
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+
+    //Spring Rest Doc
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+}

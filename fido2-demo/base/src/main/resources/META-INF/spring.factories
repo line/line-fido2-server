@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.linecorp.line.auth.fido.fido2.base.config.BaseAutoConfiguration
+  

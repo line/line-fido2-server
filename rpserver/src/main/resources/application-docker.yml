@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: docker
+    active: local
   resources:
     chain:
       cache: false
@@ -9,6 +9,7 @@ fido2:
     id: localhost
     origin: localhost
     port: 8080
+
 conformance:
   url: http://localhost:8080
 logging:
@@ -18,4 +19,3 @@ logging:
     com.linecorp.line: DEBUG
 fido2-server:
   host: fido2
-
