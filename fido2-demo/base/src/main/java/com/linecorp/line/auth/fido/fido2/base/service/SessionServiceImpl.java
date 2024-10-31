@@ -16,10 +16,10 @@
 
 package com.linecorp.line.auth.fido.fido2.base.service;
 
-import com.linecorp.line.auth.fido.fido2.server.respository.SessionRepository;
 import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.model.Session;
+import com.linecorp.line.auth.fido.fido2.server.repository.SessionRepository;
 import com.linecorp.line.auth.fido.fido2.server.service.SessionService;
 import com.linecorp.line.auth.fido.fido2.server.util.HmacUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +50,7 @@ public class SessionServiceImpl implements SessionService {
             hmacKey = HmacUtil.generateHmacKey();
         } catch (NoSuchAlgorithmException e) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.CRYPTO_OPERATION_EXCEPTION,
-                                                  "Exception during generating hmac key", e);
+                    "Exception during generating hmac key", e);
         }
         String hmacKeyString = Base64.getUrlEncoder().withoutPadding().encodeToString(hmacKey.getEncoded());
         session.setId(sessionId);

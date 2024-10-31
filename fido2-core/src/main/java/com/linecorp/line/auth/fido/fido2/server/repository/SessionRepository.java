@@ -14,12 +14,14 @@
  * under the License.
  */
 
-package com.linecorp.line.auth.fido.fido2.server.respository;
+package com.linecorp.line.auth.fido.fido2.server.repository;
 
 import com.linecorp.line.auth.fido.fido2.server.model.Session;
 
 public interface SessionRepository {
     Session getSession(String id);
+
     void save(Session session);
+
     void update(Session session);
 }

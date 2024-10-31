@@ -16,14 +16,14 @@
 
 package com.linecorp.line.auth.fido.fido2.base.service;
 
+import com.linecorp.line.auth.fido.fido2.base.entity.AuthenticatorTransportEntity;
+import com.linecorp.line.auth.fido.fido2.base.entity.RpEntity;
 import com.linecorp.line.auth.fido.fido2.base.entity.UserKeyEntity;
 import com.linecorp.line.auth.fido.fido2.base.repository.RpRepository;
 import com.linecorp.line.auth.fido.fido2.base.repository.UserKeyRepository;
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorTransport;
 import com.linecorp.line.auth.fido.fido2.common.extension.CredentialProtectionPolicy;
 import com.linecorp.line.auth.fido.fido2.common.server.COSEAlgorithm;
-import com.linecorp.line.auth.fido.fido2.base.entity.AuthenticatorTransportEntity;
-import com.linecorp.line.auth.fido.fido2.base.entity.RpEntity;
 import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.model.UserKey;
@@ -74,8 +74,7 @@ public class UserKeyServiceImpl implements UserKeyService {
     @Override
     public boolean isRegistered(String rpId, String userId) {
         List<UserKeyEntity> userKeyEntities = userKeyRepository.findAllByRpEntityIdAndUserId(rpId, userId);
-        return userKeyEntities != null &&
-                !userKeyEntities.isEmpty();
+        return userKeyEntities != null && !userKeyEntities.isEmpty();
     }
 
     @Override
@@ -118,8 +117,7 @@ public class UserKeyServiceImpl implements UserKeyService {
     @Override
     public void deleteWithUserId(String rpId, String userId) {
         List<UserKeyEntity> userKeyEntities = userKeyRepository.findAllByRpEntityIdAndUserId(rpId, userId);
-        if (userKeyEntities == null ||
-                userKeyEntities.isEmpty()) {
+        if (userKeyEntities == null || userKeyEntities.isEmpty()) {
             throw FIDO2ServerRuntimeException.makeCredNotFoundUser(rpId, userId);
         }
         userKeyEntities.forEach(userKeyRepository::delete);

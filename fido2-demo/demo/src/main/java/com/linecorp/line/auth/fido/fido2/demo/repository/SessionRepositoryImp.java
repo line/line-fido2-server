@@ -14,20 +14,18 @@
  * under the License.
  */
 
-package com.linecorp.line.auth.fido.fido2.demo.respository;
+package com.linecorp.line.auth.fido.fido2.demo.repository;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-
-import com.linecorp.line.auth.fido.fido2.server.respository.SessionRepository;
+import com.linecorp.line.auth.fido.fido2.server.model.Session;
+import com.linecorp.line.auth.fido.fido2.server.repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
-import com.linecorp.line.auth.fido.fido2.server.model.Session;
+import javax.annotation.PostConstruct;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 public class SessionRepositoryImp implements SessionRepository {
@@ -39,12 +37,12 @@ public class SessionRepositoryImp implements SessionRepository {
     private long sessionTtlMillis;
 
     @Autowired
-    public SessionRepositoryImp(RedisTemplate<String, Object> redisTemplate){
+    public SessionRepositoryImp(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         valueOperations = redisTemplate.opsForValue();
     }
 
