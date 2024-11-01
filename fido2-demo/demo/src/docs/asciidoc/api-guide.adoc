@@ -1,0 +1,88 @@
+= LINE FIDO2 SERVER API Guide
+LINE Corp;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[[introduction]]
+= Introduction
+
+This document is about the APIs of the LINE FIDO2 Server application that has been released as open-source.
+
+These define the messages exchanged between the RP server and LINE FIDO2 server.
+
+For more information, please see README.md at the link below.
+
+https://github.com/line/line-fido2-server
+
+
+
+If you want to know the details of the WebAuthn standard, you can also refer to the official documentation.
+
+https://www.w3.org/TR/webauthn-2/
+
+
+
+Basically, FIDO2 has the following operations - Registration, Authentication.
+
+Example APIs worked like this:
+
+- Work with server-side credentials.
+(https://www.w3.org/TR/webauthn/#server-side-credential)
+
+- Use the platform authenticator in the Chrome browser on Mac OS.
+
+- Attestation Type is "NONE".
+
+
+
+=== Registration
+
+Registration consists of two APIs: an API for requesting a challenge, and an API for delivering the results of the client's registration.
+
+==== Get Reg Challenge
+
+operation::challenge-controller-test/get-reg-challenge_success[snippets='http-request,http-response']
+
+==== Send Reg Response
+
+operation::response-controller-test/send-reg-response_success[snippets='http-request,http-response']
+
+=== Authentication
+
+Authentication consists of two APIs: an API for requesting a challenge and an API for delivering the client's authentication result.
+
+==== Get Auth Challenge
+
+operation::challenge-controller-test/get-auth-challenge_success[snippets='http-request,http-response']
+
+==== Send Auth Response
+
+operation::response-controller-test/send-auth-response_success[snippets='http-request,http-response']
+
+=== Credential API
+
+NOTE: These are not within the scope of the WebAuthn specification but its own APIs.
+
+==== Get Credential by CredentialId
+operation::credential-controller-test/get-credential-with-credential-id-and-rp-id_success[snippets='http-request,path-parameters,request-parameters,http-response']
+
+==== Get Credential by UserId
+operation::credential-controller-test/get-credentials-with-user-id-and-rp-id_success[snippets='http-request,request-parameters,http-response']
+
+==== Delete Credential by CredentialId
+operation::credential-controller-test/delete-credential-with-credential-id-and-rp-id_success[snippets='http-request,path-parameters,request-parameters,http-response']
+
+==== Delete Credential by UserId
+operation::credential-controller-test/delete-credential-with-user-id-id-and-rp-id_success[snippets='http-request,request-parameters,http-response']
+
+
+=== Health Check
+
+NOTE: This is not within the scope of the WebAuthn specification but its own API.
+
+=== Get Health Check Status
+operation::health-check-controller-test/health-check_success[snippets='http-request,http-response']

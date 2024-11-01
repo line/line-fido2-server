@@ -1,7 +1,7 @@
 /*
- * Copyright 2022 LINE Corporation
+ * Copyright 2024 LY Corporation
  *
- * LINE Corporation licenses this file to you under the Apache License,
+ * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at:
  *
@@ -14,54 +14,43 @@
  * under the License.
  */
 
-buildscript {
-    ext {
-        springBootVersion = '2.4.3'
-    }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
+plugins {
+    id 'application'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
 }
 
-apply plugin: 'java'
-apply plugin: 'java-library'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+uploadArchives.enabled = false
+jar.enabled = true
 
-group = 'com.linecorp.line.auth.fido.fido2'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
 
 test {
     useJUnitPlatform()
 }
 
+task dockerBuild() {
+    doFirst {
+        jar.enabled = System.getenv("OPEN_SOURCE_BUILD") != "true"
+    }
+    dependsOn(bootJar)
+}
 
 dependencies {
+    implementation project(':common')
+//    implementation("com.linecorp.line.auth.fido.fido2.inhouse:common:0.0.6-SNAPSHOT")
+
     implementation('org.springframework.boot:spring-boot-starter-web')
 
     //thymeleaf
     implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
 
-    //logging
-    implementation('org.zalando:logbook-spring-boot-starter:1.8.1')
-
-    //swagger
-    implementation('io.springfox:springfox-swagger2:2.9.2')
-    implementation('io.springfox:springfox-swagger-ui:2.9.2')
+    //springdoc
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
 
     implementation('javax.activation:activation:1.1.1')
     implementation('org.springframework.boot:spring-boot-devtools')
     compileOnly('org.projectlombok:lombok')
-    annotationProcessor 'org.projectlombok:lombok:1.18.2'
+    annotationProcessor 'org.projectlombok:lombok'
 
     implementation project(':common')
     compileOnly('org.springframework.boot:spring-boot-configuration-processor')

@@ -3,20 +3,13 @@ spring:
     active: local
   config:
     use-legacy-processing: true
+  # Swagger
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
 server:
   port: 8080
-logbook:
-  write:
-    level: INFO
-  obfuscate:
-    headers:
-      - host
-      - origin
-      - referer
-      - user-agent
-      - accept-encoding
-  exclude:
-    - /health
 fido2-server:
   scheme: http
   host: localhost
@@ -28,4 +21,8 @@ fido2-server:
     send-auth-response: /fido2/auth/response
     get-delete-credentials: /fido2/credentials
 
-
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html

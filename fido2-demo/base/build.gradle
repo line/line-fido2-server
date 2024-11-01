@@ -1,0 +1,45 @@
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'java-library'
+}
+
+jar.enabled = true
+bootJar.enabled = false
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    processResources {
+        exclude("**/*.sql")
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-data-redis')
+    implementation('org.springframework.boot:spring-boot-starter-validation')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+
+    api project(':fido2-core')
+    api project(':common')
+
+    compileOnly 'org.projectlombok:lombok:1.18.18'
+    annotationProcessor 'org.projectlombok:lombok:1.18.18'
+
+    //bouncy castle
+    implementation('org.bouncycastle:bcprov-jdk15on:1.60')
+
+    //eddsa library
+    implementation('net.i2p.crypto:eddsa:0.3.0')
+
+    //jwt
+    implementation('com.auth0:java-jwt:3.4.0')
+
+    //retrofit
+    implementation('com.squareup.retrofit2:retrofit:2.4.0')
+    implementation('com.squareup.retrofit2:converter-jackson:2.4.0')
+}

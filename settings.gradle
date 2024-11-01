@@ -1,7 +1,7 @@
 /*
- * Copyright 2022 LINE Corporation
+ * Copyright 2024 LY Corporation
  *
- * LINE Corporation licenses this file to you under the Apache License,
+ * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at:
  *
@@ -14,12 +14,24 @@
  * under the License.
  */
 
+pluginManagement {
+    plugins {
+        id 'org.springframework.boot' version '2.7.12'
+        id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+        id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    }
+}
+
 rootProject.name = 'fido2'
 
 include 'server'
+include 'fido2-core'
 include 'rpserver'
 include 'common'
-include 'spring-boot-starter:line-fido2-spring-boot-autoconfigure'
-include 'spring-boot-starter:line-fido2-spring-boot-starter'
-include 'spring-boot-starter:line-fido2-spring-boot-demo'
+
+include ':demo'
+project(":demo").projectDir = new File('./fido2-demo/demo')
+
+include ':base'
+project(":base").projectDir = new File('./fido2-demo/base')
 
