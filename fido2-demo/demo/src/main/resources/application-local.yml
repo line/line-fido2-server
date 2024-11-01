@@ -25,7 +25,8 @@ logging:
     org.springframework.web: DEBUG
     org.hibernate: DEBUG
 app:
-  origins:
-      - android:aaa-bbb
-      - ios:aaa-bbb
+  origins: # This item does not need to be applied for web cases.
+    - android:aaa-bbb
+    - ios:aaa-bbb
+
 
