@@ -178,7 +178,7 @@ public class AndroidSafetyNetAttestationVerifier implements AttestationVerifier 
                 if (attestationStatementInfo.getTimestampMs() >= currentTime) {
                     throw new FIDO2ServerRuntimeException(InternalErrorCode.ANDROID_SAFETYNET_ATTESTATION_TIMESTAMP_INVALID);
                 }
-                if ((currentTime - attestationStatementInfo.getTimestampMs()) > 60 * 100) {
+                if ((currentTime - attestationStatementInfo.getTimestampMs()) > 60 * 1000) {
                     throw new FIDO2ServerRuntimeException(InternalErrorCode.ANDROID_SAFETYNET_ATTESTATION_TIMESTAMP_INVALID);
                 }
 
