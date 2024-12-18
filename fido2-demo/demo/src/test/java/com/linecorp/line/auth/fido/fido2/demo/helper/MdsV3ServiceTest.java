@@ -43,7 +43,7 @@ import java.util.List;
 @SpringBootTest
 class MdsV3ServiceTest {
 
-    public static final int EXPECTED_METADATA_SIZE = 73;
+    public static final int EXPECTED_METADATA_SIZE = 155;
     @Autowired
     private MdsService mdsService;
 
@@ -60,7 +60,7 @@ class MdsV3ServiceTest {
     void setUp() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
 
-        //This is a file that was actually downloaded from https://mds3.fidoalliance.org/ on October 28, 2022.
+        //This is a file that was actually downloaded from https://mds3.fidoalliance.org/ on July 31, 2024.
         File file = new File(classLoader.getResource("file/test_encoded_mds_v3_bob_data_.jwt").getFile());
 
         metadataToc = new String(Files.readAllBytes(Paths.get(file.getPath())));
