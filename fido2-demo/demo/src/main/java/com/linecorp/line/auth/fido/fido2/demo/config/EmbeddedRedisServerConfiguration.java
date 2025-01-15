@@ -68,6 +68,17 @@ public class EmbeddedRedisServerConfiguration {
         String command = String.format("netstat -nat | grep LISTEN|grep %d", port);
         String[] shell = {"/bin/sh", "-c", command};
         return Runtime.getRuntime().exec(shell);
+
+    }
+
+    /**
+     * @brief The executeGrepProcessWindowCommand function can be used as a replacement for the executeGrepProcessCommand function when running on Windows OS.
+     */
+    private Process executeGrepProcessWindowCommand(int port) throws IOException {
+        String command = String.format("netstat -an | findstr :%d", port);
+        String[] shell = {"cmd.exe", "/c", command};  // cmd.exe에서 명령어 실행
+        return Runtime.getRuntime().exec(shell);
+
     }
 
     private boolean isRunning(Process process) {
