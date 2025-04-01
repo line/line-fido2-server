@@ -18,6 +18,29 @@ test {
     useJUnitPlatform()
 }
 
+publishing {
+    publications {
+        mavenJar(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            url = project.ext.getMavenPublishUrl()
+
+            if (project.ext.getMavenPublishUsername() != null) {
+                credentials {
+                    username = project.ext.getMavenPublishUsername()
+                    if (project.ext.getMavenPublishPassword() != null) {
+                        password = project.ext.getMavenPublishPassword()
+                    }
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     compile('com.fasterxml.jackson.core:jackson-databind:2.9.6')
     compile('com.fasterxml.jackson.core:jackson-core:2.9.6')

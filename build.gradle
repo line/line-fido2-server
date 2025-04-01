@@ -24,6 +24,20 @@ subprojects {
     group = 'com.linecorp.line.auth.fido.fido2'
     version = '1.0.0-SNAPSHOT'
 
+    ext {
+        getMavenPublishUrl = {
+            return findProperty("publish.maven.url")
+        }
+
+        getMavenPublishUsername = {
+            return findProperty("publish.maven.username")
+        }
+
+        getMavenPublishPassword = {
+            return findProperty("publish.maven.password")
+        }
+    }
+
     repositories {
         mavenCentral()
         maven {
