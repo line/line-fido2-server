@@ -42,4 +42,5 @@ public class AuthenticationExtensionsClientInputs {
     // Credential Protection (credProtect)
     private CredentialProtectionPolicy credentialProtectionPolicy;
     private Boolean enforceCredentialProtectionPolicy;  // if true, it should fail
+    private PRFInputs prf;
 }

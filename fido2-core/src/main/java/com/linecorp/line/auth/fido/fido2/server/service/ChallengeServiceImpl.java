@@ -126,6 +126,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                     .setEnforceCredentialProtectionPolicy(regOptionRequest.getCredProtect().getEnforceCredentialProtectionPolicy());
         }
 
+        if (regOptionRequest.getPrf() != null) {
+            extensions.setPrf(regOptionRequest.getPrf());
+        }
+
         builder.extensions(extensions);
 
         // set server response
@@ -193,6 +197,11 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         // set extension
         AuthenticationExtensionsClientInputs extensions = new AuthenticationExtensionsClientInputs();
+
+        if (authOptionRequest.getPrf() != null) {
+            extensions.setPrf(authOptionRequest.getPrf());
+        }
+
         builder.extensions(extensions);
 
         // create and set session

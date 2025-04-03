@@ -19,6 +19,7 @@ package com.linecorp.line.auth.fido.fido2.rpserver.model.transport;
 import com.linecorp.line.auth.fido.fido2.common.AttestationConveyancePreference;
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
 import com.linecorp.line.auth.fido.fido2.common.extension.CredProtect;
+import com.linecorp.line.auth.fido.fido2.common.extension.PRFInputs;
 
 import lombok.Data;
 
@@ -29,4 +30,5 @@ public class ServerPublicKeyCredentialCreationOptionsRequest {
     private AuthenticatorSelectionCriteria authenticatorSelection;
     private AttestationConveyancePreference attestation = AttestationConveyancePreference.none;
     private CredProtect credProtect;
+    private PRFInputs prf;
 }
