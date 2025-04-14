@@ -309,12 +309,13 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
         if (authData.getSignCount() != 0 || userKey.getSignCounter() != 0) {
             if (authData.getSignCount() > userKey.getSignCounter()) {
                 // update
-                userKey.setSignCounter(authData.getSignCount());
-                userKeyService.update(userKey);
+                userKeyService.updateSignCounterAndAuthenticatedAt(userKey.getRpId(), userKey.getCredentialId(), authData.getSignCount());
             } else {
                 throw new FIDO2ServerRuntimeException(InternalErrorCode.ASSERTION_SIGNATURE_VERIFICATION_FAIL);
                 // authenticator is may cloned, reject.
             }
+        } else {
+            userKeyService.updateAuthenticatedAt(userKey.getRpId(), userKey.getCredentialId());
         }
     }
 

@@ -105,10 +105,19 @@ public class UserKeyServiceImpl implements UserKeyService {
 
     @Transactional
     @Override
-    public void update(UserKey user) {
+    public void updateSignCounterAndAuthenticatedAt(String rpId, String credentialId, long signCounter) {
         UserKeyEntity userKeyEntity = userKeyRepository
-                .findByRpEntityIdAndCredentialId(user.getRpId(), user.getCredentialId());
-        userKeyEntity.setSignCounter(user.getSignCounter());
+                .findByRpEntityIdAndCredentialId(rpId, credentialId);
+        userKeyEntity.setSignCounter(signCounter);
+        userKeyEntity.setAuthenticatedTimestamp(new Date());
+        userKeyRepository.save(userKeyEntity);
+    }
+
+    @Transactional
+    @Override
+    public void updateAuthenticatedAt(String rpId, String credentialId) {
+        UserKeyEntity userKeyEntity = userKeyRepository
+                .findByRpEntityIdAndCredentialId(rpId, credentialId);
         userKeyEntity.setAuthenticatedTimestamp(new Date());
         userKeyRepository.save(userKeyEntity);
     }
