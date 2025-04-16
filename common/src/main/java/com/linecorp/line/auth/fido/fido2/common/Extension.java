@@ -33,7 +33,8 @@ public enum Extension {
     SUPPORTED_EXTENSIONS("exts"),
     USER_VERIFICATION_INDEX("uvi"),
     LOCATION("loc"),
-    BIOMETRIC_AUTHENTICATOR_PERFORMANCE_BOUNDS("biometricPerfBounds");
+    BIOMETRIC_AUTHENTICATOR_PERFORMANCE_BOUNDS("biometricPerfBounds"),
+    PSEUDO_RANDOM_FUNCTION("prf");
 
     @JsonValue
     @Getter

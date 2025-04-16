@@ -53,6 +53,14 @@ let performMakeCredReq = (makeCredReq) => {
         }
     }
 
+    if (makeCredReq.extensions.prf && makeCredReq.extensions.prf.eval && makeCredReq.extensions.prf.eval.first) {
+        makeCredReq.extensions.prf.eval.first = base64UrlDecode(makeCredReq.extensions.prf.eval.first)
+    }
+
+    if (makeCredReq.extensions.prf && makeCredReq.extensions.prf.eval && makeCredReq.extensions.prf.eval.second) {
+        makeCredReq.extensions.prf.eval.second = base64UrlDecode(makeCredReq.extensions.prf.eval.second)
+    }
+
     delete makeCredReq.status;
     delete makeCredReq.errorMessage;
     // delete makeCredReq.authenticatorSelection;
@@ -73,6 +81,14 @@ let performGetCredReq = (getCredReq) => {
             i.id = base64UrlDecode(i.id);
           }
         }
+    }
+
+    if (getCredReq.extensions.prf && getCredReq.extensions.prf.eval && getCredReq.extensions.prf.eval.first) {
+        getCredReq.extensions.prf.eval.first = base64UrlDecode(getCredReq.extensions.prf.eval.first)
+    }
+
+    if (getCredReq.extensions.prf && getCredReq.extensions.prf.eval && getCredReq.extensions.prf.eval.second) {
+        getCredReq.extensions.prf.eval.second = base64UrlDecode(getCredReq.extensions.prf.eval.second)
     }
 
     delete getCredReq.status;
@@ -146,6 +162,10 @@ function registerButtonClicked() {
     let enableCredProtect = $("input[name='enableCredProtect']").is(':checked');
     let enforceCredentialProtectionPolicy = $("input[name='enforceCredentialProtectionPolicy']").is(':checked');
     let credentialProtectionPolicy = $("input[name='credentialProtectionPolicy']:checked").val();
+    // prf
+    let enablePrf = $("input[name='enablePrf']").is(':checked');
+    let prfFirst = $("input[name='prfFirst']").val();
+    let prfSecond = $("input[name='prfSecond']").val();
 
 
     // prepare parameter
@@ -182,6 +202,20 @@ function registerButtonClicked() {
         }
     }
 
+    if (enablePrf) {
+        serverPublicKeyCredentialCreationOptionsRequest.prf = {};
+
+        if (prfFirst.length !== 0) {
+            serverPublicKeyCredentialCreationOptionsRequest.prf.eval = {}
+            serverPublicKeyCredentialCreationOptionsRequest.prf.eval.first = prfFirst;
+
+            if (prfSecond.length !== 0) {
+                // PRF first must exist for PRF second to exist.
+                serverPublicKeyCredentialCreationOptionsRequest.prf.eval.second = prfSecond;
+            }
+        }
+    }
+
     getRegChallenge(serverPublicKeyCredentialCreationOptionsRequest)
         .then(createCredentialOptions => {
             return createCredential(createCredentialOptions);
@@ -207,12 +241,30 @@ function authenticateButtonClicked() {
 
     let username  = $("input[name='username']").val();
     let userVerification = $("input[name='userVerificationRequired']:checked").val();
+    // prf
+    let enablePrf = $("input[name='enablePrf']").is(':checked');
+    let prfFirst = $("input[name='prfFirst']").val();
+    let prfSecond = $("input[name='prfSecond']").val();
 
     // prepare parameter
     let serverPublicKeyCredentialGetOptionsRequest = {
         username: username,
         userVerification: userVerification
     };
+
+    if (enablePrf) {
+        serverPublicKeyCredentialGetOptionsRequest.prf = {};
+
+        if (prfFirst.length !== 0) {
+            serverPublicKeyCredentialGetOptionsRequest.prf.eval = {}
+            serverPublicKeyCredentialGetOptionsRequest.prf.eval.first = prfFirst;
+
+            if (prfSecond.length !== 0) {
+                // PRF first must exist for PRF second to exist.
+                serverPublicKeyCredentialGetOptionsRequest.prf.eval.second = prfSecond;
+            }
+        }
+    }
 
     getAuthChallenge(serverPublicKeyCredentialGetOptionsRequest)
         .then(getCredentialOptions => {
@@ -360,6 +412,16 @@ function createCredential(options) {
 
             if (rawAttestation.getClientExtensionResults) {
                 attestation.extensions = rawAttestation.getClientExtensionResults();
+
+                if (attestation.extensions.prf && attestation.extensions.prf.results) {
+                    if (attestation.extensions.prf.results.first) {
+                        attestation.extensions.prf.results.first = base64UrlEncode(attestation.extensions.prf.results.first)
+                    }
+
+                    if (attestation.extensions.prf.results.second) {
+                        attestation.extensions.prf.results.second = base64UrlEncode(attestation.extensions.prf.results.second)
+                    }
+                }
             }
 
             // set transports if it is available
@@ -368,6 +430,7 @@ function createCredential(options) {
             }
 
             console.log("=== Attestation response ===");
+            console.log(rawAttestation)
             logVariable("rawId (b64url)", attestation.rawId)
             logVariable("id (b64url)", attestation.id);
             logVariable("response.clientDataJSON (b64url)", attestation.response.clientDataJSON);
@@ -420,14 +483,24 @@ function getAssertion(options) {
 
             if (rawAssertion.getClientExtensionResults) {
                 assertion.extensions = rawAssertion.getClientExtensionResults();
+                if (assertion.extensions.prf && assertion.extensions.prf.results) {
+                    if (assertion.extensions.prf.results.first) {
+                        assertion.extensions.prf.results.first = base64UrlEncode(assertion.extensions.prf.results.first)
+                    }
+
+                    if (assertion.extensions.prf.results.second) {
+                        assertion.extensions.prf.results.second = base64UrlEncode(assertion.extensions.prf.results.second)
+                    }
+                }
             }
 
             console.log("=== Assertion response ===");
+            console.log(rawAssertion)
             logVariable("rawId (b64url)", assertion.rawId);
             logVariable("id (b64url)", assertion.id);
             logVariable("response.userHandle (b64url)", assertion.response.userHandle);
             logVariable("response.authenticatorData (b64url)", assertion.response.authenticatorData);
-            logVariable("response.lientDataJSON", assertion.response.clientDataJSON);
+            logVariable("response.clientDataJSON", assertion.response.clientDataJSON);
             logVariable("response.signature (b64url)", assertion.response.signature);
             logVariable("id", assertion.type);
 

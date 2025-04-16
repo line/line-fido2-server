@@ -31,4 +31,5 @@ public class AuthenticationExtensionsClientOutputs {
     private Coordinates loc;
     private Boolean biometricPerfBounds;
     private CredentialPropertiesOutput credProps;
+    private PRFOutputs prf;
 }

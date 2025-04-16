@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2025 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -14,27 +14,15 @@
  * under the License.
  */
 
-package com.linecorp.line.auth.fido.fido2.common.server;
+package com.linecorp.line.auth.fido.fido2.common.extension;
 
+import javax.validation.constraints.NotNull;
 
-import javax.validation.constraints.NotBlank;
-
-import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
-import com.linecorp.line.auth.fido.fido2.common.extension.PRFInputs;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AuthOptionRequest {
-    @NotBlank
-    private String rpId;
-    private String userId;
-    private UserVerificationRequirement userVerification;
-    private PRFInputs prf;
+public class PRFValues {
+    @NotNull
+    private String first; // Base64url encoded string
+    private String second; // Base64url encoded string
 }

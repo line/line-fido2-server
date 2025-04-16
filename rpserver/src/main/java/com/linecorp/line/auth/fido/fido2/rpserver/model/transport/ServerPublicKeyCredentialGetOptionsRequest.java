@@ -17,6 +17,7 @@
 package com.linecorp.line.auth.fido.fido2.rpserver.model.transport;
 
 import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
+import com.linecorp.line.auth.fido.fido2.common.extension.PRFInputs;
 
 import lombok.Data;
 
@@ -24,4 +25,5 @@ import lombok.Data;
 public class ServerPublicKeyCredentialGetOptionsRequest {
     private String username;
     private UserVerificationRequirement userVerification;
+    private PRFInputs prf;
 }

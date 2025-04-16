@@ -23,6 +23,7 @@ import com.linecorp.line.auth.fido.fido2.common.AttestationConveyancePreference;
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRpEntity;
 import com.linecorp.line.auth.fido.fido2.common.extension.CredProtect;
+import com.linecorp.line.auth.fido.fido2.common.extension.PRFInputs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,4 +43,5 @@ public class RegOptionRequest {
     private AuthenticatorSelectionCriteria authenticatorSelection;
     private AttestationConveyancePreference attestation;
     private CredProtect credProtect;
+    private PRFInputs prf;
 }

@@ -64,7 +64,7 @@ public class AdapterController {
     private final RestTemplate restTemplate;
     private final FidoServerConfig fidoServerConfig;
 
-    private final String COOKIE_NAME = "fido2-session-id";
+    private static final String COOKIE_NAME = "fido2-session-id";
 
     @Autowired
     public AdapterController(RestTemplate restTemplate, FidoServerConfig fidoServerConfig) {
@@ -122,31 +122,32 @@ public class AdapterController {
             HttpServletResponse httpServletResponse) {
 
         // set header
-        HttpHeaders httpHeaders = new HttpHeaders();
+        final HttpHeaders httpHeaders = new HttpHeaders();
 
         // set options
-        PublicKeyCredentialRpEntity rp = new PublicKeyCredentialRpEntity();
+        final PublicKeyCredentialRpEntity rp = new PublicKeyCredentialRpEntity();
         rp.setName("Test RP");
         // just for test
         rp.setId(rpId);
-        ServerPublicKeyCredentialUserEntity user = new ServerPublicKeyCredentialUserEntity();
+        final ServerPublicKeyCredentialUserEntity user = new ServerPublicKeyCredentialUserEntity();
         user.setName(optionsRequest.getUsername());
         user.setId(createUserId(optionsRequest.getUsername()));
         user.setDisplayName(optionsRequest.getDisplayName());
 
-        RegOptionRequest regOptionRequest = RegOptionRequest
+        final RegOptionRequest regOptionRequest = RegOptionRequest
                 .builder()
                 .rp(rp)
                 .user(user)
                 .authenticatorSelection(optionsRequest.getAuthenticatorSelection())
                 .attestation(optionsRequest.getAttestation())
                 .credProtect(optionsRequest.getCredProtect())
+                .prf(optionsRequest.getPrf())
                 .build();
 
-        HttpEntity<RegOptionRequest> request = new HttpEntity<>(regOptionRequest, httpHeaders);
-        RegOptionResponse response = restTemplate.postForObject(regChallengeUri, request, RegOptionResponse.class);
+        final HttpEntity<RegOptionRequest> request = new HttpEntity<>(regOptionRequest, httpHeaders);
+        final RegOptionResponse response = restTemplate.postForObject(regChallengeUri, request, RegOptionResponse.class);
 
-        ServerPublicKeyCredentialCreationOptionsResponse serverResponse = ServerPublicKeyCredentialCreationOptionsResponse
+        final ServerPublicKeyCredentialCreationOptionsResponse serverResponse = ServerPublicKeyCredentialCreationOptionsResponse
                 .builder()
                 .rp(response.getRp())
                 .user(response.getUser())
@@ -172,10 +173,10 @@ public class AdapterController {
             @RequestBody AdapterRegServerPublicKeyCredential clientResponse,
             HttpServletRequest httpServletRequest) {
 
-        AdapterServerResponse serverResponse;
+        final AdapterServerResponse serverResponse;
 
         // get session id
-        Cookie[] cookies = httpServletRequest.getCookies();
+        final Cookie[] cookies = httpServletRequest.getCookies();
         if (cookies == null || cookies.length == 0) {
             //error
             serverResponse = new AdapterServerResponse();
@@ -193,9 +194,9 @@ public class AdapterController {
         }
 
         // prepare origin
-        String scheme = httpServletRequest.getScheme();
+        final String scheme = httpServletRequest.getScheme();
 
-        StringBuilder builder = new StringBuilder()
+        final StringBuilder builder = new StringBuilder()
                 .append(scheme)
                 .append("://")
                 .append(rpOrigin);
@@ -206,10 +207,10 @@ public class AdapterController {
         }
 
         // set header
-        HttpHeaders httpHeaders = new HttpHeaders();
+        final HttpHeaders httpHeaders = new HttpHeaders();
 
-        RegisterCredential registerCredential = new RegisterCredential();
-        ServerRegPublicKeyCredential serverRegPublicKeyCredential = new ServerRegPublicKeyCredential();
+        final RegisterCredential registerCredential = new RegisterCredential();
+        final ServerRegPublicKeyCredential serverRegPublicKeyCredential = new ServerRegPublicKeyCredential();
         serverRegPublicKeyCredential.setId(clientResponse.getId());
         serverRegPublicKeyCredential.setType(clientResponse.getType());
         serverRegPublicKeyCredential.setResponse(clientResponse.getResponse());
@@ -219,7 +220,7 @@ public class AdapterController {
         registerCredential.setSessionId(sessionId);
         registerCredential.setOrigin(builder.toString());
 
-        HttpEntity<RegisterCredential> request = new HttpEntity<>(registerCredential, httpHeaders);
+        final HttpEntity<RegisterCredential> request = new HttpEntity<>(registerCredential, httpHeaders);
 
         restTemplate.postForObject(regResponseUri, request, RegisterCredentialResult.class);
 
@@ -236,19 +237,20 @@ public class AdapterController {
             HttpServletResponse httpServletResponse) {
 
         // set header
-        HttpHeaders httpHeaders = new HttpHeaders();
+        final HttpHeaders httpHeaders = new HttpHeaders();
 
-        AuthOptionRequest authOptionRequest = AuthOptionRequest
+        final AuthOptionRequest authOptionRequest = AuthOptionRequest
                 .builder()
                 .rpId(rpId)
                 .userId(createUserId(optionRequest.getUsername()))
                 .userVerification(optionRequest.getUserVerification())
+                .prf(optionRequest.getPrf())
                 .build();
 
-        HttpEntity<AuthOptionRequest> request = new HttpEntity<>(authOptionRequest, httpHeaders);
-        AuthOptionResponse response = restTemplate.postForObject(authChallengeUri, request, AuthOptionResponse.class);
+        final HttpEntity<AuthOptionRequest> request = new HttpEntity<>(authOptionRequest, httpHeaders);
+        final AuthOptionResponse response = restTemplate.postForObject(authChallengeUri, request, AuthOptionResponse.class);
 
-        ServerPublicKeyCredentialGetOptionsResponse serverResponse;
+        final ServerPublicKeyCredentialGetOptionsResponse serverResponse;
         serverResponse = ServerPublicKeyCredentialGetOptionsResponse
                 .builder()
                 .allowCredentials(response.getAllowCredentials())
@@ -279,10 +281,10 @@ public class AdapterController {
             @RequestBody AdapterAuthServerPublicKeyCredential clientResponse,
             HttpServletRequest httpServletRequest) {
 
-        AdapterServerResponse serverResponse;
+        final AdapterServerResponse serverResponse;
 
         // get session id
-        Cookie[] cookies = httpServletRequest.getCookies();
+        final Cookie[] cookies = httpServletRequest.getCookies();
         if (cookies == null || cookies.length == 0) {
             //error
             serverResponse = new AdapterServerResponse();
@@ -300,8 +302,8 @@ public class AdapterController {
         }
 
         // prepare origin
-        String scheme = httpServletRequest.getScheme();
-        StringBuilder builder = new StringBuilder()
+        final String scheme = httpServletRequest.getScheme();
+        final StringBuilder builder = new StringBuilder()
                 .append(scheme)
                 .append("://")
                 .append(rpOrigin);
@@ -312,10 +314,10 @@ public class AdapterController {
         }
 
         // set header
-        HttpHeaders httpHeaders = new HttpHeaders();
+        final HttpHeaders httpHeaders = new HttpHeaders();
 
-        VerifyCredential verifyCredential = new VerifyCredential();
-        ServerAuthPublicKeyCredential serverAuthPublicKeyCredential = new ServerAuthPublicKeyCredential();
+        final VerifyCredential verifyCredential = new VerifyCredential();
+        final ServerAuthPublicKeyCredential serverAuthPublicKeyCredential = new ServerAuthPublicKeyCredential();
         serverAuthPublicKeyCredential.setResponse(clientResponse.getResponse());
         serverAuthPublicKeyCredential.setId(clientResponse.getId());
         serverAuthPublicKeyCredential.setType(clientResponse.getType());
@@ -325,7 +327,7 @@ public class AdapterController {
         verifyCredential.setSessionId(sessionId);
         verifyCredential.setOrigin(builder.toString());
 
-        HttpEntity<VerifyCredential> request = new HttpEntity<>(verifyCredential, httpHeaders);
+        final HttpEntity<VerifyCredential> request = new HttpEntity<>(verifyCredential, httpHeaders);
 
         restTemplate.postForObject(authResponseUri, request, VerifyCredentialResult.class);
 
@@ -339,7 +341,7 @@ public class AdapterController {
             return null;
         }
 
-        byte[] digest = Digests.sha256(username.getBytes(StandardCharsets.UTF_8));
+        final byte[] digest = Digests.sha256(username.getBytes(StandardCharsets.UTF_8));
         return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
     }
 }
