@@ -27,7 +27,8 @@ public interface UserKeyService {
     List<UserKey> getWithUserId(String rpId, String userId);
     UserKey getWithCredentialId(String rpId, String credentialId);
     List<UserKey> getWithUserIdAndAaguid(String rpId, String userId, String aaguid);
-    void update(UserKey user);
+    void updateSignCounterAndAuthenticatedAt(String rpId, String credentialId, long signCounter);
+    void updateAuthenticatedAt(String rpId, String credentialId);
     void deleteWithUserId(String rpId, String userId);
     void deleteWithCredentialId(String rpId, String credentialId);
 }
