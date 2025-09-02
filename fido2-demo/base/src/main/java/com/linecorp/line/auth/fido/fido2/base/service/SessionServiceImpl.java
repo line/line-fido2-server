@@ -70,13 +70,12 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public void revokeSession(String sessionId) {
-        //TODO: TTL NOT WORK
-//        Session session = sessionRepository.getSession(sessionId);
-//        if (session != null) {
-//            session.setServed(true);
-//            sessionRepository.update(session);
-//        } else {
-//            log.warn("no such session with session id: {}", sessionId);
-//        }
+        Session session = sessionRepository.getSession(sessionId);
+        if (session != null) {
+            session.setServed(true);
+            sessionRepository.update(session);
+        } else {
+            log.warn("no such session with session id: {}", sessionId);
+        }
     }
 }
