@@ -26,3 +26,5 @@
 .swp
 /.nb-gradle/
 **/build/
+
+.DS_Store

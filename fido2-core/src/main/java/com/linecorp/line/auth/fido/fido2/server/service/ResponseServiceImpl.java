@@ -27,6 +27,7 @@ import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.helper.CredentialPublicKeyHelper;
 import com.linecorp.line.auth.fido.fido2.server.helper.ExtensionHelper;
+import com.linecorp.line.auth.fido.fido2.server.helper.OriginValidationHelper;
 import com.linecorp.line.auth.fido.fido2.server.helper.SignatureHelper;
 import com.linecorp.line.auth.fido.fido2.server.model.*;
 import com.linecorp.line.auth.fido.fido2.server.util.AaguidUtil;
@@ -151,26 +152,14 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
 
     @Override
     protected void checkOrigin(URI originFromClientData, URI originFromRp) {
-        final String ANDROID_FACET_SCHEME = "android";
-        final String IOS_FACET_SCHEME = "ios";
+        List<String> configuredOrigins = appOriginService.getOrigins(originFromRp.toString());
 
-        if (originFromClientData.getScheme().equals(ANDROID_FACET_SCHEME) ||
-                originFromClientData.getScheme().equals(IOS_FACET_SCHEME)) {
-            //app case
-            List<String> appOriginList = appOriginService.getOrigins(originFromRp.toString());
-
-            if (!appOriginList.contains(originFromClientData.toString())) {
-                throw new FIDO2ServerRuntimeException(InternalErrorCode.ORIGIN_NOT_MATCHED,
-                        "Client facet origin: " + originFromClientData + ", App Origin List: " + appOriginList);
-            }
-
-        } else {
-            // web case
-            if (!originFromRp.toString().equals(originFromClientData.toString())) {
-                throw new FIDO2ServerRuntimeException(InternalErrorCode.ORIGIN_NOT_MATCHED,
-                        "From collected data: " + originFromClientData + ", From request param: " + originFromRp);
-            }
+        if (OriginValidationHelper.isAppFacet(originFromClientData)) {
+            OriginValidationHelper.validateAppFacet(originFromClientData, configuredOrigins);
+            return;
         }
+
+        OriginValidationHelper.validateWeb(originFromClientData, originFromRp, configuredOrigins);
     }
 
     @Override
