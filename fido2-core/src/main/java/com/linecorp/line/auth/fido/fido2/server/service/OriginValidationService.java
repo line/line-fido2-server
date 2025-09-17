@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2025 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -16,10 +16,8 @@
 
 package com.linecorp.line.auth.fido.fido2.server.service;
 
-import java.util.List;
+import java.net.URI;
 
-public interface AppOriginService {
-    default List<String> getOrigins(String rpId) {
-        throw new UnsupportedOperationException("AppOriginService is not implemented");
-    }
+public interface OriginValidationService {
+    void validate(URI originFromClientData, URI originFromRp, String rpId);
 }

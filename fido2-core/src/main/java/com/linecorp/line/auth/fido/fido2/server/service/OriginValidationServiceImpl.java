@@ -14,47 +14,65 @@
  * under the License.
  */
 
-package com.linecorp.line.auth.fido.fido2.server.helper;
+package com.linecorp.line.auth.fido.fido2.server.service;
 
 import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
-/**
- * Helper for origin validation logic. Keeps ResponseServiceImpl readable
- * while preserving exact string-match policy and error messages.
- */
-public class OriginValidationHelper {
+public class OriginValidationServiceImpl implements OriginValidationService {
 
     private static final String ANDROID_FACET_SCHEME = "android";
     private static final String IOS_FACET_SCHEME = "ios";
 
-    public static boolean isAppFacet(URI origin) {
+    private final OriginService originService;
+
+    public OriginValidationServiceImpl(OriginService originService) {
+        this.originService = originService;
+    }
+
+    @Override
+    public void validate(URI originFromClientData, URI originFromRp, String rpId) {
+        List<String> allowed = originService.getOrigins(rpId);
+        if (allowed == null) {
+            allowed = Collections.emptyList();
+        }
+
+        if (isAppFacet(originFromClientData)) {
+            validateAppFacet(originFromClientData, allowed);
+            return;
+        }
+
+        validateWeb(originFromClientData, originFromRp, allowed);
+    }
+
+    private static boolean isAppFacet(URI origin) {
         String scheme = origin.getScheme();
         return ANDROID_FACET_SCHEME.equals(scheme) || IOS_FACET_SCHEME.equals(scheme);
     }
 
-    public static void validateAppFacet(URI client, List<String> allowed) {
-        if (!allowed.contains(client.toString())) {
+    private static void validateAppFacet(URI originFromClient, List<String> allowed) {
+        if (!allowed.contains(originFromClient.toString())) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.ORIGIN_NOT_MATCHED,
-                    "Client facet origin: " + client + ", App Origin List: " + allowed);
+                    "Client facet origin: " + originFromClient);
         }
     }
 
-    public static void validateWeb(URI client, URI rp, List<String> allowed) {
+    private static void validateWeb(URI originFromClient, URI originFromRp, List<String> allowed) {
         if (hasWebAllowlist(allowed)) {
-            if (!allowed.contains(client.toString())) {
+            if (!allowed.contains(originFromClient.toString())) {
                 throw new FIDO2ServerRuntimeException(InternalErrorCode.ORIGIN_NOT_MATCHED,
-                        "Client web origin: " + client + ", Allowed origins: " + allowed);
+                        "Client web origin: " + originFromClient);
             }
             return;
         }
 
-        if (!rp.toString().equals(client.toString())) {
+        if (!originFromRp.toString().equals(originFromClient.toString())) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.ORIGIN_NOT_MATCHED,
-                    "From collected data: " + client + ", From request param: " + rp);
+                    "From collected data: " + originFromClient + ", From request param: " + originFromRp);
         }
     }
 

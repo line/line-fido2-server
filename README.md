@@ -206,6 +206,7 @@ app:
 - If no web origins are configured, verification requires the request origin to exactly match `clientDataJSON.origin`.
 - Android native (FIDO2 API/Credential Manager): `clientDataJSON.origin` starts with `android:...` (app facet). See "Verify origin" in Android Credential Manager docs: https://developer.android.com/identity/sign-in/credential-manager#verify-origin
 - iOS native (AuthenticationServices, passkeys): `clientDataJSON.origin` is an `https` web origin (no `ios:` prefix), e.g., `https://example.com`. For iOS/macOS passkeys, configure a web-origin allowlist.
+ - When web origins are configured, the allowlist takes precedence: RP request fields like `VerifyCredential.origin` and `RegisterCredential.origin` do not govern the check; the server validates against the configured web-origin allowlist.
 
 ## References
 

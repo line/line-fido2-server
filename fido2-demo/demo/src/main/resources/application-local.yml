@@ -25,8 +25,12 @@ logging:
     org.springframework.web: DEBUG
     org.hibernate: DEBUG
 app:
-  origins: # This item does not need to be applied for web cases.
+  origins: # Optional: also accepts web origins as an allowlist
     - android:aaa-bbb
     - ios:aaa-bbb
-
+    # Web origins
+    # - https://example.com
+    # - https://staging.example.com
+    # For local development only
+    # - http://localhost:3000
 

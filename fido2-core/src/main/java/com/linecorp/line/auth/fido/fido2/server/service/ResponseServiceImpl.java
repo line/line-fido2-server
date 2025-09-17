@@ -27,7 +27,6 @@ import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.helper.CredentialPublicKeyHelper;
 import com.linecorp.line.auth.fido.fido2.server.helper.ExtensionHelper;
-import com.linecorp.line.auth.fido.fido2.server.helper.OriginValidationHelper;
 import com.linecorp.line.auth.fido.fido2.server.helper.SignatureHelper;
 import com.linecorp.line.auth.fido.fido2.server.model.*;
 import com.linecorp.line.auth.fido.fido2.server.util.AaguidUtil;
@@ -54,7 +53,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
     private final SessionService sessionService;
     private final UserKeyService userKeyService;
     private final AttestationService attestationService;
-    private final AppOriginService appOriginService;
+    private final OriginValidationService originValidationService;
 
     @Override
     public RegisterCredentialResult handleAttestation(ServerRegPublicKeyCredential serverPublicKeyCredential, String sessionId,
@@ -68,7 +67,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
             // handle common part
             log.debug("Handle common part of response");
             byte[] clientDataHsh = handleCommon("webauthn.create", session.getRegOptionResponse().getChallenge(),
-                    attestationResponse.getClientDataJSON(), origin, tokenBinding);
+                    attestationResponse.getClientDataJSON(), origin, rpId, tokenBinding);
 
             AttestationObject attestationObject = attestationService.getAttestationObject(attestationResponse);
             attestationService.attestationObjectValidationCheck(rpId, session.getRegOptionResponse().getAuthenticatorSelection(), attestationObject);
@@ -151,15 +150,8 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
     }
 
     @Override
-    protected void checkOrigin(URI originFromClientData, URI originFromRp) {
-        List<String> configuredOrigins = appOriginService.getOrigins(originFromRp.toString());
-
-        if (OriginValidationHelper.isAppFacet(originFromClientData)) {
-            OriginValidationHelper.validateAppFacet(originFromClientData, configuredOrigins);
-            return;
-        }
-
-        OriginValidationHelper.validateWeb(originFromClientData, originFromRp, configuredOrigins);
+    protected void checkOrigin(URI originFromClientData, URI originFromRp, String rpId) {
+        originValidationService.validate(originFromClientData, originFromRp, rpId);
     }
 
     @Override
@@ -170,7 +162,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
             Session session = checkSession(sessionId);
             ServerAuthenticatorAssertionResponse assertionResponse = serverPublicKeyCredential.getResponse();
             handleCommon("webauthn.get", session.getAuthOptionResponse().getChallenge(),
-                    assertionResponse.getClientDataJSON(), origin, tokenBinding);
+                    assertionResponse.getClientDataJSON(), origin, rpId, tokenBinding);
 
             byte[] authDataBytes = Base64.getUrlDecoder().decode(serverPublicKeyCredential.getResponse().getAuthenticatorData());
             AuthenticatorData authData = getAuthData(authDataBytes);

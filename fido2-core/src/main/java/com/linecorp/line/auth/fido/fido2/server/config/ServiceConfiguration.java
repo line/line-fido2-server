@@ -16,7 +16,9 @@
 
 package com.linecorp.line.auth.fido.fido2.server.config;
 
-import com.linecorp.line.auth.fido.fido2.server.service.AppOriginService;
+import com.linecorp.line.auth.fido.fido2.server.service.OriginService;
+import com.linecorp.line.auth.fido.fido2.server.service.OriginValidationService;
+import com.linecorp.line.auth.fido.fido2.server.service.OriginValidationServiceImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +27,15 @@ import org.springframework.context.annotation.Configuration;
 public class ServiceConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(AppOriginService.class)
-    public AppOriginService defaultAppOriginService() {
-        return new AppOriginService() {
+    @ConditionalOnMissingBean(OriginService.class)
+    public OriginService defaultOriginService() {
+        return new OriginService() {
         };
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(OriginValidationService.class)
+    public OriginValidationService defaultOriginValidationService(OriginService originService) {
+        return new OriginValidationServiceImpl(originService);
     }
 }

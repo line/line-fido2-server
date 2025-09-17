@@ -16,7 +16,7 @@
 
 package com.linecorp.line.auth.fido.fido2.demo.service;
 
-import com.linecorp.line.auth.fido.fido2.server.service.AppOriginService;
+import com.linecorp.line.auth.fido.fido2.server.service.OriginService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -30,7 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class AppOriginServiceImpl implements AppOriginService {
+public class OriginServiceImpl implements OriginService {
 
     private List<String> origins;
 

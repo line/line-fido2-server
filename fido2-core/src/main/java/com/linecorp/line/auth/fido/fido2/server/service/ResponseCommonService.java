@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 abstract public class ResponseCommonService {
 
-    protected abstract void checkOrigin(URI originFromClientData, URI originFromRp);
+    protected abstract void checkOrigin(URI originFromClientData, URI originFromRp, String rpId);
 
     /**
      * Process common part of reg/auth operations
@@ -50,7 +50,7 @@ abstract public class ResponseCommonService {
      * @param tokenBinding
      * @return
      */
-    public byte[] handleCommon(String type, String challengeSent, String base64UrlEncodedClientDataJSON, String origin, TokenBinding tokenBinding) {
+    public byte[] handleCommon(String type, String challengeSent, String base64UrlEncodedClientDataJSON, String origin, String rpId, TokenBinding tokenBinding) {
         String clientDataJSON = new String(Base64.getUrlDecoder().decode(base64UrlEncodedClientDataJSON));
         log.debug("clientDataJSON: {}", clientDataJSON);
         CollectedClientData collectedClientData;
@@ -92,7 +92,7 @@ abstract public class ResponseCommonService {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_ORIGIN, e);
         }
 
-        checkOrigin(originFromClientData, originFromRp);
+        checkOrigin(originFromClientData, originFromRp, rpId);
 
         // verify token binding
         log.debug("Verify token binding if supported");
