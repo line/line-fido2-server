@@ -24,7 +24,6 @@ pluginManagement {
 
 rootProject.name = 'fido2'
 
-include 'server'
 include 'fido2-core'
 include 'rpserver'
 include 'common'
