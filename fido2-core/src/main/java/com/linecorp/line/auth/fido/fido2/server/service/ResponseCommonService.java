@@ -94,6 +94,12 @@ abstract public class ResponseCommonService {
 
         checkOrigin(originFromClientData, originFromRp, rpId);
 
+        // verify crossOrigin
+        if (Boolean.TRUE.equals(collectedClientData.getCrossOrigin())) {
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.CROSS_ORIGIN_NOT_ALLOWED,
+                    "Cross-origin WebAuthn ceremony not permitted");
+        }
+
         // verify token binding
         log.debug("Verify token binding if supported");
         if (collectedClientData.getTokenBinding() != null) {

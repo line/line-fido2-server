@@ -28,6 +28,8 @@ public class CollectedClientData {
     private String type;
     private String challenge;
     private String origin;
+    private Boolean crossOrigin;
+    private String topOrigin;
     private TokenBinding tokenBinding;
     private String androidPackageName;  // Android specific e.g., com.chrome.canary
 }
