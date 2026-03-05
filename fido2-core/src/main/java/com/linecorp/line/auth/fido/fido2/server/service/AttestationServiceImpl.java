@@ -123,8 +123,9 @@ public class AttestationServiceImpl implements AttestationService {
         // verify user present flag
         log.debug("Verify user present flag. Should be set");
         if (!attestationObject.getAuthData().isUserPresent()) {
-            // Temporary comment out for Android chrome testings
-//            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_PRESENCE_FLAG_NOT_SET);
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_PRESENCE_FLAG_NOT_SET,
+                    "User presence flag not set",
+                    AaguidUtil.convert(attestationObject.getAuthData().getAttestedCredentialData().getAaguid()));
         }
 
         // verify user verification
