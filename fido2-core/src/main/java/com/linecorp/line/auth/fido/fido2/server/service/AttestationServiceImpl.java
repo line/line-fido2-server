@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -16,9 +16,29 @@
 
 package com.linecorp.line.auth.fido.fido2.server.service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.TrustAnchor;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.List;
+import java.util.Set;
+
+import org.bouncycastle.asn1.x509.CRLDistPoint;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.x509.extension.X509ExtensionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
+
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
+import com.linecorp.line.auth.fido.fido2.common.CredentialMediationRequirement;
 import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
 import com.linecorp.line.auth.fido.fido2.common.crypto.Digests;
 import com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata.MetadataStatement;
@@ -35,24 +55,8 @@ import com.linecorp.line.auth.fido.fido2.server.model.AttestationStatementFormat
 import com.linecorp.line.auth.fido.fido2.server.util.AaguidUtil;
 import com.linecorp.line.auth.fido.fido2.server.util.CertPathUtil;
 import com.linecorp.line.auth.fido.fido2.server.util.CertificateUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.asn1.x509.CRLDistPoint;
-import org.bouncycastle.asn1.x509.Extension;
-import org.bouncycastle.x509.extension.X509ExtensionUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.TrustAnchor;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -107,7 +111,7 @@ public class AttestationServiceImpl implements AttestationService {
     }
 
     @Override
-    public void attestationObjectValidationCheck(String rpId, AuthenticatorSelectionCriteria authenticatorSelection, AttestationObject attestationObject) {
+    public void attestationObjectValidationCheck(String rpId, AuthenticatorSelectionCriteria authenticatorSelection, AttestationObject attestationObject, CredentialMediationRequirement mediation) {
         // verify attestationObject.authData.attestedCredentialData
         if (attestationObject.getAuthData().getAttestedCredentialData() == null) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.CREDENTIAL_NOT_INCLUDED);
@@ -122,10 +126,8 @@ public class AttestationServiceImpl implements AttestationService {
 
         // verify user present flag
         log.debug("Verify user present flag. Should be set");
-        if (!attestationObject.getAuthData().isUserPresent()) {
-            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_PRESENCE_FLAG_NOT_SET,
-                    "User presence flag not set",
-                    AaguidUtil.convert(attestationObject.getAuthData().getAttestedCredentialData().getAaguid()));
+        if (mediation != CredentialMediationRequirement.CONDITIONAL && !attestationObject.getAuthData().isUserPresent()) {
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_PRESENCE_FLAG_NOT_SET, "User presence flag not set", AaguidUtil.convert(attestationObject.getAuthData().getAttestedCredentialData().getAaguid()));
         }
 
         // verify user verification

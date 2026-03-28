@@ -17,6 +17,7 @@
 package com.linecorp.line.auth.fido.fido2.server.service;
 
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
+import com.linecorp.line.auth.fido.fido2.common.CredentialMediationRequirement;
 import com.linecorp.line.auth.fido.fido2.common.server.ServerAuthenticatorAttestationResponse;
 import com.linecorp.line.auth.fido.fido2.server.attestation.AttestationVerificationResult;
 import com.linecorp.line.auth.fido.fido2.server.model.AttestationObject;
@@ -24,6 +25,6 @@ import com.linecorp.line.auth.fido.fido2.server.model.AttestationObject;
 public interface AttestationService {
     AttestationVerificationResult verifyAttestation(byte[] clientDataHsh, AttestationObject attestationObject);
     AttestationObject getAttestationObject(ServerAuthenticatorAttestationResponse attestationResponse);
-    void attestationObjectValidationCheck(String rpId, AuthenticatorSelectionCriteria authenticatorSelection, AttestationObject attestationObject);
+    void attestationObjectValidationCheck(String rpId, AuthenticatorSelectionCriteria authenticatorSelection, AttestationObject attestationObject, CredentialMediationRequirement mediation);
     void verifyAttestationCertificate(AttestationObject attestationObject, AttestationVerificationResult attestationVerificationResult);
 }

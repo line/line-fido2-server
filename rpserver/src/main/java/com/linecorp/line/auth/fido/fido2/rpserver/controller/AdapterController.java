@@ -16,6 +16,10 @@
 
 package com.linecorp.line.auth.fido.fido2.rpserver.controller;
 
+import com.linecorp.line.auth.fido.fido2.common.CredentialCreationOptions;
+import com.linecorp.line.auth.fido.fido2.common.CredentialRequestOptions;
+import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialCreationOptions;
+import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRequestOptions;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRpEntity;
 import com.linecorp.line.auth.fido.fido2.common.crypto.Digests;
 import com.linecorp.line.auth.fido.fido2.common.server.*;
@@ -24,6 +28,8 @@ import com.linecorp.line.auth.fido.fido2.rpserver.model.AdapterAuthServerPublicK
 import com.linecorp.line.auth.fido.fido2.rpserver.model.AdapterRegServerPublicKeyCredential;
 import com.linecorp.line.auth.fido.fido2.rpserver.model.Status;
 import com.linecorp.line.auth.fido.fido2.rpserver.model.transport.*;
+
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -116,9 +122,9 @@ public class AdapterController {
 
     // registration
     @PostMapping("/attestation/options")
-    public ServerPublicKeyCredentialCreationOptionsResponse getRegistrationChallenge(
+    public CredentialCreationOptionsResponse getRegistrationChallenge(
             @RequestHeader String host,
-            @RequestBody ServerPublicKeyCredentialCreationOptionsRequest optionsRequest,
+            @RequestBody CredentialCreationOptionsRequest optionsRequest,
             HttpServletResponse httpServletResponse) {
 
         // set header
@@ -142,22 +148,21 @@ public class AdapterController {
                 .attestation(optionsRequest.getAttestation())
                 .credProtect(optionsRequest.getCredProtect())
                 .prf(optionsRequest.getPrf())
+                .mediation(optionsRequest.getMediation())
                 .build();
 
         final HttpEntity<RegOptionRequest> request = new HttpEntity<>(regOptionRequest, httpHeaders);
         final RegOptionResponse response = restTemplate.postForObject(regChallengeUri, request, RegOptionResponse.class);
 
-        final ServerPublicKeyCredentialCreationOptionsResponse serverResponse = ServerPublicKeyCredentialCreationOptionsResponse
+        final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = getPublicKeyCredentialCreationOptions(response);
+
+        final CredentialCreationOptions credentialCreationOptions = new CredentialCreationOptions();
+        credentialCreationOptions.setMediation(response.getMediation());
+        credentialCreationOptions.setPublicKey(publicKeyCredentialCreationOptions);
+
+        final CredentialCreationOptionsResponse serverResponse = CredentialCreationOptionsResponse
                 .builder()
-                .rp(response.getRp())
-                .user(response.getUser())
-                .attestation(response.getAttestation())
-                .authenticatorSelection(response.getAuthenticatorSelection())
-                .challenge(response.getChallenge())
-                .excludeCredentials(response.getExcludeCredentials())
-                .pubKeyCredParams(response.getPubKeyCredParams())
-                .timeout(response.getTimeout())
-                .extensions(response.getExtensions())
+                .credentialCreationOptions(credentialCreationOptions)
                 .build();
 
         serverResponse.setStatus(Status.OK);
@@ -165,6 +170,21 @@ public class AdapterController {
         httpServletResponse.addCookie(new Cookie(COOKIE_NAME, response.getSessionId()));
 
         return serverResponse;
+    }
+
+    private static @NonNull PublicKeyCredentialCreationOptions getPublicKeyCredentialCreationOptions(RegOptionResponse response) {
+        final PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions();
+        publicKeyCredentialCreationOptions.setRp(response.getRp());
+        publicKeyCredentialCreationOptions.setUser(response.getUser());
+        publicKeyCredentialCreationOptions.setAttestation(response.getAttestation());
+        publicKeyCredentialCreationOptions.setAuthenticatorSelection(response.getAuthenticatorSelection());
+        publicKeyCredentialCreationOptions.setChallenge(response.getChallenge());
+        publicKeyCredentialCreationOptions.setExcludeCredentials(response.getExcludeCredentials());
+        publicKeyCredentialCreationOptions.setPubKeyCredParams(response.getPubKeyCredParams());
+        publicKeyCredentialCreationOptions.setTimeout(response.getTimeout());
+        publicKeyCredentialCreationOptions.setExtensions(response.getExtensions());
+
+        return publicKeyCredentialCreationOptions;
     }
 
     @PostMapping("/attestation/result")
@@ -231,9 +251,9 @@ public class AdapterController {
 
     // authentication
     @PostMapping("/assertion/options")
-    public ServerPublicKeyCredentialGetOptionsResponse getAuthenticationChallenge(
+    public CredentialGetOptionsResponse getAuthenticationChallenge(
             @RequestHeader String host,
-            @RequestBody ServerPublicKeyCredentialGetOptionsRequest optionRequest,
+            @RequestBody CredentialGetOptionsRequest optionRequest,
             HttpServletResponse httpServletResponse) {
 
         // set header
@@ -245,20 +265,28 @@ public class AdapterController {
                 .userId(createUserId(optionRequest.getUsername()))
                 .userVerification(optionRequest.getUserVerification())
                 .prf(optionRequest.getPrf())
+                .mediation(optionRequest.getMediation())
                 .build();
 
         final HttpEntity<AuthOptionRequest> request = new HttpEntity<>(authOptionRequest, httpHeaders);
         final AuthOptionResponse response = restTemplate.postForObject(authChallengeUri, request, AuthOptionResponse.class);
 
-        final ServerPublicKeyCredentialGetOptionsResponse serverResponse;
-        serverResponse = ServerPublicKeyCredentialGetOptionsResponse
+        final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions();
+        publicKeyCredentialRequestOptions.setAllowCredentials(response.getAllowCredentials());
+        publicKeyCredentialRequestOptions.setChallenge(response.getChallenge());
+        publicKeyCredentialRequestOptions.setRpId(response.getRpId());
+        publicKeyCredentialRequestOptions.setTimeout(response.getTimeout());
+        publicKeyCredentialRequestOptions.setUserVerification(response.getUserVerification());
+        publicKeyCredentialRequestOptions.setExtensions(response.getExtensions());
+
+        final CredentialRequestOptions credentialRequestOptions = new CredentialRequestOptions();
+        credentialRequestOptions.setMediation(response.getMediation());
+        credentialRequestOptions.setPublicKey(publicKeyCredentialRequestOptions);
+
+        final CredentialGetOptionsResponse serverResponse;
+        serverResponse = CredentialGetOptionsResponse
                 .builder()
-                .allowCredentials(response.getAllowCredentials())
-                .challenge(response.getChallenge())
-                .rpId(response.getRpId())
-                .timeout(response.getTimeout())
-                .userVerification(response.getUserVerification())
-                .extensions(response.getExtensions())
+                .credentialRequestOptions(credentialRequestOptions)
                 .build();
 
         // error

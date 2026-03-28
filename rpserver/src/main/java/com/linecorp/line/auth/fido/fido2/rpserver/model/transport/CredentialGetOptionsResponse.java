@@ -14,14 +14,10 @@
  * under the License.
  */
 
-package com.linecorp.line.auth.fido.fido2.common.server;
+package com.linecorp.line.auth.fido.fido2.rpserver.model.transport;
 
-
-import javax.validation.constraints.NotBlank;
-
-import com.linecorp.line.auth.fido.fido2.common.CredentialMediationRequirement;
-import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
-import com.linecorp.line.auth.fido.fido2.common.extension.PRFInputs;
+import com.linecorp.line.auth.fido.fido2.common.CredentialRequestOptions;
+import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRequestOptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,11 +28,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthOptionRequest {
-    @NotBlank
-    private String rpId;
-    private String userId;
-    private UserVerificationRequirement userVerification;
-    private PRFInputs prf;
-    private CredentialMediationRequirement mediation;
+public class CredentialGetOptionsResponse extends AdapterServerResponse {
+    private CredentialRequestOptions credentialRequestOptions;
 }

@@ -16,31 +16,29 @@
 
 package com.linecorp.line.auth.fido.fido2.rpserver.model.transport;
 
-import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
-import com.linecorp.line.auth.fido.fido2.common.extension.AuthenticationExtensionsClientInputs;
-import com.linecorp.line.auth.fido.fido2.common.server.ServerPublicKeyCredentialDescriptor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import com.linecorp.line.auth.fido.fido2.common.AttestationConveyancePreference;
+import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
+import com.linecorp.line.auth.fido.fido2.common.CredentialCreationOptions;
+import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialParameters;
+import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRpEntity;
+import com.linecorp.line.auth.fido.fido2.common.extension.AuthenticationExtensionsClientInputs;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerPublicKeyCredentialDescriptor;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerPublicKeyCredentialUserEntity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServerPublicKeyCredentialGetOptionsResponse extends AdapterServerResponse {
-    private String challenge;
-    private long timeout;
-    private String rpId;
-    @JsonInclude(Include.NON_NULL)
-    private List<ServerPublicKeyCredentialDescriptor> allowCredentials;
-    @JsonInclude(Include.NON_NULL)
-    private UserVerificationRequirement userVerification;
-    //extensions
-    private AuthenticationExtensionsClientInputs extensions;
+public class CredentialCreationOptionsResponse extends AdapterServerResponse {
+    private CredentialCreationOptions credentialCreationOptions;
 }

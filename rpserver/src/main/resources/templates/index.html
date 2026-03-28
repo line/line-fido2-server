@@ -218,6 +218,44 @@
     <hr>
     <div class="row">
       <div class="col">
+        <b>Credential mediation requirement</b>
+      </div>
+      <div class="col-3">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="specifyMediation" id="specifyMediation" value="specifyMediation">
+          Specify
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="mediation" id="mediationSilent" value="silent">
+          <label class="form-check-label" for="mediationSilent">
+            Silent
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="mediation" id="mediationOptional" value="optional" checked>
+          <label class="form-check-label" for="mediationOptional">
+            Optional (default)
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="mediation" id="mediationConditional" value="conditional">
+          <label class="form-check-label" for="mediationConditional">
+            Conditional
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="mediation" id="mediationRequired" value="required">
+          <label class="form-check-label" for="mediationRequired">
+            Required
+          </label>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col">
         <b>Pseudo-random function Extension</b>
       </div>
       <div class="col-3">
