@@ -20,19 +20,23 @@
   "pubKeyCredParams": [
     {
       "type": "public-key",
-      "alg": -65535
+      "alg": -7
     },
     {
       "type": "public-key",
-      "alg": -257
+      "alg": -8
     },
     {
       "type": "public-key",
-      "alg": -258
+      "alg": -35
     },
     {
       "type": "public-key",
-      "alg": -259
+      "alg": -36
+    },
+    {
+      "type": "public-key",
+      "alg": -43
     },
     {
       "type": "public-key",
@@ -48,23 +52,15 @@
     },
     {
       "type": "public-key",
-      "alg": -7
+      "alg": -257
     },
     {
       "type": "public-key",
-      "alg": -35
+      "alg": -258
     },
     {
       "type": "public-key",
-      "alg": -36
-    },
-    {
-      "type": "public-key",
-      "alg": -8
-    },
-    {
-      "type": "public-key",
-      "alg": -43
+      "alg": -259
     }
   ],
   "timeout": 180000,

@@ -1,0 +1,44 @@
+/*
+ * Copyright 2026 LY Corporation
+ *
+ * LY Corporation licenses this file to you under the Apache License,
+ * version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+package com.linecorp.line.auth.fido.fido2.server.property;
+
+import java.util.List;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Value;
+
+@ConfigurationProperties("fido.fido2")
+@AllArgsConstructor
+@ConstructorBinding
+@Value
+public class Fido2Properties {
+    long sessionTtlMillis;
+    boolean acceptUnregisteredAuthenticators;
+    boolean denyCrossOrigin;
+    @NestedConfigurationProperty
+    RegistrationProperties registration;
+
+    @AllArgsConstructor
+    @Value
+    public static class RegistrationProperties {
+        List<String> allowedAlgorithms;
+    }
+}

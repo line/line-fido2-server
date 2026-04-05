@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -16,26 +16,6 @@
 
 package com.linecorp.line.auth.fido.fido2.server.service;
 
-import com.linecorp.line.auth.fido.fido2.common.AuthenticatorTransport;
-import com.linecorp.line.auth.fido.fido2.common.TokenBinding;
-import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
-import com.linecorp.line.auth.fido.fido2.common.crypto.Digests;
-import com.linecorp.line.auth.fido.fido2.common.extension.AuthenticationExtensionsClientOutputs;
-import com.linecorp.line.auth.fido.fido2.common.server.*;
-import com.linecorp.line.auth.fido.fido2.server.attestation.AttestationVerificationResult;
-import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
-import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
-import com.linecorp.line.auth.fido.fido2.server.helper.CredentialPublicKeyHelper;
-import com.linecorp.line.auth.fido.fido2.server.helper.ExtensionHelper;
-import com.linecorp.line.auth.fido.fido2.server.helper.SignatureHelper;
-import com.linecorp.line.auth.fido.fido2.server.model.*;
-import com.linecorp.line.auth.fido.fido2.server.util.AaguidUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -43,6 +23,41 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.linecorp.line.auth.fido.fido2.common.AuthenticatorTransport;
+import com.linecorp.line.auth.fido.fido2.common.TokenBinding;
+import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
+import com.linecorp.line.auth.fido.fido2.common.crypto.Digests;
+import com.linecorp.line.auth.fido.fido2.common.extension.AuthenticationExtensionsClientOutputs;
+import com.linecorp.line.auth.fido.fido2.common.server.AttestationType;
+import com.linecorp.line.auth.fido.fido2.common.server.RegOptionResponse;
+import com.linecorp.line.auth.fido.fido2.common.server.RegisterCredentialResult;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerAuthPublicKeyCredential;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerAuthenticatorAssertionResponse;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerAuthenticatorAttestationResponse;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerPublicKeyCredentialDescriptor;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerRegPublicKeyCredential;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerResponse;
+import com.linecorp.line.auth.fido.fido2.common.server.VerifyCredentialResult;
+import com.linecorp.line.auth.fido.fido2.server.attestation.AttestationVerificationResult;
+import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
+import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
+import com.linecorp.line.auth.fido.fido2.server.helper.CredentialPublicKeyHelper;
+import com.linecorp.line.auth.fido.fido2.server.helper.ExtensionHelper;
+import com.linecorp.line.auth.fido.fido2.server.helper.SignatureHelper;
+import com.linecorp.line.auth.fido.fido2.server.model.AttestationObject;
+import com.linecorp.line.auth.fido.fido2.server.model.AttestedCredentialData;
+import com.linecorp.line.auth.fido.fido2.server.model.AuthenticatorData;
+import com.linecorp.line.auth.fido.fido2.server.model.Session;
+import com.linecorp.line.auth.fido.fido2.server.model.UserKey;
+import com.linecorp.line.auth.fido.fido2.server.util.AaguidUtil;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -70,7 +85,13 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
                     attestationResponse.getClientDataJSON(), origin, rpId, tokenBinding);
 
             AttestationObject attestationObject = attestationService.getAttestationObject(attestationResponse);
-            attestationService.attestationObjectValidationCheck(rpId, session.getRegOptionResponse().getAuthenticatorSelection(), attestationObject, session.getRegOptionResponse().getMediation());
+            attestationService.attestationObjectValidationCheck(
+                    rpId,
+                    session.getRegOptionResponse().getAuthenticatorSelection(),
+                    attestationObject,
+                    session.getRegOptionResponse().getMediation(),
+                    session.getRegOptionResponse().getPubKeyCredParams()
+            );
             AttestationVerificationResult attestationVerificationResult = attestationService.verifyAttestation(clientDataHsh, attestationObject);
 
             // prepare trust anchors, attestation fmt (from metadata service or trusted source)

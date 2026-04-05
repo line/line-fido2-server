@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -16,8 +16,11 @@
 
 package com.linecorp.line.auth.fido.fido2.server.service;
 
+import java.util.List;
+
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
 import com.linecorp.line.auth.fido.fido2.common.CredentialMediationRequirement;
+import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialParameters;
 import com.linecorp.line.auth.fido.fido2.common.server.ServerAuthenticatorAttestationResponse;
 import com.linecorp.line.auth.fido.fido2.server.attestation.AttestationVerificationResult;
 import com.linecorp.line.auth.fido.fido2.server.model.AttestationObject;
@@ -25,6 +28,6 @@ import com.linecorp.line.auth.fido.fido2.server.model.AttestationObject;
 public interface AttestationService {
     AttestationVerificationResult verifyAttestation(byte[] clientDataHsh, AttestationObject attestationObject);
     AttestationObject getAttestationObject(ServerAuthenticatorAttestationResponse attestationResponse);
-    void attestationObjectValidationCheck(String rpId, AuthenticatorSelectionCriteria authenticatorSelection, AttestationObject attestationObject, CredentialMediationRequirement mediation);
+    void attestationObjectValidationCheck(String rpId, AuthenticatorSelectionCriteria authenticatorSelection, AttestationObject attestationObject,CredentialMediationRequirement mediation , List<PublicKeyCredentialParameters>  publicKeyCredentialParameters);
     void verifyAttestationCertificate(AttestationObject attestationObject, AttestationVerificationResult attestationVerificationResult);
 }

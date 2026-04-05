@@ -44,5 +44,10 @@ subprojects {
     dependencies {
         "compileOnly"("org.projectlombok:lombok:$lombokVersion")
         "annotationProcessor"("org.projectlombok:lombok:$lombokVersion")
+
+        "testImplementation"("org.mockito:mockito-core:5.23.0")
+        // mockito-core depends on byte-buddy. Override spring boot's dependency version in test.
+        "testImplementation"("net.bytebuddy:byte-buddy:1.17.7")
+        "testImplementation"("net.bytebuddy:byte-buddy-agent:1.17.7")
     }
 }

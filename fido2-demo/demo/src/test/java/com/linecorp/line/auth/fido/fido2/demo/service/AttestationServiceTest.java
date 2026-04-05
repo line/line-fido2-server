@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -16,22 +16,23 @@
 
 package com.linecorp.line.auth.fido.fido2.demo.service;
 
-import com.linecorp.line.auth.fido.fido2.common.server.ServerAuthenticatorAttestationResponse;
-import com.linecorp.line.auth.fido.fido2.server.attestation.AttestationVerificationResult;
-import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
-import com.linecorp.line.auth.fido.fido2.server.model.AttestationObject;
-import com.linecorp.line.auth.fido.fido2.server.model.AttestationStatementFormatIdentifier;
-import com.linecorp.line.auth.fido.fido2.server.service.AttestationService;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
+import java.util.Base64;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Base64;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerAuthenticatorAttestationResponse;
+import com.linecorp.line.auth.fido.fido2.server.attestation.AttestationVerificationResult;
+import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
+import com.linecorp.line.auth.fido.fido2.server.model.AttestationObject;
+import com.linecorp.line.auth.fido.fido2.server.model.AttestationStatementFormatIdentifier;
+import com.linecorp.line.auth.fido.fido2.server.service.AttestationService;
 
 @SpringBootTest
 class AttestationServiceTest {
