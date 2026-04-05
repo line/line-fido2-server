@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -19,6 +19,8 @@ package com.linecorp.line.auth.fido.fido2.server.model;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
+import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.util.UnsignedUtil;
 
 import lombok.Data;
@@ -32,12 +34,16 @@ public class AuthenticatorData {
 
     static final int UP_MASK = 1;
     static final int UV_MASK = 1 << 2;
+    static final int BE_MASK = 1 << 3;
+    static final int BS_MASK = 1 << 4;
     static final int AT_MASK = 1 << 6;
     static final int ED_MASK = 1 << 7;
 
     private byte[] rpIdHash;
     private boolean userPresent;
     private boolean userVerified;
+    private boolean backupEligibility;
+    private boolean backupState;
     private boolean atIncluded;
     private boolean edIncluded;
     private long signCount;
@@ -75,9 +81,11 @@ public class AuthenticatorData {
 
     protected static AuthenticatorData decodeAuthenticatorDataCommon(byte[] encoded, ByteArrayInputStream inputStream, byte[] rpIdHash, int flags) throws IOException {
 
-        boolean userPresent = (flags & UP_MASK) == UP_MASK;
-        boolean userVerified = (flags & UV_MASK) == UV_MASK;
-        boolean atIncluded = (flags & AT_MASK) == AT_MASK;
+        final boolean userPresent = (flags & UP_MASK) == UP_MASK;
+        final boolean userVerified = (flags & UV_MASK) == UV_MASK;
+        final boolean backupEligibility = (flags & BE_MASK) == BE_MASK;
+        final boolean backupState = (flags & BS_MASK) == BS_MASK;
+        final boolean atIncluded = (flags & AT_MASK) == AT_MASK;
 
         AttestedCredentialData attestedCredentialData = null;
 
@@ -85,6 +93,11 @@ public class AuthenticatorData {
         byte[] signCounterBytes = new byte[4];
         inputStream.read(signCounterBytes, 0, signCounterBytes.length);
         long signCounter = UnsignedUtil.readUINT32BE(signCounterBytes);
+
+        // backupState cannot be true if backupEligibility is false
+        if (!backupEligibility && backupState) {
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_BACKUP_STATE_FLAG_SET, "BS cannot be true if BE is false");
+        }
 
         // attested cred. data
         if (atIncluded) {
@@ -115,6 +128,8 @@ public class AuthenticatorData {
                 .signCount(signCounter)
                 .userPresent(userPresent)
                 .userVerified(userVerified)
+                .backupEligibility(backupEligibility)
+                .backupState(backupState)
                 .atIncluded(atIncluded)
                 .bytes(encoded)
                 .attestedCredentialData(attestedCredentialData)
