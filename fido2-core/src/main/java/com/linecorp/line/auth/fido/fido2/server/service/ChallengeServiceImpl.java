@@ -182,13 +182,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         List<UserKey> userKeys = userKeyService.getWithUserId(rpId, userId);
 
         // set allowCredentials by searching with rp id and user id
+        // Return empty allowCredentials for unknown users instead of throwing an error,
+        // to prevent username enumeration (CWE-204).
         List<ServerPublicKeyCredentialDescriptor> allowCredentials = getExcludeAndIncludeCredentials(userKeys);
-        if (!StringUtils.isEmpty(userId)) {
-            // if there is no credentials for dedicated to the userId, throw an error
-            if (allowCredentials.isEmpty()) {
-                throw new FIDO2ServerRuntimeException(InternalErrorCode.CREDENTIAL_NOT_FOUND, "User Id: " + userId);
-            }
-        }
 
         builder.allowCredentials(allowCredentials);
 
