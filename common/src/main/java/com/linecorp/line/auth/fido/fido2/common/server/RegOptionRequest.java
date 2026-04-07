@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import com.linecorp.line.auth.fido.fido2.common.AttestationConveyancePreference;
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
+import com.linecorp.line.auth.fido.fido2.common.CredentialMediationRequirement;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRpEntity;
 import com.linecorp.line.auth.fido.fido2.common.extension.CredProtect;
 import com.linecorp.line.auth.fido.fido2.common.extension.PRFInputs;
@@ -44,4 +45,5 @@ public class RegOptionRequest {
     private AttestationConveyancePreference attestation;
     private CredProtect credProtect;
     private PRFInputs prf;
+    private CredentialMediationRequirement mediation;
 }

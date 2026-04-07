@@ -17,6 +17,8 @@
 package com.linecorp.line.auth.fido.fido2.common.server;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import com.linecorp.line.auth.fido.fido2.common.CredentialMediationRequirement;
 import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
 import com.linecorp.line.auth.fido.fido2.common.extension.AuthenticationExtensionsClientInputs;
 
@@ -42,4 +44,6 @@ public class AuthOptionResponse implements ServerAPIResult {
     private String sessionId;
     // extension
     private AuthenticationExtensionsClientInputs extensions;
+
+    private CredentialMediationRequirement mediation;
 }

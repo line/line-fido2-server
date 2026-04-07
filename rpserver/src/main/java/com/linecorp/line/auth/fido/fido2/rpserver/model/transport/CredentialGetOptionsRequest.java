@@ -16,19 +16,16 @@
 
 package com.linecorp.line.auth.fido.fido2.rpserver.model.transport;
 
-import com.linecorp.line.auth.fido.fido2.common.AttestationConveyancePreference;
-import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
-import com.linecorp.line.auth.fido.fido2.common.extension.CredProtect;
+import com.linecorp.line.auth.fido.fido2.common.CredentialMediationRequirement;
+import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
 import com.linecorp.line.auth.fido.fido2.common.extension.PRFInputs;
 
 import lombok.Data;
 
 @Data
-public class ServerPublicKeyCredentialCreationOptionsRequest {
+public class CredentialGetOptionsRequest {
     private String username;
-    private String displayName;
-    private AuthenticatorSelectionCriteria authenticatorSelection;
-    private AttestationConveyancePreference attestation = AttestationConveyancePreference.none;
-    private CredProtect credProtect;
+    private UserVerificationRequirement userVerification;
     private PRFInputs prf;
+    private CredentialMediationRequirement mediation;
 }

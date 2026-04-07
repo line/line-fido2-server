@@ -78,6 +78,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         // set rp info
         builder.rp(rpService.get(rpId));
 
+        // set mediation
+        builder.mediation(regOptionRequest.getMediation());
+
         // set user info
         builder.user(regOptionRequest.getUser());
 
@@ -177,6 +180,9 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         // set rp id
         builder.rpId(rpId);
+
+        // set mediation
+        builder.mediation(authOptionRequest.getMediation());
 
         // get user key
         List<UserKey> userKeys = userKeyService.getWithUserId(rpId, userId);

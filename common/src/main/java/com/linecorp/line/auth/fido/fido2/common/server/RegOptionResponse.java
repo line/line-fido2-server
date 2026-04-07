@@ -19,6 +19,7 @@ package com.linecorp.line.auth.fido.fido2.common.server;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.linecorp.line.auth.fido.fido2.common.AttestationConveyancePreference;
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
+import com.linecorp.line.auth.fido.fido2.common.CredentialMediationRequirement;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialParameters;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRpEntity;
 import com.linecorp.line.auth.fido.fido2.common.extension.AuthenticationExtensionsClientInputs;
@@ -49,4 +50,6 @@ public class RegOptionResponse implements ServerAPIResult {
     private String sessionId;
     // extension
     private AuthenticationExtensionsClientInputs extensions;
+
+    private CredentialMediationRequirement mediation;
 }

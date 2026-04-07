@@ -41,24 +41,24 @@ const abortController = new AbortController();
 const abortSignal = abortController.signal;
 
 let performMakeCredReq = (makeCredReq) => {
-    makeCredReq.challenge = base64UrlDecode(makeCredReq.challenge);
-    makeCredReq.user.id = base64UrlDecode(makeCredReq.user.id);
+    makeCredReq.publicKey.challenge = base64UrlDecode(makeCredReq.publicKey.challenge);
+    makeCredReq.publicKey.user.id = base64UrlDecode(makeCredReq.publicKey.user.id);
 
     //Base64url decoding of id in excludeCredentials
-    if (makeCredReq.excludeCredentials instanceof Array) {
-        for (let i of makeCredReq.excludeCredentials) {
+    if (makeCredReq.publicKey.excludeCredentials instanceof Array) {
+        for (let i of makeCredReq.publicKey.excludeCredentials) {
             if ('id' in i) {
                 i.id = base64UrlDecode(i.id);
             }
         }
     }
 
-    if (makeCredReq.extensions.prf && makeCredReq.extensions.prf.eval && makeCredReq.extensions.prf.eval.first) {
-        makeCredReq.extensions.prf.eval.first = base64UrlDecode(makeCredReq.extensions.prf.eval.first)
+    if (makeCredReq.publicKey.extensions.prf && makeCredReq.publicKey.extensions.prf.eval && makeCredReq.publicKey.extensions.prf.eval.first) {
+        makeCredReq.publicKey.extensions.prf.eval.first = base64UrlDecode(makeCredReq.publicKey.extensions.prf.eval.first)
     }
 
-    if (makeCredReq.extensions.prf && makeCredReq.extensions.prf.eval && makeCredReq.extensions.prf.eval.second) {
-        makeCredReq.extensions.prf.eval.second = base64UrlDecode(makeCredReq.extensions.prf.eval.second)
+    if (makeCredReq.publicKey.extensions.prf && makeCredReq.publicKey.extensions.prf.eval && makeCredReq.publicKey.extensions.prf.eval.second) {
+        makeCredReq.publicKey.extensions.prf.eval.second = base64UrlDecode(makeCredReq.publicKey.extensions.prf.eval.second)
     }
 
     delete makeCredReq.status;
@@ -72,23 +72,23 @@ let performMakeCredReq = (makeCredReq) => {
 }
 
 let performGetCredReq = (getCredReq) => {
-    getCredReq.challenge = base64UrlDecode(getCredReq.challenge);
+    getCredReq.publicKey.challenge = base64UrlDecode(getCredReq.publicKey.challenge);
 
     //Base64url decoding of id in allowCredentials
-    if (getCredReq.allowCredentials instanceof Array) {
-        for (let i of getCredReq.allowCredentials) {
+    if (getCredReq.publicKey.allowCredentials instanceof Array) {
+        for (let i of getCredReq.publicKey.allowCredentials) {
           if ('id' in i) {
             i.id = base64UrlDecode(i.id);
           }
         }
     }
 
-    if (getCredReq.extensions.prf && getCredReq.extensions.prf.eval && getCredReq.extensions.prf.eval.first) {
-        getCredReq.extensions.prf.eval.first = base64UrlDecode(getCredReq.extensions.prf.eval.first)
+    if (getCredReq.publicKey.extensions.prf && getCredReq.publicKey.extensions.prf.eval && getCredReq.publicKey.extensions.prf.eval.first) {
+        getCredReq.publicKey.extensions.prf.eval.first = base64UrlDecode(getCredReq.publicKey.extensions.prf.eval.first)
     }
 
-    if (getCredReq.extensions.prf && getCredReq.extensions.prf.eval && getCredReq.extensions.prf.eval.second) {
-        getCredReq.extensions.prf.eval.second = base64UrlDecode(getCredReq.extensions.prf.eval.second)
+    if (getCredReq.publicKey.extensions.prf && getCredReq.publicKey.extensions.prf.eval && getCredReq.publicKey.extensions.prf.eval.second) {
+        getCredReq.publicKey.extensions.prf.eval.second = base64UrlDecode(getCredReq.publicKey.extensions.prf.eval.second)
     }
 
     delete getCredReq.status;
@@ -162,6 +162,9 @@ function registerButtonClicked() {
     let enableCredProtect = $("input[name='enableCredProtect']").is(':checked');
     let enforceCredentialProtectionPolicy = $("input[name='enforceCredentialProtectionPolicy']").is(':checked');
     let credentialProtectionPolicy = $("input[name='credentialProtectionPolicy']:checked").val();
+    // mediation
+    let specifyMediation = $("input[name='specifyMediation']").is(':checked');
+    let mediation = $("input[name='mediation']:checked").val();
     // prf
     let enablePrf = $("input[name='enablePrf']").is(':checked');
     let prfFirst = $("input[name='prfFirst']").val();
@@ -214,6 +217,10 @@ function registerButtonClicked() {
                 serverPublicKeyCredentialCreationOptionsRequest.prf.eval.second = prfSecond;
             }
         }
+    }
+
+    if (specifyMediation) {
+        serverPublicKeyCredentialCreationOptionsRequest.mediation = mediation;
     }
 
     getRegChallenge(serverPublicKeyCredentialCreationOptionsRequest)
@@ -349,7 +356,7 @@ function getRegChallenge(serverPublicKeyCredentialCreationOptionsRequest) {
             if (response.status !== 'ok') {
                 return Promise.reject(response.errorMessage);
             } else {
-                let createCredentialOptions = performMakeCredReq(response);
+                let createCredentialOptions = performMakeCredReq(response.credentialCreationOptions);
                 return Promise.resolve(createCredentialOptions);
             }
         });
@@ -367,7 +374,7 @@ function getAuthChallenge(serverPublicKeyCredentialGetOptionsRequest) {
             if (response.status !== 'ok') {
                 return Promise.reject(response.errorMessage);
             } else {
-                let getCredentialOptions = performGetCredReq(response);
+                let getCredentialOptions = performGetCredReq(response.credentialRequestOptions);
                 return Promise.resolve(getCredentialOptions);
             }
         });
@@ -396,7 +403,9 @@ function createCredential(options) {
         return Promise.reject("WebAuthn APIs are not available on this user agent.");
     }
 
-    return navigator.credentials.create({publicKey: options, signal: abortSignal})
+    options.signal = abortSignal;
+
+    return navigator.credentials.create(options)
         .then(rawAttestation => {
             logObject("raw attestation", rawAttestation);
 
@@ -465,7 +474,9 @@ function getAssertion(options) {
         return Promise.reject("WebAuthn APIs are not available on this user agent.");
     }
 
-    return navigator.credentials.get({publicKey: options, signal: abortSignal})
+    options.signal = abortSignal;
+
+    return navigator.credentials.get(options)
         .then(rawAssertion => {
             logObject("raw assertion", rawAssertion);
 

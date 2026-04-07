@@ -70,7 +70,7 @@ public class ResponseServiceImpl extends ResponseCommonService implements Respon
                     attestationResponse.getClientDataJSON(), origin, rpId, tokenBinding);
 
             AttestationObject attestationObject = attestationService.getAttestationObject(attestationResponse);
-            attestationService.attestationObjectValidationCheck(rpId, session.getRegOptionResponse().getAuthenticatorSelection(), attestationObject);
+            attestationService.attestationObjectValidationCheck(rpId, session.getRegOptionResponse().getAuthenticatorSelection(), attestationObject, session.getRegOptionResponse().getMediation());
             AttestationVerificationResult attestationVerificationResult = attestationService.verifyAttestation(clientDataHsh, attestationObject);
 
             // prepare trust anchors, attestation fmt (from metadata service or trusted source)
