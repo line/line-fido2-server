@@ -16,6 +16,7 @@ fido:
   fido2:
     session-ttl-millis: 180000
     accept-unregistered-authenticators: true
+    deny-cross-origin: true
 
 mds:
   enable-mds : false
