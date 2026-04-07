@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +36,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 abstract public class ResponseCommonService {
+
+    @Value("${fido.fido2.deny-cross-origin:true}")
+    private boolean denyCrossOrigin;
 
     protected abstract void checkOrigin(URI originFromClientData, URI originFromRp, String rpId);
 
@@ -93,6 +97,12 @@ abstract public class ResponseCommonService {
         }
 
         checkOrigin(originFromClientData, originFromRp, rpId);
+
+        // verify crossOrigin
+        if (denyCrossOrigin && Boolean.TRUE.equals(collectedClientData.getCrossOrigin())) {
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.CROSS_ORIGIN_NOT_ALLOWED,
+                    "Cross-origin WebAuthn ceremony not permitted");
+        }
 
         // verify token binding
         log.debug("Verify token binding if supported");
