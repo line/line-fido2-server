@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -16,22 +16,20 @@
 
 pluginManagement {
     plugins {
-        id 'org.springframework.boot' version '2.7.12'
-        id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-        id 'org.asciidoctor.jvm.convert' version '3.3.2'
+        id("org.springframework.boot") version "2.7.12"
+        id("io.spring.dependency-management") version "1.0.11.RELEASE"
+        id("org.asciidoctor.jvm.convert") version "3.3.2"
     }
 }
 
-rootProject.name = 'fido2'
+rootProject.name = "fido2"
 
-include 'server'
-include 'fido2-core'
-include 'rpserver'
-include 'common'
+include("fido2-core")
+include("rpserver")
+include("common")
 
-include ':demo'
-project(":demo").projectDir = new File('./fido2-demo/demo')
+include("demo")
+project(":demo").projectDir = file("./fido2-demo/demo")
 
-include ':base'
-project(":base").projectDir = new File('./fido2-demo/base')
-
+include("base")
+project(":base").projectDir = file("./fido2-demo/base")
