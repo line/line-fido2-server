@@ -1,4 +1,4 @@
 #!/bin/sh
 
-SPRING_PROFILES_ACTIVE=conformance ./gradlew  :server:bootrun|tee server.log
+SPRING_PROFILES_ACTIVE=local ./gradlew :demo:bootrun |tee server.log
 
