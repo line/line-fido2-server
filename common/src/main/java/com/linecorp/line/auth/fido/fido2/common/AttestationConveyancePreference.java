@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -17,5 +17,8 @@
 package com.linecorp.line.auth.fido.fido2.common;
 
 public enum AttestationConveyancePreference {
-    none, indirect, direct
+    none,
+    indirect,
+    direct,
+    enterprise,
 }

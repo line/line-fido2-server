@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 LY Corporation
+ * Copyright 2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -25,22 +25,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public enum AuthenticatorTransport {
-    USB("usb"),
-    NFC("nfc"),
-    BLE("ble"),
-    SMART_CARD("smart-card"),
-    INTERNAL("internal"),
-    HYBRID("hybrid");
+public enum ResidentKeyRequirement {
+    DISCOURAGED("discouraged"),
+    PREFERRED("preferred"),
+    REQUIRED("required"),
+    ;
 
     @JsonValue
     @Getter private final String value;
 
     @JsonCreator(mode=JsonCreator.Mode.DELEGATING)
-    public static AuthenticatorTransport fromValue(String value) {
-        return Arrays.stream(AuthenticatorTransport.values())
-              .filter(e -> e.value.equals(value))
-              .findFirst()
-              .get();
+    public static ResidentKeyRequirement fromValue(String value) {
+        return Arrays.stream(values())
+                     .filter(e -> e.value.equals(value))
+                     .findFirst()
+                     .get();
     }
 }
