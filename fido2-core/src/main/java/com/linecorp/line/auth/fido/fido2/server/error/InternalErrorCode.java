@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -107,10 +107,9 @@ public enum InternalErrorCode {
     ASSERTION_SIGNATURE_VERIFICATION_FAIL(56),
     METADATA_JSON_PARSING_FAIL(57),
     INVALID_ORIGIN(80),
-
-    CROSS_ORIGIN_NOT_ALLOWED(82),
-
     ECDAA_ALGORITHM_NOT_SUPPORTED(81),
+    CROSS_ORIGIN_NOT_ALLOWED(82),
+    NOT_ALLOWED_COSE_ALGORITHM(83),
 
     //U2F
     APPID_NOT_FOUND(100),

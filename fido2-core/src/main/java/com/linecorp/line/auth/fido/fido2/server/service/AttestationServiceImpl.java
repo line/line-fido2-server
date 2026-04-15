@@ -31,7 +31,6 @@ import org.bouncycastle.asn1.x509.CRLDistPoint;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.x509.extension.X509ExtensionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,10 +38,12 @@ import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 
 import com.linecorp.line.auth.fido.fido2.common.AuthenticatorSelectionCriteria;
 import com.linecorp.line.auth.fido.fido2.common.CredentialMediationRequirement;
+import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialParameters;
 import com.linecorp.line.auth.fido.fido2.common.UserVerificationRequirement;
 import com.linecorp.line.auth.fido.fido2.common.crypto.Digests;
 import com.linecorp.line.auth.fido.fido2.common.mdsv3.metadata.MetadataStatement;
 import com.linecorp.line.auth.fido.fido2.common.server.AttestationType;
+import com.linecorp.line.auth.fido.fido2.common.server.COSEAlgorithm;
 import com.linecorp.line.auth.fido.fido2.common.server.ServerAuthenticatorAttestationResponse;
 import com.linecorp.line.auth.fido.fido2.server.attestation.AttestationVerificationResult;
 import com.linecorp.line.auth.fido.fido2.server.attestation.AttestationVerifierFactory;
@@ -50,8 +51,10 @@ import com.linecorp.line.auth.fido.fido2.server.attestation.android.keyattestati
 import com.linecorp.line.auth.fido.fido2.server.attestation.android.keyattestation.RevokeCheckerClient;
 import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
+import com.linecorp.line.auth.fido.fido2.server.helper.CredentialPublicKeyHelper;
 import com.linecorp.line.auth.fido.fido2.server.model.AttestationObject;
 import com.linecorp.line.auth.fido.fido2.server.model.AttestationStatementFormatIdentifier;
+import com.linecorp.line.auth.fido.fido2.server.property.Fido2Properties;
 import com.linecorp.line.auth.fido.fido2.server.util.AaguidUtil;
 import com.linecorp.line.auth.fido.fido2.server.util.CertPathUtil;
 import com.linecorp.line.auth.fido.fido2.server.util.CertificateUtil;
@@ -66,16 +69,21 @@ public class AttestationServiceImpl implements AttestationService {
     private final VendorSpecificMetadataService vendorSpecificMetadataService;
     private final AttestationVerifierFactory attestationVerifierFactory;
     private final RevokeCheckerClient revokeCheckerClient;
-
-    @Value("${fido.fido2.accept-unregistered-authenticators}")
-    private boolean acceptUnregisteredAuthenticators;
+    private final Fido2Properties fido2Properties;
 
     @Autowired
-    public AttestationServiceImpl(MetadataService metadataService, VendorSpecificMetadataService vendorSpecificMetadataService, AttestationVerifierFactory attestationVerifierFactory, RevokeCheckerClient revokeCheckerClient) {
+    public AttestationServiceImpl(
+            MetadataService metadataService,
+            VendorSpecificMetadataService vendorSpecificMetadataService,
+            AttestationVerifierFactory attestationVerifierFactory,
+            RevokeCheckerClient revokeCheckerClient,
+            Fido2Properties fido2Properties
+    ) {
         this.metadataService = metadataService;
         this.vendorSpecificMetadataService = vendorSpecificMetadataService;
         this.attestationVerifierFactory = attestationVerifierFactory;
         this.revokeCheckerClient = revokeCheckerClient;
+        this.fido2Properties = fido2Properties;
     }
 
     @Override
@@ -111,7 +119,7 @@ public class AttestationServiceImpl implements AttestationService {
     }
 
     @Override
-    public void attestationObjectValidationCheck(String rpId, AuthenticatorSelectionCriteria authenticatorSelection, AttestationObject attestationObject, CredentialMediationRequirement mediation) {
+    public void attestationObjectValidationCheck(String rpId, AuthenticatorSelectionCriteria authenticatorSelection, AttestationObject attestationObject, CredentialMediationRequirement mediation, List<PublicKeyCredentialParameters>  publicKeyCredentialParameters) {
         // verify attestationObject.authData.attestedCredentialData
         if (attestationObject.getAuthData().getAttestedCredentialData() == null) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.CREDENTIAL_NOT_INCLUDED);
@@ -137,6 +145,15 @@ public class AttestationServiceImpl implements AttestationService {
                 authenticatorSelection.getUserVerification() == UserVerificationRequirement.REQUIRED &&
                 !attestationObject.getAuthData().isUserVerified()) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.USER_VERIFICATION_FLAG_NOT_SET, "User verification flag not set", AaguidUtil.convert(attestationObject.getAuthData().getAttestedCredentialData().getAaguid()));
+        }
+
+        // Verify "alg" parameter
+        final COSEAlgorithm coseAlgorithm = CredentialPublicKeyHelper.getCOSEAlgorithm(attestationObject.getAuthData().getAttestedCredentialData().getCredentialPublicKey());
+        final boolean algorithmExistsInRegOptionResponse = publicKeyCredentialParameters.stream().anyMatch(
+                parameter -> parameter.getAlg().getValue() == coseAlgorithm.getValue()
+        );
+        if (!algorithmExistsInRegOptionResponse) {
+            throw new FIDO2ServerRuntimeException(InternalErrorCode.NOT_ALLOWED_COSE_ALGORITHM, "Not allowed algorithm used");
         }
     }
 
@@ -167,7 +184,7 @@ public class AttestationServiceImpl implements AttestationService {
 
         // set attestation root certificate with metadata or vendor specific data
         // or skip getting metadata
-        if (!acceptUnregisteredAuthenticators) {    // throw an error if there is no metadata
+        if (!fido2Properties.isAcceptUnregisteredAuthenticators()) {    // throw an error if there is no metadata
             if (attestationRootCertificates == null) {
                 throw new FIDO2ServerRuntimeException(InternalErrorCode.METADATA_NOT_FOUND);
             }

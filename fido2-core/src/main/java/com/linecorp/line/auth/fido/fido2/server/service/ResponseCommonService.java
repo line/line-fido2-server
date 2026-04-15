@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -21,7 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,14 +31,15 @@ import com.linecorp.line.auth.fido.fido2.common.crypto.Digests;
 import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.model.CollectedClientData;
+import com.linecorp.line.auth.fido.fido2.server.property.Fido2Properties;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 abstract public class ResponseCommonService {
 
-    @Value("${fido.fido2.deny-cross-origin:true}")
-    private boolean denyCrossOrigin;
+    @Autowired
+    private Fido2Properties fido2Properties;
 
     protected abstract void checkOrigin(URI originFromClientData, URI originFromRp, String rpId);
 
@@ -99,7 +100,7 @@ abstract public class ResponseCommonService {
         checkOrigin(originFromClientData, originFromRp, rpId);
 
         // verify crossOrigin
-        if (denyCrossOrigin && Boolean.TRUE.equals(collectedClientData.getCrossOrigin())) {
+        if (fido2Properties.isDenyCrossOrigin() && Boolean.TRUE.equals(collectedClientData.getCrossOrigin())) {
             throw new FIDO2ServerRuntimeException(InternalErrorCode.CROSS_ORIGIN_NOT_ALLOWED,
                     "Cross-origin WebAuthn ceremony not permitted");
         }

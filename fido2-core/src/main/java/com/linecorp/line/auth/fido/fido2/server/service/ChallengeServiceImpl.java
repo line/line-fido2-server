@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 LY Corporation
+ * Copyright 2024-2026 LY Corporation
  *
  * LY Corporation licenses this file to you under the Apache License,
  * version 2.0 (the "License"); you may not use this file except in compliance
@@ -16,45 +16,55 @@
 
 package com.linecorp.line.auth.fido.fido2.server.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.linecorp.line.auth.fido.fido2.common.COSEAlgorithmIdentifier;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialParameters;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialType;
 import com.linecorp.line.auth.fido.fido2.common.extension.AuthenticationExtensionsClientInputs;
-import com.linecorp.line.auth.fido.fido2.common.server.*;
+import com.linecorp.line.auth.fido.fido2.common.server.AuthOptionRequest;
+import com.linecorp.line.auth.fido.fido2.common.server.AuthOptionResponse;
+import com.linecorp.line.auth.fido.fido2.common.server.COSEAlgorithm;
+import com.linecorp.line.auth.fido.fido2.common.server.RegOptionRequest;
+import com.linecorp.line.auth.fido.fido2.common.server.RegOptionResponse;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerPublicKeyCredentialDescriptor;
+import com.linecorp.line.auth.fido.fido2.common.server.ServerResponse;
 import com.linecorp.line.auth.fido.fido2.server.ServerConstant;
 import com.linecorp.line.auth.fido.fido2.server.error.InternalErrorCode;
 import com.linecorp.line.auth.fido.fido2.server.exception.FIDO2ServerRuntimeException;
 import com.linecorp.line.auth.fido.fido2.server.model.Session;
 import com.linecorp.line.auth.fido.fido2.server.model.UserKey;
+import com.linecorp.line.auth.fido.fido2.server.property.Fido2Properties;
 import com.linecorp.line.auth.fido.fido2.server.util.ChallengeGenerator;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Primary
-@Service
 public class ChallengeServiceImpl implements ChallengeService {
     private final RpService rpService;
     private final UserKeyService userKeyService;
     private final SessionService sessionService;
 
-    @Value("${fido.fido2.session-ttl-millis}")
-    private long sessionTtlMillis;
+    private final long sessionTtlMillis;
+    private final List<COSEAlgorithm> allowedAlgorithms;
 
-    @Autowired
     public ChallengeServiceImpl(RpService rpService,
                                 UserKeyService userKeyService,
-                                SessionService sessionService) {
+                                SessionService sessionService,
+                                Fido2Properties fido2Properties
+    ) {
         this.rpService = rpService;
         this.userKeyService = userKeyService;
         this.sessionService = sessionService;
+
+        sessionTtlMillis = fido2Properties.getSessionTtlMillis();
+        allowedAlgorithms = fido2Properties.getRegistration()
+                                           .getAllowedAlgorithms()
+                                           .stream()
+                                           .map(COSEAlgorithm::valueOf)
+                                           .collect(Collectors.toList());
     }
 
     /**
@@ -91,12 +101,11 @@ public class ChallengeServiceImpl implements ChallengeService {
         builder.excludeCredentials(getExcludeAndIncludeCredentials(userKeys));
 
         // set public key params with all available algorithms
-        List<PublicKeyCredentialParameters> publicKeyCredentialParameters = new ArrayList<>();
-        for (COSEAlgorithmIdentifier identifier : COSEAlgorithmIdentifier.values()) {
-            PublicKeyCredentialParameters parameters = new PublicKeyCredentialParameters();
-            parameters.setType(PublicKeyCredentialType.PUBLIC_KEY);
-            parameters.setAlg(identifier);
-            publicKeyCredentialParameters.add(parameters);
+        final List<PublicKeyCredentialParameters> publicKeyCredentialParameters;
+        if (allowedAlgorithms.isEmpty()) {
+            publicKeyCredentialParameters = createPublicKeyCredentialParameters(List.of(COSEAlgorithm.values()));
+        } else {
+            publicKeyCredentialParameters = createPublicKeyCredentialParameters(allowedAlgorithms);
         }
         builder.pubKeyCredParams(publicKeyCredentialParameters);
 
@@ -243,5 +252,20 @@ public class ChallengeServiceImpl implements ChallengeService {
         }
 
         return publicKeyCredentialDescriptors;
+    }
+
+    private static List<PublicKeyCredentialParameters> createPublicKeyCredentialParameters(
+            List<COSEAlgorithm> coseAlgorithms
+    ) {
+        final List<PublicKeyCredentialParameters> publicKeyCredentialParameters = new ArrayList<>();
+
+        for (COSEAlgorithm coseAlgorithm : coseAlgorithms) {
+            final PublicKeyCredentialParameters parameters = new PublicKeyCredentialParameters();
+            parameters.setType(PublicKeyCredentialType.PUBLIC_KEY);
+            parameters.setAlg(COSEAlgorithmIdentifier.fromValue(coseAlgorithm.getValue()));
+            publicKeyCredentialParameters.add(parameters);
+        }
+
+        return publicKeyCredentialParameters;
     }
 }
