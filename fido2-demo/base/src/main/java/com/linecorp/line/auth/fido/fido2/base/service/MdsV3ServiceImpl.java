@@ -92,7 +92,10 @@ public class MdsV3ServiceImpl implements MdsService {
 
     private static void checkLatestDataExist(MetadataTocEntity metadataTocEntity, MetadataBLOBPayload metadataBLOBPayload) throws MdsV3MetadataException {
         // check no and compare with previous
-        if (metadataTocEntity != null && (metadataTocEntity.getId() >= metadataBLOBPayload.getNo())) {
+        // NOTE: must compare metadataTocEntity.getNo() (FIDO Alliance BLOB sequence number)
+        // against metadataBLOBPayload.getNo(), NOT getId() (DB auto-increment PK).
+        // Using getId() causes the sync to be permanently blocked once the PK exceeds the BLOB no.
+        if (metadataTocEntity != null && (metadataTocEntity.getNo() >= metadataBLOBPayload.getNo())) {
             // already up to date
             throw new MdsV3MetadataException(MetadataTOCResult
                     .builder()
