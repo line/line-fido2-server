@@ -70,6 +70,15 @@ public class EmbeddedRedisServerConfiguration {
         return Runtime.getRuntime().exec(shell);
     }
 
+    /**
+     * @brief The executeGrepProcessWindowCommand function can be used as a replacement for the executeGrepProcessCommand function when running on Windows OS.
+     */
+    private Process executeGrepProcessWindowCommand(int port) throws IOException {
+        String command = String.format("netstat -an | findstr :%d", port);
+        String[] shell = {"cmd.exe", "/c", command};
+        return Runtime.getRuntime().exec(shell);
+    }
+
     private boolean isRunning(Process process) {
         String line;
         StringBuilder pidInfo = new StringBuilder();
