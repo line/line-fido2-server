@@ -110,6 +110,11 @@ public class AuthenticatorData {
             inputStream.read(credentialIdLengthBytes, 0, credentialIdLengthBytes.length);
             int credentialIdLength = UnsignedUtil.readUINT16BE(credentialIdLengthBytes);
 
+            // Check credential id length
+            if (credentialIdLength == 0 || credentialIdLength > 1023) {
+                throw new FIDO2ServerRuntimeException(InternalErrorCode.INVALID_CREDENTIAL_ID_LENGTH, "Credential ID length must be between 1 and 1023 bytes");
+            }
+
             // credentialId
             byte[] credentialIdBytes = new byte[credentialIdLength];
             inputStream.read(credentialIdBytes, 0, credentialIdLength);
