@@ -17,15 +17,12 @@
 package com.linecorp.line.auth.fido.fido2.server.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -85,7 +82,7 @@ class ChallengeServiceImplTest {
     }
 
     @Test
-    void getRegChallenge_emptyAllowedAlgorithms_returnsAllAlgorithms() {
+    void getRegChallenge_emptyAllowedAlgorithms_returnsAllAlgorithmsInEnumOrder() {
         final Fido2Properties fido2Properties = new Fido2Properties(
                 SESSION_TTL_MILLIS,
                 true,
@@ -96,25 +93,25 @@ class ChallengeServiceImplTest {
 
         final RegOptionResponse response = cut.getRegChallenge(createRegOptionRequest());
 
+        final COSEAlgorithm[] expectedAlgorithms = COSEAlgorithm.values();
         final List<PublicKeyCredentialParameters> pubKeyCredParams = response.getPubKeyCredParams();
-        assertEquals(COSEAlgorithm.values().length, pubKeyCredParams.size());
+        assertEquals(expectedAlgorithms.length, pubKeyCredParams.size());
 
-        final Set<Long> returnedValues = pubKeyCredParams.stream()
-                                                         .map(p -> p.getAlg().getValue())
-                                                         .collect(Collectors.toSet());
-        for (COSEAlgorithm alg : COSEAlgorithm.values()) {
-            assertTrue(returnedValues.contains((long) alg.getValue()),
-                    "Expected algorithm " + alg.getName() + " to be included");
+        int index = 0;
+        for (COSEAlgorithm expectedAlgorithm : expectedAlgorithms) {
+            final PublicKeyCredentialParameters actualParameter = pubKeyCredParams.get(index);
+            assertEquals(expectedAlgorithm.getValue(), actualParameter.getAlg().getValue());
+            index++;
         }
     }
 
     @Test
-    void getRegChallenge_specificAllowedAlgorithms_returnsOnlyAllowedAlgorithms() {
+    void getRegChallenge_specificAllowedAlgorithms_returnsOnlyAllowedAlgorithmsInConfiguredOrder() {
         final Fido2Properties fido2Properties = new Fido2Properties(
                 SESSION_TTL_MILLIS,
                 true,
                 true,
-                new RegistrationProperties(List.of("ES256", "RS256"))
+                new RegistrationProperties(List.of("RS512", "ES256", "ES256K"))
         );
         final ChallengeServiceImpl cut = createCut(fido2Properties);
 
@@ -122,14 +119,8 @@ class ChallengeServiceImplTest {
 
         final List<PublicKeyCredentialParameters> pubKeyCredParams = response.getPubKeyCredParams();
         assertEquals(fido2Properties.getRegistration().getAllowedAlgorithms().size(), pubKeyCredParams.size());
-
-        final Set<Long> returnedValues = pubKeyCredParams.stream()
-                                                         .map(p -> p.getAlg().getValue())
-                                                         .collect(Collectors.toSet());
-        for (String algName : fido2Properties.getRegistration().getAllowedAlgorithms()) {
-            final COSEAlgorithm expected = COSEAlgorithm.valueOf(algName);
-            assertTrue(returnedValues.contains((long) expected.getValue()),
-                       "Expected algorithm " + algName + " to be included");
-        }
+        assertEquals(COSEAlgorithm.RS512.getValue(), pubKeyCredParams.get(0).getAlg().getValue());
+        assertEquals(COSEAlgorithm.ES256.getValue(), pubKeyCredParams.get(1).getAlg().getValue());
+        assertEquals(COSEAlgorithm.ES256K.getValue(), pubKeyCredParams.get(2).getAlg().getValue());
     }
 }

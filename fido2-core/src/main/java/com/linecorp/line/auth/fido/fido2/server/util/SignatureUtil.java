@@ -88,16 +88,6 @@ public class SignatureUtil {
         return signature.sign();
     }
 
-    // RSA PKCS v1.5
-    public static boolean verifySHA1withRSASignature(PublicKey publicKey, byte[] messageBytes, byte[] signatureBytes)
-            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        Signature signature = Signature.getInstance("SHA1withRSA");
-        signature.initVerify(publicKey);
-        signature.update(messageBytes);
-
-        return signature.verify(signatureBytes);
-    }
-
     public static boolean verifySHA256withRSASignature(PublicKey publicKey, byte[] messageBytes, byte[] signatureBytes)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Signature signature = Signature.getInstance("SHA256withRSA");

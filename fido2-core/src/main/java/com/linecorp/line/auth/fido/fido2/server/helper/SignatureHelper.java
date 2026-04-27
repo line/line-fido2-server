@@ -40,8 +40,6 @@ public class SignatureHelper {
                 return SignatureUtil.verifySHA384withRSAPssSignature(publicKey, messageBytes, signatureBytes);
             } else if (algorithm == COSEAlgorithm.PS512) {
                 return SignatureUtil.verifySHA512withRSAPssSignature(publicKey, messageBytes, signatureBytes);
-            } else if (algorithm == COSEAlgorithm.RS1) {
-                return SignatureUtil.verifySHA1withRSASignature(publicKey, messageBytes, signatureBytes);
             } else if (algorithm == COSEAlgorithm.RS256) {
                 return SignatureUtil.verifySHA256withRSASignature(publicKey, messageBytes, signatureBytes);
             } else if (algorithm == COSEAlgorithm.RS384) {
