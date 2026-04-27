@@ -21,6 +21,7 @@ import com.linecorp.line.auth.fido.fido2.common.CredentialRequestOptions;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialCreationOptions;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRequestOptions;
 import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialRpEntity;
+import com.linecorp.line.auth.fido.fido2.common.PublicKeyCredentialType;
 import com.linecorp.line.auth.fido.fido2.common.crypto.Digests;
 import com.linecorp.line.auth.fido.fido2.common.server.*;
 import com.linecorp.line.auth.fido.fido2.rpserver.config.FidoServerConfig;
@@ -44,11 +45,16 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -270,9 +276,10 @@ public class AdapterController {
 
         final HttpEntity<AuthOptionRequest> request = new HttpEntity<>(authOptionRequest, httpHeaders);
         final AuthOptionResponse response = restTemplate.postForObject(authChallengeUri, request, AuthOptionResponse.class);
+        final boolean success = response.getServerResponse().getInternalErrorCode() == 0;
 
         final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions();
-        publicKeyCredentialRequestOptions.setAllowCredentials(response.getAllowCredentials());
+        publicKeyCredentialRequestOptions.setAllowCredentials(getAllowCredentials(response, optionRequest.getUsername(), success));
         publicKeyCredentialRequestOptions.setChallenge(response.getChallenge());
         publicKeyCredentialRequestOptions.setRpId(response.getRpId());
         publicKeyCredentialRequestOptions.setTimeout(response.getTimeout());
@@ -290,7 +297,7 @@ public class AdapterController {
                 .build();
 
         // error
-        if (response.getServerResponse().getInternalErrorCode() != 0) {
+        if (!success) {
             serverResponse.setStatus(Status.FAILED);
             serverResponse.setErrorMessage(response.getServerResponse().getInternalErrorCodeDescription());
             return serverResponse;
@@ -362,6 +369,64 @@ public class AdapterController {
         serverResponse = new AdapterServerResponse();
         serverResponse.setStatus(Status.OK);
         return serverResponse;
+    }
+
+    // The FIDO2 server may return an empty allowCredentials list when the username
+    // has no credentials, or when the request has no username.
+    // How to handle it is an RP policy decision.
+    // Returning an empty list for a username can leak whether that user exists.
+    // This demo RP returns one stable fake credential as a simple mitigation.
+    // A real RP should consider credential count and ID length to avoid fingerprinting.
+    // Other RPs may choose a different trade-off, such as failing the request
+    // or passing the empty list as-is.
+    private List<ServerPublicKeyCredentialDescriptor> getAllowCredentials(
+            AuthOptionResponse response,
+            String username,
+            boolean success) {
+
+        final List<ServerPublicKeyCredentialDescriptor> allowCredentials = response.getAllowCredentials();
+        final boolean hasUsername = StringUtils.hasLength(username);
+        final boolean hasCredentials = allowCredentials != null && !allowCredentials.isEmpty();
+        final boolean shouldUseImaginaryCredential = success && hasUsername && !hasCredentials;
+
+        if (!shouldUseImaginaryCredential) {
+            return allowCredentials;
+        }
+
+        // This is the username enumeration case.
+        return Collections.singletonList(createImaginaryCredential(username));
+    }
+
+    private ServerPublicKeyCredentialDescriptor createImaginaryCredential(String username) {
+        final ServerPublicKeyCredentialDescriptor descriptor = new ServerPublicKeyCredentialDescriptor();
+        descriptor.setType(PublicKeyCredentialType.PUBLIC_KEY);
+        descriptor.setId(generateImaginaryCredentialId(username));
+        return descriptor;
+    }
+
+    private String generateImaginaryCredentialId(String username) {
+        try {
+            final String hmacAlgorithm = "HmacSHA256";
+
+            // This demo RP uses a fixed key for simplicity.
+            // A real RP should keep this key secret and load it from server-side config.
+            final String key = "line-fido2-rpserver-demo-imaginary-credential-key";
+            // Separates this HMAC use from other possible uses.
+            final String prefix = "line-fido2-rpserver:imaginary-credential:v1";
+
+            // Same rpId and username gives the same ID.
+            // Different usernames give different-looking IDs.
+            final Mac mac = Mac.getInstance(hmacAlgorithm);
+            final byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+            mac.init(new SecretKeySpec(keyBytes, hmacAlgorithm));
+
+            // Build one clear HMAC input from purpose, RP ID, and username.
+            final String message = prefix + '\0' + rpId + '\0' + username;
+            final byte[] credentialId = mac.doFinal(message.getBytes(StandardCharsets.UTF_8));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(credentialId);
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("Failed to generate imaginary credential ID", e);
+        }
     }
 
     private String createUserId(String username) {
