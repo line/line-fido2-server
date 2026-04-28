@@ -18,18 +18,22 @@ fido:
     accept-unregistered-authenticators: true
     deny-cross-origin: true
     registration:
+      # If allowed-algorithms is explicitly set to an empty list ([]), the server uses
+      # the default algorithm order defined by the COSEAlgorithm enum, which lists the
+      # security-recommended algorithms first. If this property is omitted, the server
+      # may fail to start.
       allowed-algorithms:
         - ES256
-        - EDDSA
         - ES384
         - ES512
-        - ES256K
+        - EDDSA
         - PS256
         - PS384
         - PS512
         - RS256
         - RS384
         - RS512
+        - ES256K
 
 mds:
   enable-mds : false

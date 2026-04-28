@@ -25,9 +25,9 @@ import lombok.Getter;
 @Getter
 public enum COSEAlgorithm {
     ES256("ES256", -7, "ECDSA w/ SHA-256", true),
-    EDDSA("EdDSA", -8, "EdDSA", true),
     ES384("ES384", -35, "ECDSA w/ SHA-384", true),
     ES512("ES512", -36, "ECDSA w/ SHA-512", true),
+    EDDSA("EdDSA", -8, "EdDSA", true),
     PS256("PS256", -37, "RSASSA-PSS w/ SHA-256", true),
     PS384("PS384", -38, "RSASSA-PSS w/ SHA-384", true),
     PS512("PS512", -39, "RSASSA-PSS w/ SHA-512", true),
