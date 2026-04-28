@@ -24,10 +24,6 @@
     },
     {
       "type": "public-key",
-      "alg": -8
-    },
-    {
-      "type": "public-key",
       "alg": -35
     },
     {
@@ -36,7 +32,7 @@
     },
     {
       "type": "public-key",
-      "alg": -43
+      "alg": -8
     },
     {
       "type": "public-key",
@@ -61,6 +57,10 @@
     {
       "type": "public-key",
       "alg": -259
+    },
+    {
+      "type": "public-key",
+      "alg": -47
     }
   ],
   "timeout": 180000,
